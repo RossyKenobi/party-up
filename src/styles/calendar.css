@@ -1,0 +1,372 @@
+/* ============================================
+   Calendar-specific Styles
+   ============================================ */
+
+/* ── Week View ── */
+.week-view {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.week-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-xs) var(--space-md) 0;
+}
+
+.week-header .month-label {
+  font-size: var(--font-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: opacity var(--duration-fast);
+}
+
+.week-header .month-label:active {
+  opacity: 0.6;
+}
+
+.week-header .year-label {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.week-header .view-toggle {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.week-days-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  padding: var(--space-sm) var(--space-sm) 0;
+  gap: 2px;
+}
+
+.week-day-label {
+  text-align: center;
+  font-size: var(--font-xs);
+  color: var(--text-tertiary);
+  font-weight: 500;
+  padding-bottom: var(--space-xs);
+  text-transform: uppercase;
+}
+
+.week-dates-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  padding: 0 var(--space-sm);
+  gap: 2px;
+  position: relative;
+}
+
+.week-date-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-xs) 0 var(--space-sm);
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.week-date-cell:active {
+  background: var(--bg-secondary);
+}
+
+.week-date-num {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  font-size: var(--font-base);
+  font-weight: 500;
+  color: var(--text-primary);
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.week-date-cell.today .week-date-num {
+  background: var(--accent);
+  color: var(--text-inverse);
+  font-weight: 600;
+}
+
+.week-date-cell.selected:not(.today) .week-date-num {
+  background: var(--accent-bg);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.week-date-cell .event-dots {
+  display: flex;
+  gap: 3px;
+  margin-top: 3px;
+  min-height: 5px;
+}
+
+.event-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: var(--radius-full);
+}
+
+/* ── Day Timeline ── */
+.day-timeline {
+  position: relative;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: var(--space-lg);
+}
+
+.day-timeline::-webkit-scrollbar {
+  display: none;
+}
+
+.timeline-grid {
+  position: relative;
+  margin-left: 52px;
+  border-left: 1px solid var(--divider);
+}
+
+.timeline-hour {
+  height: var(--timeline-hour-height);
+  position: relative;
+  border-bottom: 1px solid var(--divider);
+}
+
+.timeline-hour-label {
+  position: absolute;
+  left: -52px;
+  top: -8px;
+  width: 44px;
+  text-align: right;
+  font-size: var(--font-xs);
+  color: var(--text-tertiary);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.timeline-now-line {
+  position: absolute;
+  left: -8px;
+  right: 0;
+  height: 2px;
+  background: var(--danger);
+  z-index: 5;
+  pointer-events: none;
+}
+
+.timeline-now-line::before {
+  content: '';
+  position: absolute;
+  left: -4px;
+  top: -4px;
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-full);
+  background: var(--danger);
+}
+
+/* ── Timeline Event Block ── */
+.timeline-event {
+  position: absolute;
+  left: var(--space-sm);
+  right: var(--space-sm);
+  border-radius: var(--radius-sm);
+  padding: var(--space-xs) var(--space-sm);
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform var(--duration-fast) var(--ease-out);
+  z-index: 3;
+  min-height: 24px;
+}
+
+.timeline-event:active {
+  transform: scale(0.98);
+}
+
+.timeline-event .event-title {
+  font-size: var(--font-xs);
+  font-weight: 600;
+  color: inherit;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.timeline-event .event-time {
+  font-size: 10px;
+  opacity: 0.8;
+  margin-top: 1px;
+}
+
+.timeline-event .event-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-top: 3px;
+}
+
+/* ── Month View ── */
+.month-view {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.month-view-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm) var(--space-md);
+}
+
+.month-view-header h2 {
+  font-size: var(--font-xl);
+  font-weight: 700;
+}
+
+.month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  padding: 0 var(--space-sm);
+  gap: 1px;
+}
+
+.month-day-label {
+  text-align: center;
+  font-size: var(--font-xs);
+  color: var(--text-tertiary);
+  font-weight: 500;
+  padding: var(--space-xs) 0 var(--space-sm);
+}
+
+.month-date-cell {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  transition: background var(--duration-fast);
+  position: relative;
+}
+
+.month-date-cell:active {
+  background: var(--bg-secondary);
+}
+
+.month-date-cell .date-num {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  font-size: var(--font-sm);
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.month-date-cell.other-month .date-num {
+  color: var(--text-tertiary);
+}
+
+.month-date-cell.today .date-num {
+  background: var(--accent);
+  color: var(--text-inverse);
+  font-weight: 600;
+}
+
+.month-date-cell .month-event-dots {
+  display: flex;
+  gap: 2px;
+  margin-top: 2px;
+  min-height: 5px;
+}
+
+/* ── Year View ── */
+.year-view {
+  padding: var(--space-md);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.year-view-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+}
+
+.year-view-header h2 {
+  font-size: var(--font-2xl);
+  font-weight: 700;
+}
+
+.year-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+}
+
+.year-month-card {
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  padding: var(--space-sm);
+  transition: background var(--duration-fast);
+}
+
+.year-month-card:active {
+  background: var(--bg-secondary);
+}
+
+.year-month-card .ym-title {
+  font-size: var(--font-sm);
+  font-weight: 600;
+  margin-bottom: var(--space-xs);
+  color: var(--text-primary);
+}
+
+.year-month-card.current-month .ym-title {
+  color: var(--accent);
+}
+
+.year-mini-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+}
+
+.year-mini-grid .mini-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  color: var(--text-secondary);
+  border-radius: 2px;
+}
+
+.year-mini-grid .mini-day.today {
+  background: var(--accent);
+  color: var(--text-inverse);
+  font-weight: 700;
+  border-radius: var(--radius-full);
+}
+
+.year-mini-grid .mini-day.has-event {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.year-mini-grid .mini-day-header {
+  font-size: 7px;
+  color: var(--text-tertiary);
+  font-weight: 500;
+}

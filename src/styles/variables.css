@@ -1,0 +1,114 @@
+/* ============================================
+   PARTY-UP Design Tokens
+   莫兰迪色系 — 低饱和度、温暖、活泼
+   ============================================ */
+
+:root {
+  /* ── Background ── */
+  --bg-primary: #F5F2EE;
+  --bg-secondary: #EDEAE5;
+  --bg-card: #FFFFFF;
+  --bg-elevated: #FFFFFF;
+  --bg-overlay: rgba(0, 0, 0, 0.35);
+
+  /* ── Text ── */
+  --text-primary: #3D3B38;
+  --text-secondary: #8A8785;
+  --text-tertiary: #B0ADAA;
+  --text-inverse: #FFFFFF;
+
+  /* ── Accent ── */
+  --accent: #B8907E;
+  --accent-light: #D4B8A8;
+  --accent-bg: rgba(184, 144, 126, 0.12);
+
+  /* ── Borders & Dividers ── */
+  --border: #E8E5E0;
+  --divider: #F0EDEA;
+
+  /* ── Event Categories ── */
+  --cat-fitness: #9CAF88;
+  --cat-fitness-bg: rgba(156, 175, 136, 0.15);
+  --cat-drinks: #C8A882;
+  --cat-drinks-bg: rgba(200, 168, 130, 0.15);
+  --cat-outdoor: #8FA3B0;
+  --cat-outdoor-bg: rgba(143, 163, 176, 0.15);
+
+  /* ── Status ── */
+  --success: #9CAF88;
+  --warning: #D4B07A;
+  --danger: #C49090;
+
+  /* ── Shadows ── */
+  --shadow-sm: 0 1px 3px rgba(61, 59, 56, 0.06);
+  --shadow-md: 0 4px 12px rgba(61, 59, 56, 0.08);
+  --shadow-lg: 0 8px 24px rgba(61, 59, 56, 0.1);
+
+  /* ── Spacing ── */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+
+  /* ── Radius ── */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* ── Typography ── */
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-xs: 11px;
+  --font-sm: 13px;
+  --font-base: 15px;
+  --font-md: 17px;
+  --font-lg: 20px;
+  --font-xl: 24px;
+  --font-2xl: 28px;
+  --font-3xl: 34px;
+
+  /* ── Transitions ── */
+  --ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 400ms;
+
+  /* ── Layout ── */
+  --header-height: 52px;
+  --tabbar-height: 56px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --timeline-hour-height: 60px;
+}
+
+/* ── Dark Mode ── */
+[data-theme="dark"] {
+  --bg-primary: #2A2826;
+  --bg-secondary: #232120;
+  --bg-card: #3A3836;
+  --bg-elevated: #444240;
+  --bg-overlay: rgba(0, 0, 0, 0.55);
+
+  --text-primary: #E8E5E0;
+  --text-secondary: #9A9795;
+  --text-tertiary: #6A6765;
+  --text-inverse: #2A2826;
+
+  --accent: #C4A08E;
+  --accent-light: #A88A78;
+  --accent-bg: rgba(196, 160, 142, 0.15);
+
+  --border: #4A4846;
+  --divider: #3A3836;
+
+  --cat-fitness-bg: rgba(156, 175, 136, 0.2);
+  --cat-drinks-bg: rgba(200, 168, 130, 0.2);
+  --cat-outdoor-bg: rgba(143, 163, 176, 0.2);
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
