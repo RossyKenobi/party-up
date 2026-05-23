@@ -1,10 +1,15 @@
 <!--pages/calendar/calendar.wxml-->
-<view class="week-view">
-  <view class="week-header">
-    <text class="month-label" bindtap="switchToMonth">{{monthName}} {{displayYear}}</text>
-    <view class="view-toggle" style="display:flex; align-items:center; gap:8px;">
-      <view class="btn btn-secondary" style="padding: 4px 16px; font-size: 14px; min-width: 60px;" bindtap="goToday">今日</view>
-      <view class="btn btn-primary" style="padding: 4px 16px; font-size: 14px; min-width: 60px;" bindtap="goCreate">＋</view>
+<view class="calendar-page">
+  <view class="header-bar">
+    <picker mode="date" fields="month" value="{{currentMonthValue}}" bindchange="onMonthPickerChange">
+      <view class="month-label">
+        {{monthName}} {{displayYear}} <text class="icon-arrow-down" style="font-size:12px; margin-left:4px;">▼</text>
+      </view>
+    </picker>
+    <view class="header-actions" style="display:flex; align-items:center; gap:8px;">
+      <view class="btn btn-secondary" style="padding: 4px 10px; font-size: 12px; min-width: 40px;" bindtap="toggleMonthView">{{isMonthView ? '收起' : '展开'}}</view>
+      <view class="btn btn-secondary" style="padding: 4px 10px; font-size: 12px; min-width: 40px;" bindtap="goToday">今日</view>
+      <view class="btn btn-primary" style="padding: 4px 16px; font-size: 14px; min-width: 40px;" bindtap="goCreate">＋</view>
     </view>
   </view>
 
@@ -12,33 +17,58 @@
     <text class="week-day-label" wx:for="{{dayNamesShort}}" wx:key="*this">{{item}}</text>
   </view>
 
-  <view class="week-dates-row">
-    <view class="week-date-cell {{item.isToday ? 'today' : ''}} {{item.isSelected ? 'selected' : ''}}" 
-          wx:for="{{weekDates}}" wx:key="date" data-date="{{item.dateStr}}" bindtap="selectDate">
-      <view class="week-date-num">{{item.dateNum}}</view>
+  <!-- Month Grid View -->
+  <view class="month-grid" wx:if="{{isMonthView}}">
+    <view class="month-grid-cell {{item.currentMonth ? '' : 'other-month'}} {{item.isToday ? 'today' : ''}} {{item.isSelected ? 'selected' : ''}}"
+          wx:for="{{monthGrid}}" wx:key="dateStr" data-date="{{item.dateStr}}" bindtap="selectDate">
+      <view class="date-num">{{item.dateNum}}</view>
       <view class="event-dots">
         <view class="event-dot" wx:for="{{item.dots}}" wx:for-item="dot" wx:key="*this" style="background:{{dot}}"></view>
       </view>
     </view>
   </view>
 
-  <scroll-view class="day-timeline" scroll-y="true" scroll-top="{{scrollTop}}">
-    <view class="timeline-grid" style="height:{{24 * hourHeight}}px; margin-top: 10px; margin-bottom: 10px;">
-      <view class="timeline-hour" wx:for="{{hours}}" wx:key="*this">
-        <text class="timeline-hour-label">{{item}}:00</text>
-      </view>
-      <view style="position: absolute; top: {{24 * hourHeight}}px; width: 100%;">
-        <text class="timeline-hour-label">24:00</text>
-      </view>
+  <!-- Week Swiper View -->
+  <view class="week-swiper-container" wx:else>
+    <swiper class="week-swiper" current="{{currentWeekIndex}}" circular="true" bindchange="onWeekSwiperChange" duration="250">
+      <swiper-item wx:for="{{weeksList}}" wx:key="id" wx:for-item="week">
+        <view class="week-dates-row">
+          <view class="week-date-cell {{day.isToday ? 'today' : ''}} {{day.isSelected ? 'selected' : ''}}" 
+                wx:for="{{week.days}}" wx:for-item="day" wx:key="dateStr" data-date="{{day.dateStr}}" bindtap="selectDate">
+            <view class="week-date-num">{{day.dateNum}}</view>
+            <view class="event-dots">
+              <view class="event-dot" wx:for="{{day.dots}}" wx:for-item="dot" wx:key="*this" style="background:{{dot}}"></view>
+            </view>
+          </view>
+        </view>
+      </swiper-item>
+    </swiper>
+  </view>
 
-      <view wx:if="{{isToday}}" class="timeline-now-line" style="top:{{nowLineTop}}px"></view>
+  <!-- Timeline Swiper -->
+  <view class="timeline-container">
+    <swiper class="day-swiper" current="{{currentDayIndex}}" circular="true" bindchange="onDaySwiperChange" duration="250">
+      <swiper-item wx:for="{{daysList}}" wx:key="id" wx:for-item="dayData">
+        <scroll-view class="day-timeline" scroll-y="true" scroll-top="{{scrollTop}}">
+          <view class="timeline-grid" style="height:{{24 * hourHeight}}px; margin-top: 10px; margin-bottom: 10px;">
+            <view class="timeline-hour" wx:for="{{hours}}" wx:key="*this">
+              <text class="timeline-hour-label">{{item}}:00</text>
+            </view>
+            <view style="position: absolute; top: {{24 * hourHeight}}px; width: 100%;">
+              <text class="timeline-hour-label">24:00</text>
+            </view>
 
-      <view class="timeline-event" wx:for="{{eventsForSelected}}" wx:key="id" 
-            style="top:{{item.top}}px; height:{{item.height}}px; background-color:{{item.bgColor}}; border-left:3px solid {{item.color}}; color:{{item.color}};"
-            data-id="{{item.id}}" bindtap="goDetail">
-        <view class="event-title">{{item.emoji}} {{item.title}}</view>
-        <view class="event-time" style="opacity:0.7">{{item.timeStr}}</view>
-      </view>
-    </view>
-  </scroll-view>
+            <view wx:if="{{dayData.isToday}}" class="timeline-now-line" style="top:{{nowLineTop}}px"></view>
+
+            <view class="timeline-event" wx:for="{{dayData.events}}" wx:key="id" 
+                  style="top:{{item.top}}px; height:{{item.height}}px; background-color:{{item.bgColor}}; border-left:3px solid {{item.color}}; color:{{item.color}};"
+                  data-id="{{item.id}}" bindtap="goDetail">
+              <view class="event-title">{{item.emoji}} {{item.title}}</view>
+              <view class="event-time" style="opacity:0.7">{{item.timeStr}}</view>
+            </view>
+          </view>
+        </scroll-view>
+      </swiper-item>
+    </swiper>
+  </view>
 </view>

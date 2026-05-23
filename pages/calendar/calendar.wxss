@@ -1,4 +1,4 @@
-.week-view {
+.calendar-page {
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -6,7 +6,7 @@
   overflow: hidden;
 }
 
-.week-header {
+.header-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -17,6 +17,8 @@
   font-size: var(--font-xl);
   font-weight: 700;
   color: var(--text-primary);
+  display: flex;
+  align-items: center;
 }
 
 .week-days-row {
@@ -32,11 +34,64 @@
   font-weight: 500;
 }
 
+/* Month Grid */
+.month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  padding: var(--space-sm);
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--divider);
+}
+
+.month-grid-cell {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 4px;
+}
+
+.month-grid-cell.other-month {
+  opacity: 0.3;
+}
+
+.date-num {
+  width: 28px;
+  height: 28px;
+  line-height: 28px;
+  text-align: center;
+  border-radius: var(--radius-full);
+  font-size: var(--font-sm);
+  font-weight: 500;
+}
+
+.month-grid-cell.today .date-num {
+  color: var(--accent);
+  font-weight: 600;
+  background: var(--accent-bg);
+}
+
+.month-grid-cell.selected .date-num {
+  background: var(--text-primary) !important;
+  color: var(--bg-primary) !important;
+  font-weight: 600;
+}
+
+/* Week Swiper */
+.week-swiper-container {
+  height: 60px;
+  margin-bottom: var(--space-sm);
+}
+
+.week-swiper {
+  height: 100%;
+}
+
 .week-dates-row {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   padding: 0 var(--space-sm);
-  margin-bottom: var(--space-sm);
+  height: 100%;
 }
 
 .week-date-cell {
@@ -59,8 +114,8 @@
 }
 
 .week-date-cell.selected .week-date-num {
-  background: var(--accent);
-  color: var(--text-inverse);
+  background: var(--text-primary);
+  color: var(--bg-primary);
   font-weight: 600;
 }
 
@@ -84,14 +139,26 @@
 }
 
 /* Timeline */
-.day-timeline {
+.timeline-container {
   flex: 1;
-  height: 0;
   position: relative;
   background-color: var(--bg-card);
   border-top-left-radius: var(--radius-lg);
   border-top-right-radius: var(--radius-lg);
   box-shadow: 0 -4px 20px rgba(0,0,0,0.02);
+  overflow: hidden;
+}
+
+.day-swiper {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.day-timeline {
+  height: 100%;
 }
 
 .timeline-grid {

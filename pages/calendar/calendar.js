@@ -1,7 +1,7 @@
 import { 
-  getWeekDates, getMonthName, isToday, isSameDay, 
+  getWeekDates, getMonthGrid, getMonthName, isToday, isSameDay, 
   DAY_NAMES_SHORT, formatTime, getTimelinePosition, getNowLinePosition,
-  eventOnDate
+  eventOnDate, addDays, addWeeks
 } from '../../utils/date.js';
 import { getEvents } from '../../utils/store.js';
 
@@ -11,29 +11,35 @@ Page({
   data: {
     currentDate: new Date().toISOString(),
     selectedDate: new Date().toISOString(),
+    currentMonthValue: '', // For picker "YYYY-MM"
     monthName: '',
     displayYear: '',
     dayNamesShort: DAY_NAMES_SHORT,
-    weekDates: [],
-    eventsForSelected: [],
-    allEvents: [],
     
+    isMonthView: false,
+    monthGrid: [],
+    
+    // Swiper states
+    currentWeekIndex: 1,
+    weeksList: [null, null, null],
+    
+    currentDayIndex: 1,
+    daysList: [null, null, null],
+    
+    allEvents: [],
     hours: Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0')),
     hourHeight: 60,
     scrollTop: 0,
-    isToday: true,
     nowLineTop: 0,
+    timer: null,
     
-    // Auto-update timer for the now line
-    timer: null
+    _syncingFromDaySwiper: false
   },
 
   onLoad() {
-    // Scroll to current hour minus 2
     const now = new Date();
-    const currentHour = now.getHours();
     this.setData({
-      scrollTop: Math.max((currentHour - 2) * this.data.hourHeight, 0)
+      scrollTop: Math.max((now.getHours() - 2) * this.data.hourHeight, 0)
     });
   },
 
@@ -70,7 +76,7 @@ Page({
     try {
       const allEvents = await getEvents();
       this.setData({ allEvents }, () => {
-        this.updateView();
+        this.fullResetView(this.data.selectedDate);
       });
     } catch (e) {
       console.error(e);
@@ -80,63 +86,96 @@ Page({
     }
   },
 
-  updateView() {
-    const d = new Date(this.data.currentDate);
-    const sel = new Date(this.data.selectedDate);
+  fullResetView(baseDateStr) {
+    const d = new Date(baseDateStr);
     
-    const weekStart = getWeekDates(d);
-    const allEvents = this.data.allEvents || [];
+    this.data.currentDate = d.toISOString();
+    this.data.selectedDate = d.toISOString();
+    
+    this.setData({
+      currentWeekIndex: 1,
+      currentDayIndex: 1,
+      monthName: getMonthName(d.getMonth()),
+      displayYear: d.getFullYear(),
+      currentMonthValue: `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`
+    });
+    
+    this.refreshWeekData();
+    this.refreshDayData();
+    if (this.data.isMonthView) {
+      this.refreshMonthData();
+    }
+  },
 
-    const weekDates = weekStart.map(date => {
-      // Find dots for this date
-      const dayEvents = allEvents.filter(e => eventOnDate(e, date));
+  getCircularIndices(current) {
+    if (current === 0) return { prev: 2, current: 0, next: 1 };
+    if (current === 1) return { prev: 0, current: 1, next: 2 };
+    return { prev: 1, current: 2, next: 0 };
+  },
+
+  refreshWeekData() {
+    const { currentDate, currentWeekIndex } = this.data;
+    const base = new Date(currentDate);
+    const indices = this.getCircularIndices(currentWeekIndex);
+    
+    const weeksList = [...this.data.weeksList];
+    weeksList[indices.prev] = this.buildWeekData(addWeeks(base, -1));
+    weeksList[indices.current] = this.buildWeekData(base);
+    weeksList[indices.next] = this.buildWeekData(addWeeks(base, 1));
+    
+    const d = new Date(this.data.selectedDate);
+    this.setData({ 
+      weeksList,
+      monthName: getMonthName(d.getMonth()),
+      displayYear: d.getFullYear(),
+      currentMonthValue: `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`
+    });
+  },
+
+  buildWeekData(dateObj) {
+    const dates = getWeekDates(dateObj);
+    const sel = new Date(this.data.selectedDate);
+    const allEvents = this.data.allEvents || [];
+    
+    const days = dates.map(d => {
+      const dayEvents = allEvents.filter(e => eventOnDate(e, d));
       const dots = dayEvents.slice(0, 3).map(e => {
-        // category color fallback
         if (e.categoryId === 'fitness') return '#9CAF88';
         if (e.categoryId === 'drinks') return '#C8A882';
         if (e.categoryId === 'outdoor') return '#8FA3B0';
         return '#bba0a0';
       });
-
       return {
-        dateStr: date.toISOString(),
-        dateNum: date.getDate(),
-        isToday: isToday(date),
-        isSelected: isSameDay(date, sel),
+        dateStr: d.toISOString(),
+        dateNum: d.getDate(),
+        isToday: isToday(d),
+        isSelected: isSameDay(d, sel),
         dots
       };
     });
+    return { id: dateObj.getTime(), days };
+  },
 
-    const isTodayFlag = isToday(sel);
+  refreshDayData() {
+    const { selectedDate, currentDayIndex } = this.data;
+    const base = new Date(selectedDate);
+    const indices = this.getCircularIndices(currentDayIndex);
     
-    this.setData({
-      monthName: getMonthName(d.getMonth()),
-      displayYear: d.getFullYear(),
-      weekDates,
-      isToday: isTodayFlag
-    });
-
+    const daysList = [...this.data.daysList];
+    daysList[indices.prev] = this.buildDayData(addDays(base, -1));
+    daysList[indices.current] = this.buildDayData(base);
+    daysList[indices.next] = this.buildDayData(addDays(base, 1));
+    
+    this.setData({ daysList });
     this.updateNowLine();
-    this.renderEventsForSelected();
   },
 
-  updateNowLine() {
-    if (this.data.isToday) {
-      this.setData({
-        nowLineTop: getNowLinePosition(this.data.hourHeight)
-      });
-    }
-  },
-
-  renderEventsForSelected() {
-    const sel = new Date(this.data.selectedDate);
+  buildDayData(dateObj) {
     const allEvents = this.data.allEvents || [];
+    const dayEvents = allEvents.filter(e => eventOnDate(e, dateObj));
     
-    const dayEvents = allEvents.filter(e => eventOnDate(e, sel));
-    
-    const eventsForSelected = dayEvents.map(e => {
+    const events = dayEvents.map(e => {
       const pos = getTimelinePosition(e.startTime, e.endTime, this.data.hourHeight);
-      
       let bgColor = 'var(--bg-secondary)';
       let color = 'var(--text-secondary)';
       let emoji = '📅';
@@ -147,54 +186,167 @@ Page({
 
       const start = new Date(e.startTime);
       const end = new Date(e.endTime);
-      
       return {
         ...e,
         top: pos.top,
         height: pos.height,
-        color,
-        bgColor,
-        emoji,
+        color, bgColor, emoji,
         timeStr: `${formatTime(start)} - ${formatTime(end)}`
       };
     });
     
-    this.setData({ eventsForSelected });
+    return {
+      id: dateObj.getTime(),
+      isToday: isToday(dateObj),
+      events
+    };
+  },
+
+  updateNowLine() {
+    this.setData({
+      nowLineTop: getNowLinePosition(this.data.hourHeight)
+    });
+  },
+
+  onWeekSwiperChange(e) {
+    if (e.detail.source !== 'touch' && !this.data._syncingFromDaySwiper) return;
+    
+    const isFromDaySync = this.data._syncingFromDaySwiper;
+    this.data._syncingFromDaySwiper = false;
+    
+    const current = e.detail.current;
+    const oldCurrent = this.data.currentWeekIndex;
+    let direction = 1;
+    if ((oldCurrent === 1 && current === 0) || (oldCurrent === 0 && current === 2) || (oldCurrent === 2 && current === 1)) {
+      direction = -1;
+    }
+    
+    this.data.currentWeekIndex = current;
+    
+    if (!isFromDaySync) {
+      const newBaseDate = addWeeks(this.data.currentDate, direction);
+      const newSelectedDate = addWeeks(this.data.selectedDate, direction);
+      this.data.currentDate = newBaseDate.toISOString();
+      this.data.selectedDate = newSelectedDate.toISOString();
+      
+      this.refreshWeekData();
+      
+      this.setData({ currentDayIndex: 1 });
+      this.refreshDayData();
+    } else {
+      // Synced from day swiper, dates already updated
+      this.refreshWeekData();
+    }
+  },
+
+  onDaySwiperChange(e) {
+    if (e.detail.source !== 'touch') return;
+    const current = e.detail.current;
+    const oldCurrent = this.data.currentDayIndex;
+    
+    let direction = 1;
+    if ((oldCurrent === 1 && current === 0) || (oldCurrent === 0 && current === 2) || (oldCurrent === 2 && current === 1)) {
+      direction = -1;
+    }
+    
+    this.data.currentDayIndex = current;
+    const oldSelected = new Date(this.data.selectedDate);
+    const newSelected = addDays(oldSelected, direction);
+    
+    this.data.selectedDate = newSelected.toISOString();
+    this.data.currentDate = newSelected.toISOString();
+    
+    this.refreshDayData();
+    
+    // Check if we crossed week boundary
+    if ((oldSelected.getDay() === 0 && direction === 1) || (oldSelected.getDay() === 1 && direction === -1)) {
+      const nextWeekIndex = (this.data.currentWeekIndex + direction + 3) % 3;
+      this.data._syncingFromDaySwiper = true;
+      this.setData({ currentWeekIndex: nextWeekIndex }); // triggers onWeekSwiperChange
+    } else {
+      this.refreshWeekData(); // update selected state
+    }
   },
 
   selectDate(e) {
     const { date } = e.currentTarget.dataset;
-    this.setData({
-      selectedDate: date,
-      currentDate: date // also shift week view if clicked from month view later
+    const d = new Date(date);
+    this.data.selectedDate = d.toISOString();
+    this.data.currentDate = d.toISOString();
+    
+    this.setData({ currentDayIndex: 1 });
+    this.refreshDayData();
+    this.refreshWeekData();
+    
+    if (this.data.isMonthView) {
+      this.setData({ isMonthView: false }); 
+    }
+  },
+
+  toggleMonthView() {
+    const willShow = !this.data.isMonthView;
+    this.setData({ isMonthView: willShow });
+    if (willShow) {
+      this.refreshMonthData();
+    }
+  },
+
+  refreshMonthData() {
+    const d = new Date(this.data.currentDate);
+    const days = getMonthGrid(d.getFullYear(), d.getMonth());
+    const sel = new Date(this.data.selectedDate);
+    const allEvents = this.data.allEvents || [];
+    
+    const monthGrid = days.map(item => {
+      const dayEvents = allEvents.filter(e => eventOnDate(e, item.date));
+      const dots = dayEvents.slice(0, 3).map(e => {
+        if (e.categoryId === 'fitness') return '#9CAF88';
+        if (e.categoryId === 'drinks') return '#C8A882';
+        if (e.categoryId === 'outdoor') return '#8FA3B0';
+        return '#bba0a0';
+      });
+      return {
+        dateStr: item.date.toISOString(),
+        dateNum: item.date.getDate(),
+        currentMonth: item.currentMonth,
+        isToday: isToday(item.date),
+        isSelected: isSameDay(item.date, sel),
+        dots
+      };
     });
-    this.updateView();
+    
+    this.setData({ monthGrid });
+  },
+
+  onMonthPickerChange(e) {
+    const [year, month] = e.detail.value.split('-');
+    const newDate = new Date(year, parseInt(month) - 1, 1);
+    
+    this.data.currentDate = newDate.toISOString();
+    this.data.selectedDate = newDate.toISOString();
+    
+    this.setData({
+      currentWeekIndex: 1,
+      currentDayIndex: 1
+    });
+    
+    this.refreshWeekData();
+    this.refreshDayData();
+    if (this.data.isMonthView) {
+      this.refreshMonthData();
+    }
   },
 
   goToday() {
-    const now = new Date().toISOString();
-    this.setData({
-      currentDate: now,
-      selectedDate: now
-    });
-    this.updateView();
+    this.fullResetView(new Date().toISOString());
   },
 
-  switchToMonth() {
-    // To be implemented: Navigate to a month view page or toggle state
-    wx.showToast({ title: '月视图即将上线', icon: 'none' });
-  },
-  
   goCreate() {
-    wx.navigateTo({
-      url: '/pages/create/create'
-    });
+    wx.navigateTo({ url: '/pages/create/create' });
   },
 
   goDetail(e) {
     const id = e.currentTarget.dataset.id;
-    wx.navigateTo({
-      url: `/pages/detail/detail?id=${id}`
-    });
+    wx.navigateTo({ url: `/pages/detail/detail?id=${id}` });
   }
 });

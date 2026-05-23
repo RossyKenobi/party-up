@@ -43,6 +43,20 @@ export function isToday(date) {
   return isSameDay(date, new Date());
 }
 
+/** Add days to a date */
+export function addDays(date, days) {
+  const d = new Date(date);
+  d.setDate(d.getDate() + days);
+  return d;
+}
+
+/** Add weeks to a date */
+export function addWeeks(date, weeks) {
+  const d = new Date(date);
+  d.setDate(d.getDate() + weeks * 7);
+  return d;
+}
+
 /** Format time as HH:MM */
 export function formatTime(date) {
   const d = new Date(date);
