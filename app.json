@@ -7,10 +7,10 @@
     "pages/detail/detail"
   ],
   "window": {
-    "navigationBarBackgroundColor": "#1a1a1a",
-    "navigationBarTitleText": "PARTY-UP",
-    "navigationBarTextStyle": "white",
-    "backgroundColor": "#1a1a1a"
+    "navigationBarBackgroundColor": "#f8f6f4",
+    "navigationBarTitleText": "",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f8f6f4"
   },
   "tabBar": {
     "custom": true,
