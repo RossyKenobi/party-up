@@ -13,6 +13,13 @@ Page({
     startTime: '',
     endDate: '',
     endTime: '',
+
+    timeArray: [
+      Array.from({length: 24}, (_, i) => String(i).padStart(2, '0')),
+      ['00', '10', '20', '30', '40', '50']
+    ],
+    startTimeIdx: [0, 0],
+    endTimeIdx: [0, 0],
     
     location: '',
     
@@ -44,6 +51,8 @@ Page({
             location: event.location || '',
             reminderIndex: reminderIndex > -1 ? reminderIndex : 3
           });
+          this.setTimeIndexes(this.data.startTime, 'startTime');
+          this.setTimeIndexes(this.data.endTime, 'endTime');
         }
       } catch (e) {
         wx.showToast({ title: '加载失败', icon: 'none' });
@@ -66,6 +75,8 @@ Page({
         startDate: sDate, startTime: sTime,
         endDate: eDate, endTime: eTime
       });
+      this.setTimeIndexes(sTime, 'startTime');
+      this.setTimeIndexes(eTime, 'endTime');
     }
   },
 
@@ -74,7 +85,18 @@ Page({
   },
 
   formatTime(d) {
-    return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    const h = String(d.getHours()).padStart(2,'0');
+    let m = Math.round(d.getMinutes() / 10) * 10;
+    if (m === 60) m = 50; 
+    return `${h}:${String(m).padStart(2,'0')}`;
+  },
+
+  setTimeIndexes(timeStr, key) {
+    const [h, m] = timeStr.split(':');
+    const hIdx = parseInt(h, 10);
+    let mIdx = ['00', '10', '20', '30', '40', '50'].indexOf(m);
+    if (mIdx === -1) mIdx = 0;
+    this.setData({ [`${key}Idx`]: [hIdx, mIdx], [key]: timeStr });
   },
 
   onTitleInput(e) { this.setData({ title: e.detail.value }); },
@@ -83,9 +105,17 @@ Page({
   selectCategory(e) { this.setData({ categoryId: e.currentTarget.dataset.id }); },
 
   onStartDateChange(e) { this.setData({ startDate: e.detail.value, endDate: e.detail.value }); },
-  onStartTimeChange(e) { this.setData({ startTime: e.detail.value }); },
+  onStartTimeChange(e) { 
+    const [hIdx, mIdx] = e.detail.value;
+    const timeStr = `${this.data.timeArray[0][hIdx]}:${this.data.timeArray[1][mIdx]}`;
+    this.setData({ startTimeIdx: e.detail.value, startTime: timeStr }); 
+  },
   onEndDateChange(e) { this.setData({ endDate: e.detail.value }); },
-  onEndTimeChange(e) { this.setData({ endTime: e.detail.value }); },
+  onEndTimeChange(e) { 
+    const [hIdx, mIdx] = e.detail.value;
+    const timeStr = `${this.data.timeArray[0][hIdx]}:${this.data.timeArray[1][mIdx]}`;
+    this.setData({ endTimeIdx: e.detail.value, endTime: timeStr }); 
+  },
   
   onReminderChange(e) { this.setData({ reminderIndex: e.detail.value }); },
 
