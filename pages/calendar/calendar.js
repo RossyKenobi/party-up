@@ -172,10 +172,20 @@ Page({
 
   buildDayData(dateObj) {
     const allEvents = this.data.allEvents || [];
-    const dayEvents = allEvents.filter(e => eventOnDate(e, dateObj));
+    const baseDate = new Date(dateObj);
+    baseDate.setHours(0, 0, 0, 0);
+    
+    const endTimeLimit = new Date(baseDate);
+    endTimeLimit.setHours(26, 0, 0, 0);
+    
+    const dayEvents = allEvents.filter(e => {
+        const eStart = new Date(e.startTime);
+        const eEnd = new Date(e.endTime);
+        return eStart < endTimeLimit && eEnd > baseDate;
+    });
     
     const events = dayEvents.map(e => {
-      const pos = getTimelinePosition(e.startTime, e.endTime, this.data.hourHeight);
+      const pos = getTimelinePosition(e.startTime, e.endTime, this.data.hourHeight, baseDate);
       const cat = CATEGORIES.find(c => c.id === e.categoryId);
       const bgColor = cat ? cat.bg : 'var(--bg-secondary)';
       const color = cat ? cat.color : 'var(--text-secondary)';
@@ -215,10 +225,9 @@ Page({
       targetHour = Math.max(now.getHours() - 2, 0);
     } else {
       if (dayData.events && dayData.events.length > 0) {
-         let minMinutes = 24 * 60;
+         let minMinutes = 48 * 60;
          dayData.events.forEach(e => {
-            const start = new Date(e.startTime);
-            const m = start.getHours() * 60 + start.getMinutes();
+            const m = (e.top / this.data.hourHeight) * 60;
             if (m < minMinutes) minMinutes = m;
          });
          

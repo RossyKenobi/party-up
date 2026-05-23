@@ -117,11 +117,24 @@ export function getMonthName(month) {
 }
 
 /** Calculate top position and height for a timeline event */
-export function getTimelinePosition(startTime, endTime, hourHeight) {
+export function getTimelinePosition(startTime, endTime, hourHeight, baseDate) {
   const start = new Date(startTime);
   const end = new Date(endTime);
-  const startMinutes = start.getHours() * 60 + start.getMinutes();
-  const endMinutes = end.getHours() * 60 + end.getMinutes();
+  let startMinutes, endMinutes;
+
+  if (baseDate) {
+    const base = new Date(baseDate);
+    base.setHours(0, 0, 0, 0);
+    startMinutes = (start.getTime() - base.getTime()) / (1000 * 60);
+    endMinutes = (end.getTime() - base.getTime()) / (1000 * 60);
+  } else {
+    startMinutes = start.getHours() * 60 + start.getMinutes();
+    endMinutes = end.getHours() * 60 + end.getMinutes();
+    if (end < start) {
+      endMinutes += 24 * 60;
+    }
+  }
+
   const top = (startMinutes / 60) * hourHeight;
   const height = Math.max(((endMinutes - startMinutes) / 60) * hourHeight, 24);
   return { top, height };
