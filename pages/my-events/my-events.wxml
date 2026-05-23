@@ -21,7 +21,10 @@
       </view>
       <view class="event-time">{{item.timeStr}}</view>
       <view class="event-footer">
-        <view class="participant-count">👥 {{item.participants.length}} 人参与</view>
+        <view class="participant-count">
+          <text class="emoji-icon">👥</text>
+          <text>{{item.participants.length}} 人参与</text>
+        </view>
         <view class="creator-badge" wx:if="{{item.creatorId === currentUserId}}">创建者</view>
       </view>
     </view>

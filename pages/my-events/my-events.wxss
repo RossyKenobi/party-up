@@ -84,8 +84,14 @@
 }
 
 .participant-count {
+  display: flex;
+  align-items: center;
   font-size: var(--font-xs);
   color: var(--text-secondary);
+}
+
+.emoji-icon {
+  margin-right: 4px;
 }
 
 .creator-badge {
