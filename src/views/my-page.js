@@ -94,7 +94,7 @@ export function renderMyPage() {
           退出登录
         </button>
       </div>
-    \`;
+    `;
 
     // My events
     content.querySelectorAll('.event-stat-btn').forEach(btn => {
