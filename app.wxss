@@ -1,0 +1,112 @@
+/* ============================================
+   Global Styles & Variables (app.wxss)
+   ============================================ */
+
+page {
+  /* Morandi Color Palette */
+  --accent: #c4a381;
+  --accent-bg: #f4eee8;
+  --primary: #9b9a97;
+  --primary-bg: #eae9e7;
+  --secondary: #8c9c9a;
+  --secondary-bg: #e8eceb;
+  --tertiary: #bba0a0;
+  --tertiary-bg: #f2ebeb;
+  
+  --success: #8c9c9a;
+  --danger: #bba0a0;
+  --warning: #c4a381;
+
+  /* Neutrals (Light Mode) */
+  --bg-primary: #f8f6f4;
+  --bg-secondary: #f0ebe6;
+  --bg-card: #ffffff;
+  --bg-overlay: rgba(0, 0, 0, 0.4);
+  
+  --text-primary: #3d3b38;
+  --text-secondary: #6e6a65;
+  --text-tertiary: #a19c96;
+  --text-inverse: #ffffff;
+  
+  --border: #e6e2dd;
+  --divider: #f0ebe6;
+
+  /* Spacing & Sizing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  --radius-full: 9999px;
+
+  /* Typography */
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-xs: 12px;
+  --font-sm: 14px;
+  --font-base: 16px;
+  --font-md: 18px;
+  --font-lg: 20px;
+  --font-xl: 24px;
+  --font-2xl: 32px;
+
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  font-size: var(--font-base);
+  box-sizing: border-box;
+}
+
+view, text, scroll-view, swiper, button, input, textarea {
+  box-sizing: border-box;
+}
+
+/* Utilities */
+.fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Cards */
+.card {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+/* Buttons */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  border-radius: var(--radius-full);
+  font-size: var(--font-sm);
+  font-weight: 600;
+  border: none;
+  background-color: transparent;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: var(--text-inverse);
+}
+
+.btn-secondary {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.btn-block {
+  width: 100%;
+}

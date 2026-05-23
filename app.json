@@ -1,0 +1,39 @@
+{
+  "pages": [
+    "pages/calendar/calendar",
+    "pages/my/my",
+    "pages/my-events/my-events",
+    "pages/create/create",
+    "pages/detail/detail"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#1a1a1a",
+    "navigationBarTitleText": "PARTY-UP",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#1a1a1a"
+  },
+  "tabBar": {
+    "color": "#8c8c8c",
+    "selectedColor": "#c4a381",
+    "backgroundColor": "#2a2a2a",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/calendar/calendar",
+        "text": "日历",
+        "iconPath": "assets/tab-calendar.png",
+        "selectedIconPath": "assets/tab-calendar-active.png"
+      },
+      {
+        "pagePath": "pages/my/my",
+        "text": "我的",
+        "iconPath": "assets/tab-my.png",
+        "selectedIconPath": "assets/tab-my-active.png"
+      }
+    ]
+  },
+  "sitemapLocation": "sitemap.json",
+  "useExtendedLib": {
+    "weui": true
+  }
+}
