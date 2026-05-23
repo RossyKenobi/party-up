@@ -53,12 +53,10 @@
     <swiper class="day-swiper" current="{{currentDayIndex}}" circular="true" bindchange="onDaySwiperChange" duration="250">
       <swiper-item wx:for="{{daysList}}" wx:key="id" wx:for-item="dayData">
         <scroll-view class="day-timeline" scroll-y="true" scroll-top="{{scrollTop}}">
-          <view class="timeline-grid" style="height:{{24 * hourHeight}}px; margin-top: 10px; margin-bottom: calc(90px + env(safe-area-inset-bottom));">
+          <view class="timeline-grid" style="height:{{26 * hourHeight}}px; margin-top: 10px; margin-bottom: calc(90px + env(safe-area-inset-bottom));">
             <view class="timeline-hour" wx:for="{{hours}}" wx:key="*this">
-              <text class="timeline-hour-label">{{item}}:00</text>
-            </view>
-            <view style="position: absolute; top: {{24 * hourHeight}}px; width: 100%;">
-              <text class="timeline-hour-label">24:00</text>
+              <text class="timeline-hour-label" wx:if="{{item <= 24}}">{{item}}:00</text>
+              <text class="timeline-hour-label" wx:else>次日{{item - 24}}:00</text>
             </view>
 
             <view wx:if="{{dayData.isToday}}" class="timeline-now-line" style="top:{{nowLineTop}}px"></view>

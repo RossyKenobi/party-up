@@ -27,7 +27,7 @@ Page({
     daysList: [null, null, null],
     
     allEvents: [],
-    hours: Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0')),
+    hours: Array.from({ length: 27 }, (_, i) => String(i).padStart(2, '0')),
     hourHeight: 60,
     scrollTop: 0,
     nowLineTop: 0,
