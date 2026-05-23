@@ -5,9 +5,7 @@ App({
     } else {
       wx.cloud.init({
         // env 参数决定接下来小程序发起的云开发调用（wx.cloud.xxx）会默认请求到哪个云环境的资源
-        // 此处需要用户填入实际的云环境 ID
-        // env: 'my-env-id',
-        traceUser: true,
+        env: 'cloud1-d5g42sztr4cbc5dea',
       });
     }
 

@@ -1,1 +1,63 @@
-<view class="container">my works!</view>
+<!--pages/my/my.wxml-->
+<view class="container fade-in">
+  <!-- Profile Section -->
+  <view class="card profile-card">
+    <view class="profile-avatar" style="background: {{currentUser.avatarColor || '#e8eceb'}}">
+      <text class="avatar-text">{{currentUser ? currentUser.nickname[0] : '?'}}</text>
+    </view>
+    <view class="profile-info">
+      <view class="profile-name">{{currentUser ? currentUser.nickname : '未登录'}}</view>
+      <view class="profile-role" wx:if="{{currentUser}}">{{currentUser.role === 'admin' ? '管理员' : '微信用户'}}</view>
+      <view class="profile-role" wx:else>点击下方按钮登录以创建活动</view>
+    </view>
+    
+    <button class="btn btn-primary login-btn" wx:if="{{!currentUser}}" bindtap="handleLogin">登录</button>
+  </view>
+
+  <view wx:if="{{currentUser}}">
+    <!-- Admin Controls -->
+    <view class="card admin-panel" wx:if="{{currentUser.role === 'admin'}}">
+      <view class="admin-title">🛠️ 管理员选项</view>
+      <view class="menu-item" bindtap="manageCategories">
+        <text>编辑活动分类 (颜色/Emoji)</text>
+        <text class="menu-arrow">></text>
+      </view>
+    </view>
+
+    <!-- My Events Module -->
+    <view class="card my-events-module">
+      <view class="module-header">
+        <text class="module-title">我的活动</text>
+        <text class="module-subtitle">（包含发起的和参与的）</text>
+      </view>
+
+      <view class="stats-grid">
+        <view class="stat-item" data-tab="all" bindtap="goToMyEvents">
+          <view class="stat-num">{{allCount}}</view>
+          <view class="stat-label">全部活动</view>
+        </view>
+        <view class="stat-item" data-tab="upcoming" bindtap="goToMyEvents">
+          <view class="stat-num">{{upcomingCount}}</view>
+          <view class="stat-label">即将到来</view>
+        </view>
+        <view class="stat-item" data-tab="past" bindtap="goToMyEvents">
+          <view class="stat-num past-num">{{pastCount}}</view>
+          <view class="stat-label past-label">已结束</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- Login Modal Overlay -->
+<view class="modal-overlay {{showLoginModal ? 'active' : ''}}" wx:if="{{showLoginModal}}">
+  <view class="modal-card">
+    <view class="modal-title">完善个人信息</view>
+    <view class="modal-desc">为了能在活动中展示您的身份，请设置一个昵称。</view>
+    <input class="modal-input" placeholder="请输入昵称" value="{{tempNickname}}" bindinput="onNicknameInput" />
+    <view class="modal-actions">
+      <button class="btn btn-secondary" bindtap="cancelLogin">取消</button>
+      <button class="btn btn-primary" bindtap="confirmLogin">确认</button>
+    </view>
+  </view>
+</view>

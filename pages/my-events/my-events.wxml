@@ -1,1 +1,29 @@
-<view class="container">my-events works!</view>
+<!--pages/my-events/my-events.wxml-->
+<view class="container fade-in">
+  <!-- Tabs -->
+  <view class="tabs">
+    <view class="tab {{activeTab === 'all' ? 'active' : ''}}" data-tab="all" bindtap="switchTab">全部活动</view>
+    <view class="tab {{activeTab === 'upcoming' ? 'active' : ''}}" data-tab="upcoming" bindtap="switchTab">即将到来</view>
+    <view class="tab {{activeTab === 'past' ? 'active' : ''}}" data-tab="past" bindtap="switchTab">已结束</view>
+  </view>
+
+  <view class="events-list">
+    <view wx:if="{{filteredEvents.length === 0}}" class="empty-state">
+      <view>暂无活动</view>
+    </view>
+    
+    <view class="event-card card" wx:for="{{filteredEvents}}" wx:key="id" data-id="{{item.id}}" bindtap="goDetail">
+      <view class="event-header">
+        <view class="event-title">
+          <text style="margin-right:8px">{{item.emoji}}</text>{{item.title}}
+        </view>
+        <view class="event-date">{{item.dateStr}}</view>
+      </view>
+      <view class="event-time">{{item.timeStr}}</view>
+      <view class="event-footer">
+        <view class="participant-count">👥 {{item.participants.length}} 人参与</view>
+        <view class="creator-badge" wx:if="{{item.creatorId === currentUserId}}">创建者</view>
+      </view>
+    </view>
+  </view>
+</view>

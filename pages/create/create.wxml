@@ -1,1 +1,60 @@
-<view class="container">create works!</view>
+<!--pages/create/create.wxml-->
+<view class="container fade-in">
+  <view class="header">
+    <text class="title">创建活动</text>
+  </view>
+
+  <view class="form-group card">
+    <label class="form-label">活动名称</label>
+    <input class="form-input" placeholder="输入活动名称" value="{{title}}" bindinput="onTitleInput" />
+  </view>
+
+  <view class="form-group card">
+    <label class="form-label">活动分类</label>
+    <view class="category-grid">
+      <view class="category-item {{categoryId === item.id ? 'active' : ''}}" 
+            wx:for="{{categories}}" wx:key="id" 
+            style="{{categoryId === item.id ? 'background:'+item.bg+'; border-color:'+item.color : ''}}"
+            data-id="{{item.id}}" bindtap="selectCategory">
+        <text class="cat-emoji">{{item.emoji}}</text>
+        <text class="cat-name">{{item.name}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="form-group card">
+    <label class="form-label">活动时间</label>
+    <picker mode="date" value="{{startDate}}" bindchange="onStartDateChange">
+      <view class="picker-row">开始日期: <text class="picker-val">{{startDate}}</text></view>
+    </picker>
+    <picker mode="time" value="{{startTime}}" bindchange="onStartTimeChange">
+      <view class="picker-row">开始时间: <text class="picker-val">{{startTime}}</text></view>
+    </picker>
+    <picker mode="date" value="{{endDate}}" bindchange="onEndDateChange">
+      <view class="picker-row" style="margin-top:10px">结束日期: <text class="picker-val">{{endDate}}</text></view>
+    </picker>
+    <picker mode="time" value="{{endTime}}" bindchange="onEndTimeChange">
+      <view class="picker-row">结束时间: <text class="picker-val">{{endTime}}</text></view>
+    </picker>
+  </view>
+
+  <view class="form-group card">
+    <label class="form-label">地点</label>
+    <input class="form-input" placeholder="输入地点 (选填)" value="{{location}}" bindinput="onLocationInput" />
+  </view>
+
+  <view class="form-group card">
+    <label class="form-label">提前提醒 (参与者会收到通知)</label>
+    <picker mode="selector" range="{{reminderLabels}}" bindchange="onReminderChange">
+      <view class="picker-row">
+        <text>{{reminderLabels[reminderIndex]}}</text>
+        <text style="color:var(--text-tertiary)">></text>
+      </view>
+    </picker>
+  </view>
+
+  <view class="actions">
+    <button class="btn btn-secondary" style="flex:1" bindtap="cancel">取消</button>
+    <button class="btn btn-primary" style="flex:2" bindtap="submit">创建</button>
+  </view>
+</view>

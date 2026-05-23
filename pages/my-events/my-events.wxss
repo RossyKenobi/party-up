@@ -1,0 +1,97 @@
+/* pages/my-events/my-events.wxss */
+.container {
+  padding: var(--space-md);
+}
+
+.tabs {
+  display: flex;
+  background: var(--bg-card);
+  border-radius: var(--radius-full);
+  padding: 4px;
+  margin-bottom: var(--space-lg);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+}
+
+.tab {
+  flex: 1;
+  text-align: center;
+  padding: 8px 0;
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  border-radius: var(--radius-full);
+  transition: all 0.2s;
+}
+
+.tab.active {
+  background: var(--accent);
+  color: var(--text-inverse);
+  font-weight: 600;
+}
+
+.events-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--text-tertiary);
+  font-size: var(--font-sm);
+  padding: var(--space-xl) 0;
+}
+
+.event-card {
+  margin-bottom: 0;
+  padding: var(--space-md);
+}
+
+.event-card:active {
+  background: var(--bg-secondary);
+}
+
+.event-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-xs);
+}
+
+.event-title {
+  font-size: var(--font-md);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.event-date {
+  font-size: var(--font-sm);
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.event-time {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-md);
+}
+
+.event-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--divider);
+}
+
+.participant-count {
+  font-size: var(--font-xs);
+  color: var(--text-secondary);
+}
+
+.creator-badge {
+  font-size: 10px;
+  padding: 2px 6px;
+  background: var(--bg-secondary);
+  color: var(--text-tertiary);
+  border-radius: 4px;
+}

@@ -1,1 +1,34 @@
-<view class="container">detail works!</view>
+<!--pages/detail/detail.wxml-->
+<view class="container fade-in" wx:if="{{event}}">
+  <view class="card event-header-card">
+    <view class="event-title">
+      <text style="margin-right:8px">{{category.emoji}}</text>{{event.title}}
+    </view>
+    <view class="event-time-lg">
+      {{dateStr}} {{timeStr}}
+    </view>
+    <view class="event-location" wx:if="{{event.location}}">
+      📍 {{event.location}}
+    </view>
+  </view>
+
+  <view class="card participants-card">
+    <view class="card-title">参与者 ({{participants.length}})</view>
+    <view class="participants-list">
+      <view class="participant-item" wx:for="{{participants}}" wx:key="id">
+        <view class="p-avatar" style="background:{{item.avatarColor}}">{{item.initial}}</view>
+        <view class="p-name">{{item.nickname}}</view>
+        <view class="p-badge" wx:if="{{item.id === event.creatorId}}">创建者</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="actions-panel">
+    <button class="btn btn-primary" wx:if="{{!hasJoined && !isCreator && !isPast}}" bindtap="handleJoin">我要加入</button>
+    <button class="btn btn-secondary" wx:if="{{hasJoined && !isCreator && !isPast}}" bindtap="handleLeave">退出活动</button>
+    <button class="btn btn-secondary" style="color:var(--danger)" wx:if="{{isCreator || isAdmin}}" bindtap="handleDelete">删除活动</button>
+  </view>
+</view>
+<view wx:else class="empty-state">
+  加载中或活动不存在...
+</view>
