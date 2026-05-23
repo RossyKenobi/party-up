@@ -1,6 +1,7 @@
 /* pages/my/my.wxss */
 .container {
   padding: var(--space-md);
+  padding-bottom: calc(60px + var(--space-md) + env(safe-area-inset-bottom));
 }
 
 .profile-card {

@@ -1,0 +1,27 @@
+.tab-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: #2a2a2a;
+  display: flex;
+  padding-bottom: env(safe-area-inset-bottom);
+  border-top: 1px solid rgba(0, 0, 0, 0.3);
+  z-index: 999;
+}
+
+.tab-bar-item {
+  flex: 1;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+
+.tab-bar-item:active {
+  opacity: 0.7;
+}

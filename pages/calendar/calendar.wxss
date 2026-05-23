@@ -4,11 +4,13 @@
   height: 100vh;
   background-color: var(--bg-primary);
   overflow: hidden;
+  box-sizing: border-box;
+  padding-bottom: calc(60px + env(safe-area-inset-bottom));
 }
 
 .header-bar {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
   padding: var(--space-md) var(--space-md) var(--space-xs);
 }
