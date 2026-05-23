@@ -13,7 +13,7 @@ Page({
     selectedDate: new Date().toISOString(),
     monthName: '',
     displayYear: '',
-    dayNamesShort: DAY_NAMES_SHORT,
+    dayNamesShort: ['一', '二', '三', '四', '五', '六', '日'],
     
     isMonthView: false,
     
