@@ -82,8 +82,28 @@ Page({
   
   selectCategory(e) { this.setData({ categoryId: e.currentTarget.dataset.id }); },
 
-  onStartDateChange(e) { this.setData({ startDate: e.detail.value, endDate: e.detail.value }); },
-  onStartTimeChange(e) { this.setData({ startTime: e.detail.value }); },
+  _updateEndTimeAutomatically(startDate, startTime) {
+    if (!startDate || !startTime) return;
+    try {
+      const d = new Date(`${startDate}T${startTime}`);
+      if (!isNaN(d.getTime())) {
+        d.setHours(d.getHours() + 1);
+        this.setData({
+          endDate: this.formatDate(d),
+          endTime: this.formatTime(d)
+        });
+      }
+    } catch (e) {}
+  },
+
+  onStartDateChange(e) { 
+    this.setData({ startDate: e.detail.value }); 
+    this._updateEndTimeAutomatically(e.detail.value, this.data.startTime);
+  },
+  onStartTimeChange(e) { 
+    this.setData({ startTime: e.detail.value }); 
+    this._updateEndTimeAutomatically(this.data.startDate, e.detail.value);
+  },
   onEndDateChange(e) { this.setData({ endDate: e.detail.value }); },
   onEndTimeChange(e) { this.setData({ endTime: e.detail.value }); },
   
