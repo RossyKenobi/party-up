@@ -97,7 +97,7 @@ Page({
 
     if (this.data.event && this.data.event.reminder > 0) {
       wx.requestSubscribeMessage({
-        tmplIds: ['<请在此处填写你的模板ID>'],
+        tmplIds: ['o5ZWZwaz05Rr4yZoXEcGJfFxa2hF_dc4E9fsIrhK2NU'],
         success: (res) => console.log('订阅消息成功', res),
         fail: (err) => console.error('订阅消息失败', err),
         complete: () => doJoin()
