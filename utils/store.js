@@ -1,24 +1,13 @@
 import { generateId } from './date.js';
 
-const USERS_KEY = 'party_up_users';
-const EVENTS_KEY = 'party_up_events';
 const CURRENT_USER_KEY = 'party_up_current_user';
 
-export function getLocalData(key, defaultValue) {
-  try {
-    const data = wx.getStorageSync(key);
-    return data ? data : defaultValue;
-  } catch (e) {
-    return defaultValue;
+let db = null;
+function getDB() {
+  if (!db) {
+    db = wx.cloud.database();
   }
-}
-
-export function saveLocalData(key, data) {
-  try {
-    wx.setStorageSync(key, data);
-  } catch (e) {
-    console.error('Error saving data', e);
-  }
+  return db;
 }
 
 // -----------------------------------------------------------------------------
@@ -26,13 +15,27 @@ export function saveLocalData(key, data) {
 // -----------------------------------------------------------------------------
 
 export function getCurrentUser() {
-  return getLocalData(CURRENT_USER_KEY, null);
+  try {
+    return wx.getStorageSync(CURRENT_USER_KEY) || null;
+  } catch (e) {
+    return null;
+  }
 }
 
-export function login(nickname, avatarColor, avatarUrl = '') {
-  let users = wx.getStorageSync(USERS_KEY) || [];
-  let user = users.find(u => u.nickname === nickname);
-  if (!user) {
+export async function login(nickname, avatarColor, avatarUrl = '') {
+  const database = getDB();
+  const res = await database.collection('users').where({ nickname }).get();
+  
+  let user;
+  if (res.data.length > 0) {
+    user = res.data[0];
+    if (avatarUrl && user.avatarUrl !== avatarUrl) {
+      await database.collection('users').doc(user._id).update({
+        data: { avatarUrl }
+      });
+      user.avatarUrl = avatarUrl;
+    }
+  } else {
     user = {
       id: 'u_' + Date.now().toString(36),
       nickname,
@@ -40,12 +43,9 @@ export function login(nickname, avatarColor, avatarUrl = '') {
       avatarUrl,
       role: 'user'
     };
-    users.push(user);
-    wx.setStorageSync(USERS_KEY, users);
-  } else if (avatarUrl) {
-    user.avatarUrl = avatarUrl;
-    wx.setStorageSync(USERS_KEY, users);
+    await database.collection('users').add({ data: user });
   }
+  
   wx.setStorageSync(CURRENT_USER_KEY, user);
   return user;
 }
@@ -58,12 +58,15 @@ export function logout() {
 // EVENT API
 // -----------------------------------------------------------------------------
 
-export function getEvents() {
-  return getLocalData(EVENTS_KEY, []);
+export async function getEvents() {
+  const database = getDB();
+  // Note: By default, get() returns up to 20 records. For a production app, pagination is needed.
+  const res = await database.collection('events').get();
+  return res.data;
 }
 
-export function createEvent(eventData) {
-  const events = getEvents();
+export async function createEvent(eventData) {
+  const database = getDB();
   const currentUser = getCurrentUser();
   
   const newEvent = {
@@ -74,48 +77,51 @@ export function createEvent(eventData) {
     createdAt: new Date().toISOString(),
   };
   
-  events.push(newEvent);
-  saveLocalData(EVENTS_KEY, events);
+  await database.collection('events').add({ data: newEvent });
   return newEvent;
 }
 
-export function joinEvent(eventId) {
+export async function joinEvent(eventId) {
   const currentUser = getCurrentUser();
   if (!currentUser) throw new Error('需登录');
   
-  const events = getEvents();
-  const event = events.find(e => e.id === eventId);
-  if (event) {
-    if (!event.participants.includes(currentUser.id)) {
-      event.participants.push(currentUser.id);
-      saveLocalData(EVENTS_KEY, events);
+  const database = getDB();
+  const _ = database.command;
+  
+  await database.collection('events').where({ id: eventId }).update({
+    data: {
+      participants: _.addToSet(currentUser.id)
     }
-  }
+  });
 }
 
-export function leaveEvent(eventId) {
+export async function leaveEvent(eventId) {
   const currentUser = getCurrentUser();
   if (!currentUser) throw new Error('需登录');
   
-  const events = getEvents();
-  const event = events.find(e => e.id === eventId);
-  if (event) {
-    event.participants = event.participants.filter(id => id !== currentUser.id);
-    saveLocalData(EVENTS_KEY, events);
-  }
+  const database = getDB();
+  const _ = database.command;
+  
+  await database.collection('events').where({ id: eventId }).update({
+    data: {
+      participants: _.pull(currentUser.id)
+    }
+  });
 }
 
-export function deleteEvent(eventId) {
-  const events = getEvents();
-  const filtered = events.filter(e => e.id !== eventId);
-  saveLocalData(EVENTS_KEY, filtered);
+export async function deleteEvent(eventId) {
+  const database = getDB();
+  await database.collection('events').where({ id: eventId }).remove();
 }
 
-export function getEventById(id) {
-  return getEvents().find(e => e.id === id);
+export async function getEventById(id) {
+  const database = getDB();
+  const res = await database.collection('events').where({ id }).get();
+  return res.data.length > 0 ? res.data[0] : null;
 }
 
-export function getUserById(id) {
-  const users = getLocalData(USERS_KEY, []);
-  return users.find(u => u.id === id);
+export async function getUserById(id) {
+  const database = getDB();
+  const res = await database.collection('users').where({ id }).get();
+  return res.data.length > 0 ? res.data[0] : null;
 }

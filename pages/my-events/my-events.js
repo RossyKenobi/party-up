@@ -23,46 +23,55 @@ Page({
   },
 
   onShow() {
-    this.loadEvents();
+    this.refreshData();
   },
 
-  loadEvents() {
+  async refreshData() {
     const user = getCurrentUser();
     if (!user) {
-      wx.showToast({ title: '请先登录', icon: 'none' });
+      this.setData({ allMyEvents: [], filteredEvents: [], currentUserId: null });
       return;
     }
 
     this.setData({ currentUserId: user.id });
 
-    const allEvents = getEvents();
-    let myEvents = [];
-    
-    if (this.data.eventType === 'created') {
-      myEvents = allEvents.filter(e => e.creatorId === user.id);
-    } else {
-      myEvents = allEvents.filter(e => e.participants.includes(user.id));
-    }
-
-    // Format events for display
-    const formatted = myEvents.map(e => {
-      const start = new Date(e.startTime);
-      const end = new Date(e.endTime);
-      const cat = CATEGORIES.find(c => c.id === e.categoryId) || CATEGORIES[0];
+    wx.showLoading({ title: '加载中...', mask: true });
+    try {
+      const allEvents = await getEvents();
+      let myEvents = [];
       
-      return {
-        ...e,
-        dateStr: formatDate(start),
-        timeStr: `${formatTime(start)} - ${formatTime(end)}`,
-        emoji: cat.emoji
-      };
-    });
+      if (this.data.eventType === 'created') {
+        myEvents = allEvents.filter(e => e.creatorId === user.id);
+      } else {
+        myEvents = allEvents.filter(e => e.participants.includes(user.id));
+      }
 
-    // Sort: upcoming first (earliest first), past first (latest first)
-    formatted.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
+      // Format events for display
+      const formatted = myEvents.map(e => {
+        const start = new Date(e.startTime);
+        const end = new Date(e.endTime);
+        const cat = CATEGORIES.find(c => c.id === e.categoryId) || CATEGORIES[0];
+        
+        return {
+          ...e,
+          dateStr: formatDate(start),
+          timeStr: `${formatTime(start)} - ${formatTime(end)}`,
+          emoji: cat.emoji
+        };
+      });
 
-    this.setData({ allMyEvents: formatted });
-    this.filterEvents();
+      // Sort: upcoming first (earliest first), past first (latest first)
+      formatted.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
+
+      this.setData({ allMyEvents: formatted }, () => {
+        this.filterEvents();
+      });
+    } catch (e) {
+      console.error(e);
+      wx.showToast({ title: '加载失败', icon: 'none' });
+    } finally {
+      wx.hideLoading();
+    }
   },
 
   filterEvents() {

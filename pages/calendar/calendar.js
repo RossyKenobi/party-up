@@ -65,6 +65,21 @@ Page({
     }
   },
 
+  async refreshData() {
+    wx.showLoading({ title: '加载中...', mask: true });
+    try {
+      const allEvents = await getEvents();
+      this.setData({ allEvents });
+      this.generateCalendar(this.data.currentDate);
+      this.updateTimelineForSelectedDate();
+    } catch (e) {
+      console.error(e);
+      wx.showToast({ title: '加载失败', icon: 'none' });
+    } finally {
+      wx.hideLoading();
+    }
+  },
+
   updateView() {
     const d = new Date(this.data.currentDate);
     const sel = new Date(this.data.selectedDate);

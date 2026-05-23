@@ -15,19 +15,26 @@ Page({
     this.refreshData();
   },
 
-  refreshData() {
+  async refreshData() {
     const user = getCurrentUser();
     this.setData({ currentUser: user });
 
     if (user) {
-      const allEvents = getEvents();
-      const created = allEvents.filter(e => e.creatorId === user.id);
-      const joined = allEvents.filter(e => e.participants.includes(user.id));
+      wx.showLoading({ title: '加载中...' });
+      try {
+        const allEvents = await getEvents();
+        const created = allEvents.filter(e => e.creatorId === user.id);
+        const joined = allEvents.filter(e => e.participants.includes(user.id));
 
-      this.setData({
-        createdCount: created.length,
-        joinedCount: joined.length
-      });
+        this.setData({
+          createdCount: created.length,
+          joinedCount: joined.length
+        });
+      } catch (e) {
+        console.error(e);
+      } finally {
+        wx.hideLoading();
+      }
     }
   },
 
@@ -42,7 +49,7 @@ Page({
       success: (res) => {
         if (res.confirm) {
           logout();
-          this.refreshData();
+          this.setData({ currentUser: null, createdCount: 0, joinedCount: 0 });
           wx.showToast({ title: '已退出', icon: 'success' });
         }
       }
@@ -61,7 +68,7 @@ Page({
     this.setData({ tempNickname: e.detail.value });
   },
 
-  confirmLogin() {
+  async confirmLogin() {
     const nickname = this.data.tempNickname.trim();
     if (!nickname) {
       wx.showToast({ title: '请输入昵称', icon: 'none' });
@@ -71,17 +78,6 @@ Page({
     const colors = ['#9b9a97', '#8c9c9a', '#bba0a0', '#c4a381'];
     const randomColor = colors[Math.floor(Math.random() * colors.length)];
 
-    login(nickname, randomColor, this.data.tempAvatarUrl);
-    this.setData({ showLoginModal: false });
-    this.refreshData();
-    
-    // 如果是第一次使用，这里可以将当前用户偷偷提升为 admin 测试用
-    const user = getCurrentUser();
-    if (user && user.nickname === 'admin') {
-      user.role = 'admin';
-      const users = wx.getStorageSync('party_up_users') || [];
-      const uIndex = users.findIndex(u => u.id === user.id);
-      if(uIndex > -1) {
         users[uIndex].role = 'admin';
         wx.setStorageSync('party_up_users', users);
       }

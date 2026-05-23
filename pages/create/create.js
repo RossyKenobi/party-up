@@ -61,8 +61,8 @@ Page({
     wx.navigateBack();
   },
 
-  submit() {
-    const { title, categoryId, startDate, startTime, endDate, endTime, location, reminderIndex, reminderOptions } = this.data;
+  async submit() {
+    const { title, categoryId, startDate, startTime, endDate, endTime, location, reminderIndex, categories } = this.data;
 
     if (!title.trim()) {
       wx.showToast({ title: '请输入活动名称', icon: 'none' });
@@ -77,24 +77,30 @@ Page({
       return;
     }
 
-    const reminderVal = reminderOptions[reminderIndex].value;
+    const category = categories.find(c => c.id === categoryId);
 
+    const eventData = {
+      title: title.trim(),
+      categoryId,
+      emoji: category.emoji,
+      color: category.color,
+      startTime: startDateTime.toISOString(),
+      endTime: endDateTime.toISOString(),
+      location: location.trim(),
+      reminder: REMINDER_OPTIONS[reminderIndex].value
+    };
+
+    wx.showLoading({ title: '创建中...', mask: true });
     try {
-      createEvent({
-        title: title.trim(),
-        categoryId,
-        startTime: startDateTime.toISOString(),
-        endTime: endDateTime.toISOString(),
-        location: location.trim(),
-        reminder: reminderVal
-      });
-
+      await createEvent(eventData);
       wx.showToast({ title: '创建成功', icon: 'success' });
       setTimeout(() => {
         wx.navigateBack();
       }, 1500);
     } catch (err) {
       wx.showToast({ title: err.message || '创建失败', icon: 'none' });
+    } finally {
+      wx.hideLoading();
     }
   }
 });
