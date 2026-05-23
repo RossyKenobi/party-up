@@ -1,7 +1,7 @@
 import { 
   getWeekDates, getMonthGrid, getMonthName, isToday, isSameDay, 
   DAY_NAMES_SHORT, formatTime, getTimelinePosition, getNowLinePosition,
-  eventOnDate, addDays, addWeeks, addMonths
+  eventOnDate, addDays, addWeeks, addMonths, CATEGORIES
 } from '../../utils/date.js';
 import { getEvents } from '../../utils/store.js';
 
@@ -142,10 +142,8 @@ Page({
     const days = dates.map(d => {
       const dayEvents = allEvents.filter(e => eventOnDate(e, d));
       const dots = dayEvents.slice(0, 3).map(e => {
-        if (e.categoryId === 'fitness') return '#9CAF88';
-        if (e.categoryId === 'drinks') return '#C8A882';
-        if (e.categoryId === 'outdoor') return '#8FA3B0';
-        return '#bba0a0';
+        const cat = CATEGORIES.find(c => c.id === e.categoryId);
+        return cat ? cat.color : '#bba0a0';
       });
       return {
         dateStr: d.toISOString(),
@@ -178,13 +176,10 @@ Page({
     
     const events = dayEvents.map(e => {
       const pos = getTimelinePosition(e.startTime, e.endTime, this.data.hourHeight);
-      let bgColor = 'var(--bg-secondary)';
-      let color = 'var(--text-secondary)';
-      let emoji = '📅';
-
-      if (e.categoryId === 'fitness') { color = '#9CAF88'; bgColor = '#f2f5f1'; emoji = '🏋️'; }
-      if (e.categoryId === 'drinks') { color = '#C8A882'; bgColor = '#f8f4f0'; emoji = '🍺'; }
-      if (e.categoryId === 'outdoor') { color = '#8FA3B0'; bgColor = '#f0f3f5'; emoji = '⛰️'; }
+      const cat = CATEGORIES.find(c => c.id === e.categoryId);
+      const bgColor = cat ? cat.bg : 'var(--bg-secondary)';
+      const color = cat ? cat.color : 'var(--text-secondary)';
+      const emoji = cat ? cat.emoji : '📅';
 
       const start = new Date(e.startTime);
       const end = new Date(e.endTime);
@@ -319,10 +314,8 @@ Page({
     const monthGrid = days.map(item => {
       const dayEvents = allEvents.filter(e => eventOnDate(e, item.date));
       const dots = dayEvents.slice(0, 3).map(e => {
-        if (e.categoryId === 'fitness') return '#9CAF88';
-        if (e.categoryId === 'drinks') return '#C8A882';
-        if (e.categoryId === 'outdoor') return '#8FA3B0';
-        return '#bba0a0';
+        const cat = CATEGORIES.find(c => c.id === e.categoryId);
+        return cat ? cat.color : '#bba0a0';
       });
       return {
         dateStr: item.date.toISOString(),
