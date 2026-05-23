@@ -16,6 +16,7 @@ Page({
     dayNamesShort: DAY_NAMES_SHORT,
     weekDates: [],
     eventsForSelected: [],
+    allEvents: [],
     
     hours: Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0')),
     hourHeight: 60,
@@ -28,7 +29,6 @@ Page({
   },
 
   onLoad() {
-    this.updateView();
     // Scroll to current hour minus 2
     const now = new Date();
     const currentHour = now.getHours();
@@ -38,7 +38,7 @@ Page({
   },
 
   onShow() {
-    this.updateView();
+    this.refreshData();
     this.startTimer();
   },
 
@@ -69,9 +69,9 @@ Page({
     wx.showLoading({ title: '加载中...', mask: true });
     try {
       const allEvents = await getEvents();
-      this.setData({ allEvents });
-      this.generateCalendar(this.data.currentDate);
-      this.updateTimelineForSelectedDate();
+      this.setData({ allEvents }, () => {
+        this.updateView();
+      });
     } catch (e) {
       console.error(e);
       wx.showToast({ title: '加载失败', icon: 'none' });
@@ -85,7 +85,7 @@ Page({
     const sel = new Date(this.data.selectedDate);
     
     const weekStart = getWeekDates(d);
-    const allEvents = getEvents();
+    const allEvents = this.data.allEvents || [];
 
     const weekDates = weekStart.map(date => {
       // Find dots for this date
@@ -130,7 +130,7 @@ Page({
 
   renderEventsForSelected() {
     const sel = new Date(this.data.selectedDate);
-    const allEvents = getEvents();
+    const allEvents = this.data.allEvents || [];
     
     const dayEvents = allEvents.filter(e => eventOnDate(e, sel));
     

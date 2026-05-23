@@ -20,7 +20,7 @@ Page({
     this.setData({ currentUser: user });
 
     if (user) {
-      wx.showLoading({ title: '加载中...' });
+      wx.showLoading({ title: '加载中...', mask: true });
       try {
         const allEvents = await getEvents();
         const created = allEvents.filter(e => e.creatorId === user.id);
@@ -78,11 +78,16 @@ Page({
     const colors = ['#9b9a97', '#8c9c9a', '#bba0a0', '#c4a381'];
     const randomColor = colors[Math.floor(Math.random() * colors.length)];
 
-        users[uIndex].role = 'admin';
-        wx.setStorageSync('party_up_users', users);
-      }
-      wx.setStorageSync('party_up_current_user', user);
-      this.setData({ currentUser: user });
+    wx.showLoading({ title: '登录中...', mask: true });
+    try {
+      await login(nickname, randomColor, this.data.tempAvatarUrl);
+      this.setData({ showLoginModal: false });
+      await this.refreshData();
+    } catch (e) {
+      console.error(e);
+      wx.showToast({ title: '登录失败', icon: 'none' });
+    } finally {
+      wx.hideLoading();
     }
   },
 
