@@ -1,4 +1,4 @@
-import { getCurrentUser, getEvents, login } from '../../utils/store.js';
+import { getCurrentUser, getEvents, login, logout } from '../../utils/store.js';
 
 Page({
   data: {
@@ -33,6 +33,20 @@ Page({
 
   handleLogin() {
     this.setData({ showLoginModal: true, tempNickname: '', tempAvatarUrl: '' });
+  },
+
+  handleLogout() {
+    wx.showModal({
+      title: '退出登录',
+      content: '确定要退出当前账号吗？',
+      success: (res) => {
+        if (res.confirm) {
+          logout();
+          this.refreshData();
+          wx.showToast({ title: '已退出', icon: 'success' });
+        }
+      }
+    });
   },
 
   cancelLogin() {

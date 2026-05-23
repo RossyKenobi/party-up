@@ -54,6 +54,10 @@ export function logout() {
   wx.removeStorageSync(CURRENT_USER_KEY);
 }
 
+export function logout() {
+  wx.removeStorageSync(CURRENT_USER_KEY);
+}
+
 // -----------------------------------------------------------------------------
 // EVENT API
 // -----------------------------------------------------------------------------

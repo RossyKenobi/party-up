@@ -51,6 +51,16 @@
   font-size: 14px;
 }
 
+.logout-btn {
+  position: absolute;
+  right: var(--space-md);
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: var(--font-sm);
+  color: var(--danger);
+  padding: 8px;
+}
+
 /* Admin Panel */
 .admin-panel {
   margin-bottom: var(--space-md);

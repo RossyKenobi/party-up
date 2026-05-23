@@ -13,6 +13,7 @@
     </view>
     
     <button class="btn btn-primary login-btn" wx:if="{{!currentUser}}" bindtap="handleLogin">登录</button>
+    <view class="logout-btn" wx:if="{{currentUser}}" bindtap="handleLogout">退出</view>
   </view>
 
   <view wx:if="{{currentUser}}">
