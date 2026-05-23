@@ -56,7 +56,7 @@
           <view class="timeline-grid" style="height:{{26 * hourHeight}}px; margin-top: 10px; margin-bottom: calc(90px + env(safe-area-inset-bottom));">
             <view class="timeline-hour" wx:for="{{hours}}" wx:key="*this">
               <text class="timeline-hour-label" wx:if="{{item <= 24}}">{{item}}:00</text>
-              <text class="timeline-hour-label" wx:else>次日{{item - 24}}:00</text>
+              <text class="timeline-hour-label" wx:else>{{item - 24}}:00</text>
             </view>
 
             <view wx:if="{{dayData.isToday}}" class="timeline-now-line" style="top:{{nowLineTop}}px"></view>
