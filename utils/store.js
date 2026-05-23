@@ -114,6 +114,16 @@ export async function deleteEvent(eventId) {
   await database.collection('events').where({ id: eventId }).remove();
 }
 
+export async function updateEvent(eventId, eventData) {
+  const currentUser = getCurrentUser();
+  if (!currentUser) throw new Error('需登录');
+  
+  const database = getDB();
+  await database.collection('events').where({ id: eventId, creatorId: currentUser.id }).update({
+    data: eventData
+  });
+}
+
 export async function getEventById(id) {
   const database = getDB();
   const res = await database.collection('events').where({ id }).get();

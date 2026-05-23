@@ -115,6 +115,12 @@ Page({
     });
   },
 
+  handleEdit() {
+    wx.navigateTo({
+      url: `/pages/create/create?id=${this.data.eventId}`
+    });
+  },
+
   handleDelete() {
     wx.showModal({
       title: '删除活动',

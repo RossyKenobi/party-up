@@ -1,7 +1,7 @@
 <!--pages/create/create.wxml-->
 <view class="container fade-in">
   <view class="header">
-    <text class="title">创建活动</text>
+    <text class="title">{{isEdit ? '编辑活动' : '创建活动'}}</text>
   </view>
 
   <view class="form-group card">
@@ -55,6 +55,6 @@
 
   <view class="actions">
     <button class="btn btn-secondary" style="flex:1" bindtap="cancel">取消</button>
-    <button class="btn btn-primary" style="flex:2" bindtap="submit">创建</button>
+    <button class="btn btn-primary" style="flex:2" bindtap="submit">{{isEdit ? '保存修改' : '创建'}}</button>
   </view>
 </view>
