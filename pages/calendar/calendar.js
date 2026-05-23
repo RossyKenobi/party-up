@@ -225,10 +225,11 @@ Page({
          const minH = Math.floor(minMinutes / 60);
          const minM = minMinutes % 60;
          
-         if (minM >= 30) {
-            targetHour = minH + 0.5;
+         if (minH < 3) {
+            targetHour = 0;
          } else {
-            targetHour = minH;
+            let base = minM >= 30 ? minH + 0.5 : minH;
+            targetHour = Math.max(base - 2, 0);
          }
       } else {
          targetHour = 9;
