@@ -205,6 +205,24 @@ Page({
     });
   },
 
+  scrollToDefaultTime(dayData) {
+    let targetHour = 9;
+    if (dayData && dayData.events && dayData.events.length > 0) {
+       let minHour = 24;
+       dayData.events.forEach(e => {
+          const start = new Date(e.startTime);
+          const h = start.getHours() + start.getMinutes() / 60;
+          if (h < minHour) minHour = h;
+       });
+       if (minHour < 9) {
+          targetHour = minHour;
+       }
+    }
+    this.setData({
+      scrollTop: targetHour * this.data.hourHeight
+    });
+  },
+
   onWeekSwiperChange(e) {
     if (e.detail.source !== 'touch' && !this.data._syncingFromDaySwiper) return;
     
@@ -230,6 +248,7 @@ Page({
       
       this.setData({ currentDayIndex: 1 });
       this.refreshDayData();
+      this.scrollToDefaultTime(this.data.daysList[1]);
     } else {
       this.refreshWeekData();
     }
@@ -253,6 +272,7 @@ Page({
     this.data.currentDate = newSelected.toISOString();
     
     this.refreshDayData();
+    this.scrollToDefaultTime(this.data.daysList[current]);
     
     if ((oldSelected.getDay() === 0 && direction === 1) || (oldSelected.getDay() === 1 && direction === -1)) {
       const nextWeekIndex = (this.data.currentWeekIndex + direction + 3) % 3;
@@ -272,6 +292,7 @@ Page({
     this.setData({ currentDayIndex: 1 });
     this.refreshDayData();
     this.refreshWeekData();
+    this.scrollToDefaultTime(this.data.daysList[1]);
     
     if (this.data.isMonthView) {
       // User picked a date from month view, let's close it and center the week
