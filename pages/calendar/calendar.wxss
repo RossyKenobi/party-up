@@ -1,9 +1,9 @@
-/* pages/calendar/calendar.wxss */
 .week-view {
   display: flex;
   flex-direction: column;
   height: 100vh;
   background-color: var(--bg-primary);
+  overflow: hidden;
 }
 
 .week-header {
@@ -86,6 +86,7 @@
 /* Timeline */
 .day-timeline {
   flex: 1;
+  height: 0;
   position: relative;
   background-color: var(--bg-card);
   border-top-left-radius: var(--radius-lg);
