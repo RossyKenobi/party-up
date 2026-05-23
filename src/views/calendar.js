@@ -201,12 +201,15 @@ function renderTimeline(date) {
   }).join('');
 
   return `
-    <div class="timeline-grid" style="height:${24 * hourHeight}px;">
+    <div class="timeline-grid" style="height:${24 * hourHeight}px; margin-top: 10px; margin-bottom: 10px;">
       ${hours.map(h => `
         <div class="timeline-hour">
           <span class="timeline-hour-label">${String(h).padStart(2, '0')}:00</span>
         </div>
       `).join('')}
+      <div style="position: absolute; top: ${24 * hourHeight}px; width: 100%;">
+        <span class="timeline-hour-label">24:00</span>
+      </div>
       ${nowLine}
       ${eventBlocks}
     </div>
