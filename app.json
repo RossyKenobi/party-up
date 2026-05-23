@@ -20,13 +20,13 @@
     "list": [
       {
         "pagePath": "pages/calendar/calendar",
-        "text": "日历",
+        "text": "📅 日历",
         "iconPath": "assets/tab-calendar.png",
         "selectedIconPath": "assets/tab-calendar-active.png"
       },
       {
         "pagePath": "pages/my/my",
-        "text": "我的",
+        "text": "👤 我的",
         "iconPath": "assets/tab-my.png",
         "selectedIconPath": "assets/tab-my-active.png"
       }
