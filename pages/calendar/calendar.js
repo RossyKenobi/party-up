@@ -206,18 +206,35 @@ Page({
   },
 
   scrollToDefaultTime(dayData) {
+    if (!dayData) return;
+    
     let targetHour = 9;
-    if (dayData && dayData.events && dayData.events.length > 0) {
-       let minHour = 24;
-       dayData.events.forEach(e => {
-          const start = new Date(e.startTime);
-          const h = start.getHours() + start.getMinutes() / 60;
-          if (h < minHour) minHour = h;
-       });
-       if (minHour < 9) {
-          targetHour = minHour;
-       }
+    
+    if (dayData.isToday) {
+      const now = new Date();
+      targetHour = Math.max(now.getHours() - 2, 0);
+    } else {
+      if (dayData.events && dayData.events.length > 0) {
+         let minMinutes = 24 * 60;
+         dayData.events.forEach(e => {
+            const start = new Date(e.startTime);
+            const m = start.getHours() * 60 + start.getMinutes();
+            if (m < minMinutes) minMinutes = m;
+         });
+         
+         const minH = Math.floor(minMinutes / 60);
+         const minM = minMinutes % 60;
+         
+         if (minM >= 30) {
+            targetHour = minH + 0.5;
+         } else {
+            targetHour = minH;
+         }
+      } else {
+         targetHour = 9;
+      }
     }
+    
     this.setData({
       scrollTop: targetHour * this.data.hourHeight
     });
