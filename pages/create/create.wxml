@@ -40,11 +40,11 @@
 
   <view class="form-group card">
     <label class="form-label">地点</label>
-    <input class="form-input" placeholder="输入地点 (选填)" value="{{location}}" bindinput="onLocationInput" />
+    <input class="form-input" placeholder="选填" value="{{location}}" bindinput="onLocationInput" />
   </view>
 
   <view class="form-group card">
-    <label class="form-label">提前提醒 (参与者会收到通知)</label>
+    <label class="form-label">提前提醒</label>
     <picker mode="selector" range="{{reminderLabels}}" bindchange="onReminderChange">
       <view class="picker-row">
         <text>{{reminderLabels[reminderIndex]}}</text>

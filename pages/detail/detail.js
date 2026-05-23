@@ -82,15 +82,28 @@ Page({
       return;
     }
     
-    wx.showLoading({ title: '处理中...', mask: true });
-    try {
-      await joinEvent(this.data.eventId);
-      wx.showToast({ title: '加入成功', icon: 'success' });
-      await this.loadEventDetails();
-    } catch (e) {
-      wx.showToast({ title: '操作失败', icon: 'none' });
-    } finally {
-      wx.hideLoading();
+    const doJoin = async () => {
+      wx.showLoading({ title: '处理中...', mask: true });
+      try {
+        await joinEvent(this.data.eventId);
+        wx.showToast({ title: '加入成功', icon: 'success' });
+        await this.loadEventDetails();
+      } catch (e) {
+        wx.showToast({ title: '操作失败', icon: 'none' });
+      } finally {
+        wx.hideLoading();
+      }
+    };
+
+    if (this.data.event && this.data.event.reminder > 0) {
+      wx.requestSubscribeMessage({
+        tmplIds: ['<请在此处填写你的模板ID>'],
+        success: (res) => console.log('订阅消息成功', res),
+        fail: (err) => console.error('订阅消息失败', err),
+        complete: () => doJoin()
+      });
+    } else {
+      doJoin();
     }
   },
 

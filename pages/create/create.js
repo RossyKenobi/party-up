@@ -142,22 +142,35 @@ Page({
       reminder: REMINDER_OPTIONS[reminderIndex].value
     };
 
-    wx.showLoading({ title: isEdit ? '保存中...' : '创建中...', mask: true });
-    try {
-      if (isEdit) {
-        await updateEvent(eventId, eventData);
-        wx.showToast({ title: '保存成功', icon: 'success' });
-      } else {
-        await createEvent(eventData);
-        wx.showToast({ title: '创建成功', icon: 'success' });
+    const doSubmit = async () => {
+      wx.showLoading({ title: isEdit ? '保存中...' : '创建中...', mask: true });
+      try {
+        if (isEdit) {
+          await updateEvent(eventId, eventData);
+          wx.showToast({ title: '保存成功', icon: 'success' });
+        } else {
+          await createEvent(eventData);
+          wx.showToast({ title: '创建成功', icon: 'success' });
+        }
+        setTimeout(() => {
+          wx.navigateBack();
+        }, 1500);
+      } catch (err) {
+        wx.showToast({ title: err.message || (isEdit ? '保存失败' : '创建失败'), icon: 'none' });
+      } finally {
+        wx.hideLoading();
       }
-      setTimeout(() => {
-        wx.navigateBack();
-      }, 1500);
-    } catch (err) {
-      wx.showToast({ title: err.message || (isEdit ? '保存失败' : '创建失败'), icon: 'none' });
-    } finally {
-      wx.hideLoading();
+    };
+
+    if (eventData.reminder > 0) {
+      wx.requestSubscribeMessage({
+        tmplIds: ['<请在此处填写你的模板ID>'],
+        success: (res) => console.log('订阅消息成功', res),
+        fail: (err) => console.error('订阅消息失败', err),
+        complete: () => doSubmit()
+      });
+    } else {
+      doSubmit();
     }
   }
 });
