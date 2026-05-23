@@ -5,7 +5,7 @@
 import { store, getInitial } from '../utils/store.js';
 import { formatDate, formatTime } from '../utils/date.js';
 
-export function renderMyEvents() {
+export function renderMyEvents(initialTab = 'upcoming') {
   const header = document.getElementById('app-header');
   const content = document.getElementById('app-content');
   const { upcoming, past } = store.getMyEvents();
@@ -18,15 +18,24 @@ export function renderMyEvents() {
     <div class="header-right"></div>
   `;
 
-  let activeTab = 'upcoming';
+  let activeTab = initialTab;
 
   function renderList() {
-    const events = activeTab === 'upcoming' ? upcoming : past;
+    const events = activeTab === 'all' 
+      ? [...upcoming, ...past].sort((a, b) => a.startTime - b.startTime) 
+      : activeTab === 'upcoming' ? upcoming : past;
 
     content.innerHTML = `
       <div class="fade-in" style="padding: var(--space-md);">
         <!-- Tabs -->
         <div style="display: flex; gap: var(--space-xs); margin-bottom: var(--space-md); background: var(--bg-secondary); border-radius: var(--radius-full); padding: 3px;">
+          <button class="events-tab ${activeTab === 'all' ? 'active' : ''}" data-tab="all"
+                  style="flex: 1; padding: 8px; border-radius: var(--radius-full); border: none; font-family: var(--font-family); font-size: var(--font-sm); font-weight: 500; cursor: pointer; transition: all 0.15s;
+                  background: ${activeTab === 'all' ? 'var(--bg-card)' : 'transparent'};
+                  color: ${activeTab === 'all' ? 'var(--text-primary)' : 'var(--text-secondary)'};
+                  box-shadow: ${activeTab === 'all' ? 'var(--shadow-sm)' : 'none'};">
+            全部 (${upcoming.length + past.length})
+          </button>
           <button class="events-tab ${activeTab === 'upcoming' ? 'active' : ''}" data-tab="upcoming"
                   style="flex: 1; padding: 8px; border-radius: var(--radius-full); border: none; font-family: var(--font-family); font-size: var(--font-sm); font-weight: 500; cursor: pointer; transition: all 0.15s;
                   background: ${activeTab === 'upcoming' ? 'var(--bg-card)' : 'transparent'};
@@ -46,8 +55,8 @@ export function renderMyEvents() {
         <!-- Event List -->
         ${events.length === 0 ? `
           <div class="empty-state">
-            <div class="empty-icon">${activeTab === 'upcoming' ? '📭' : '📦'}</div>
-            <div class="empty-text">${activeTab === 'upcoming' ? '暂无即将到来的活动\n去日历看看有什么好玩的吧' : '还没有已结束的活动'}</div>
+            <div class="empty-icon">${activeTab === 'upcoming' ? '📭' : activeTab === 'past' ? '📦' : '📭'}</div>
+            <div class="empty-text">${activeTab === 'upcoming' ? '暂无即将到来的活动\n去日历看看有什么好玩的吧' : activeTab === 'past' ? '还没有已结束的活动' : '暂无活动'}</div>
           </div>
         ` : `
           <div style="display: flex; flex-direction: column; gap: var(--space-sm);">

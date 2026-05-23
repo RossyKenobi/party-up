@@ -57,30 +57,32 @@ export function renderMyPage() {
           </div>
         </div>
 
-        <!-- Stats -->
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-sm); margin-bottom: var(--space-md);">
-          <div class="card" style="text-align: center; padding: var(--space-md) var(--space-sm);">
-            <div style="font-size: var(--font-xl); font-weight: 700; color: var(--accent);">${totalEvents}</div>
-            <div style="font-size: var(--font-xs); color: var(--text-secondary); margin-top: 4px;">全部活动</div>
+        <!-- My Events Module -->
+        <div class="card" style="padding: var(--space-md); margin-bottom: var(--space-md);">
+          <div style="display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-md);">
+            <span style="font-size: 18px;">📋</span>
+            <span style="font-size: var(--font-base); font-weight: 600; color: var(--text-primary);">我的活动</span>
           </div>
-          <div class="card" style="text-align: center; padding: var(--space-md) var(--space-sm);">
-            <div style="font-size: var(--font-xl); font-weight: 700; color: var(--success);">${upcoming.length}</div>
-            <div style="font-size: var(--font-xs); color: var(--text-secondary); margin-top: 4px;">即将到来</div>
-          </div>
-          <div class="card" style="text-align: center; padding: var(--space-md) var(--space-sm);">
-            <div style="font-size: var(--font-xl); font-weight: 700; color: var(--text-tertiary);">${past.length}</div>
-            <div style="font-size: var(--font-xs); color: var(--text-secondary); margin-top: 4px;">已结束</div>
+          
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-sm);">
+            <button class="event-stat-btn" data-tab="all" style="background: none; border: none; text-align: center; cursor: pointer; padding: var(--space-sm) 0; transition: transform 0.15s; font-family: var(--font-family);">
+              <div style="font-size: var(--font-xl); font-weight: 700; color: var(--accent); margin-bottom: 4px;">${totalEvents}</div>
+              <div style="font-size: var(--font-xs); color: var(--text-secondary);">全部活动</div>
+            </button>
+            <button class="event-stat-btn" data-tab="upcoming" style="background: none; border: none; text-align: center; cursor: pointer; padding: var(--space-sm) 0; transition: transform 0.15s; font-family: var(--font-family);">
+              <div style="font-size: var(--font-xl); font-weight: 700; color: var(--success); margin-bottom: 4px;">${upcoming.length}</div>
+              <div style="font-size: var(--font-xs); color: var(--text-secondary);">即将到来</div>
+            </button>
+            <button class="event-stat-btn" data-tab="past" style="background: none; border: none; text-align: center; cursor: pointer; padding: var(--space-sm) 0; transition: transform 0.15s; font-family: var(--font-family);">
+              <div style="font-size: var(--font-xl); font-weight: 700; color: var(--text-tertiary); margin-bottom: 4px;">${past.length}</div>
+              <div style="font-size: var(--font-xs); color: var(--text-secondary);">已结束</div>
+            </button>
           </div>
         </div>
 
-        <!-- Menu Items -->
-        <div class="card" style="padding: 0; overflow: hidden; margin-bottom: var(--space-md);">
-          <button class="menu-item" id="my-events-btn" style="width: 100%; display: flex; align-items: center; gap: var(--space-md); padding: var(--space-md); background: none; border: none; border-bottom: 1px solid var(--divider); cursor: pointer; font-family: var(--font-family); text-align: left;">
-            <span style="font-size: 18px;">📋</span>
-            <span style="flex: 1; font-size: var(--font-base); color: var(--text-primary); font-weight: 500;">我的活动</span>
-            <span style="color: var(--text-tertiary);">›</span>
-          </button>
-          <button class="menu-item" id="admin-panel-btn" style="width: 100%; display: ${user.isAdmin ? 'flex' : 'none'}; align-items: center; gap: var(--space-md); padding: var(--space-md); background: none; border: none; cursor: pointer; font-family: var(--font-family); text-align: left;">
+        <!-- Other Menu Items (Admin) -->
+        <div class="card" style="padding: 0; overflow: hidden; margin-bottom: var(--space-md); display: ${user.isAdmin ? 'block' : 'none'};">
+          <button class="menu-item" id="admin-panel-btn" style="width: 100%; display: flex; align-items: center; gap: var(--space-md); padding: var(--space-md); background: none; border: none; cursor: pointer; font-family: var(--font-family); text-align: left;">
             <span style="font-size: 18px;">🛡️</span>
             <span style="flex: 1; font-size: var(--font-base); color: var(--text-primary); font-weight: 500;">管理面板</span>
             <span style="color: var(--text-tertiary);">›</span>
@@ -92,11 +94,13 @@ export function renderMyPage() {
           退出登录
         </button>
       </div>
-    `;
+    \`;
 
     // My events
-    content.querySelector('#my-events-btn').addEventListener('click', () => {
-      renderMyEvents();
+    content.querySelectorAll('.event-stat-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        renderMyEvents(btn.dataset.tab);
+      });
     });
 
     // Logout
