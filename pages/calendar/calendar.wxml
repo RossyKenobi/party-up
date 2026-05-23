@@ -2,9 +2,9 @@
 <view class="week-view">
   <view class="week-header">
     <text class="month-label" bindtap="switchToMonth">{{monthName}} {{displayYear}}</text>
-    <view class="view-toggle">
-      <view class="btn btn-secondary" style="padding: 4px 12px; font-size: 12px;" bindtap="goToday">今日</view>
-      <view class="btn btn-primary" style="padding: 4px 12px; font-size: 16px; margin-left: 8px;" bindtap="goCreate">＋</view>
+    <view class="view-toggle" style="display:flex; align-items:center; gap:8px;">
+      <view class="btn btn-secondary" style="padding: 4px 16px; font-size: 14px; min-width: 60px;" bindtap="goToday">今日</view>
+      <view class="btn btn-primary" style="padding: 4px 16px; font-size: 14px; min-width: 60px;" bindtap="goCreate">＋</view>
     </view>
   </view>
 
