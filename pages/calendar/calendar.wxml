@@ -16,7 +16,7 @@
 
   <!-- Month Grid Swiper View -->
   <view class="month-swiper-container" wx:if="{{isMonthView}}">
-    <swiper class="month-swiper" current="{{currentMonthGridIndex}}" circular="true" bindchange="onMonthSwiperChange" duration="250">
+    <swiper class="month-swiper" vertical="true" current="{{currentMonthGridIndex}}" circular="true" bindchange="onMonthSwiperChange" duration="250">
       <swiper-item wx:for="{{monthGridList}}" wx:key="id" wx:for-item="monthObj">
         <view class="month-grid">
           <view class="month-grid-cell {{item.currentMonth ? '' : 'other-month'}} {{item.isToday ? 'today' : ''}} {{item.isSelected ? 'selected' : ''}}"
