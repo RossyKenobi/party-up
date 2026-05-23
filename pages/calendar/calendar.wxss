@@ -187,6 +187,7 @@
   position: relative;
   margin-left: 52px;
   border-left: 1px solid var(--divider);
+  border-top: 1px solid var(--divider);
 }
 
 .timeline-hour {
