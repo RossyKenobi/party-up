@@ -153,5 +153,19 @@ Page({
         }
       }
     });
+  },
+
+  onShareAppMessage() {
+    return {
+      title: `邀你参加：${this.data.event ? this.data.event.title : '活动'}`,
+      path: `/pages/detail/detail?id=${this.data.eventId}`
+    };
+  },
+
+  onShareTimeline() {
+    return {
+      title: `邀你参加：${this.data.event ? this.data.event.title : '活动'}`,
+      query: `id=${this.data.eventId}`
+    };
   }
 });
