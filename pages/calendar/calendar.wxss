@@ -58,13 +58,13 @@
   font-weight: 500;
 }
 
-.week-date-cell.today .week-date-num {
+.week-date-cell.selected .week-date-num {
   background: var(--accent);
   color: var(--text-inverse);
   font-weight: 600;
 }
 
-.week-date-cell.selected:not(.today) .week-date-num {
+.week-date-cell.today:not(.selected) .week-date-num {
   background: var(--accent-bg);
   color: var(--accent);
   font-weight: 600;
