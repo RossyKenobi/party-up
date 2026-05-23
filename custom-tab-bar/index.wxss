@@ -4,10 +4,10 @@
   left: 32px;
   right: 32px;
   height: 60px;
-  background: #2a2a2a;
+  background: #ffffff;
   display: flex;
   border-radius: 30px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   z-index: 999;
 }
 
