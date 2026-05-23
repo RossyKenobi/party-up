@@ -6,7 +6,9 @@ Page({
     createdCount: 0,
     joinedCount: 0,
     showLoginModal: false,
-    tempNickname: ''
+    tempNickname: '',
+    tempAvatarUrl: '',
+    defaultAvatarUrl: 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'
   },
 
   onShow() {
@@ -30,11 +32,15 @@ Page({
   },
 
   handleLogin() {
-    this.setData({ showLoginModal: true, tempNickname: '' });
+    this.setData({ showLoginModal: true, tempNickname: '', tempAvatarUrl: '' });
   },
 
   cancelLogin() {
     this.setData({ showLoginModal: false });
+  },
+
+  onChooseAvatar(e) {
+    this.setData({ tempAvatarUrl: e.detail.avatarUrl });
   },
 
   onNicknameInput(e) {
@@ -51,7 +57,7 @@ Page({
     const colors = ['#9b9a97', '#8c9c9a', '#bba0a0', '#c4a381'];
     const randomColor = colors[Math.floor(Math.random() * colors.length)];
 
-    login(nickname, randomColor);
+    login(nickname, randomColor, this.data.tempAvatarUrl);
     this.setData({ showLoginModal: false });
     this.refreshData();
     

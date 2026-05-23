@@ -16,7 +16,10 @@
     <view class="card-title">参与者 ({{participants.length}})</view>
     <view class="participants-list">
       <view class="participant-item" wx:for="{{participants}}" wx:key="id">
-        <view class="p-avatar" style="background:{{item.avatarColor}}">{{item.initial}}</view>
+        <view class="p-avatar" style="background:{{item.avatarColor}}">
+          <image wx:if="{{item.avatarUrl}}" src="{{item.avatarUrl}}" style="width:100%;height:100%;border-radius:50%;" />
+          <text wx:else>{{item.initial}}</text>
+        </view>
         <view class="p-name">{{item.nickname}}</view>
         <view class="p-badge" wx:if="{{item.id === event.creatorId}}">创建者</view>
       </view>

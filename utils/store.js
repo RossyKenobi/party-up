@@ -29,22 +29,24 @@ export function getCurrentUser() {
   return getLocalData(CURRENT_USER_KEY, null);
 }
 
-export function login(nickname, avatarColor) {
-  const users = getLocalData(USERS_KEY, []);
+export function login(nickname, avatarColor, avatarUrl = '') {
+  let users = wx.getStorageSync(USERS_KEY) || [];
   let user = users.find(u => u.nickname === nickname);
-  
   if (!user) {
     user = {
-      id: generateId(),
+      id: 'u_' + Date.now().toString(36),
       nickname,
       avatarColor,
-      role: 'user', // Default role
+      avatarUrl,
+      role: 'user'
     };
     users.push(user);
-    saveLocalData(USERS_KEY, users);
+    wx.setStorageSync(USERS_KEY, users);
+  } else if (avatarUrl) {
+    user.avatarUrl = avatarUrl;
+    wx.setStorageSync(USERS_KEY, users);
   }
-  
-  saveLocalData(CURRENT_USER_KEY, user);
+  wx.setStorageSync(CURRENT_USER_KEY, user);
   return user;
 }
 
