@@ -88,10 +88,14 @@
   align-items: center;
   font-size: var(--font-xs);
   color: var(--text-secondary);
+  line-height: 1;
 }
 
 .emoji-icon {
   margin-right: 4px;
+  line-height: 1;
+  position: relative;
+  top: 1px; /* Nudge down slightly since it appears too high */
 }
 
 .creator-badge {
