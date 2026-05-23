@@ -141,7 +141,7 @@ Page({
     
     const days = dates.map(d => {
       const dayEvents = allEvents.filter(e => eventOnDate(e, d));
-      const dots = dayEvents.slice(0, 3).map(e => {
+      const dots = dayEvents.slice(0, 6).map(e => {
         const cat = CATEGORIES.find(c => c.id === e.categoryId);
         return cat ? cat.color : '#bba0a0';
       });
@@ -361,7 +361,7 @@ Page({
     
     const monthGrid = days.map(item => {
       const dayEvents = allEvents.filter(e => eventOnDate(e, item.date));
-      const dots = dayEvents.slice(0, 3).map(e => {
+      const dots = dayEvents.slice(0, 6).map(e => {
         const cat = CATEGORIES.find(c => c.id === e.categoryId);
         return cat ? cat.color : '#bba0a0';
       });

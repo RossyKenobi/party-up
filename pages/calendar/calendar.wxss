@@ -149,6 +149,9 @@
 
 .event-dots {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 21px;
   gap: 3px;
   margin-top: 3px;
   min-height: 5px;
