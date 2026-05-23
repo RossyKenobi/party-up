@@ -82,8 +82,8 @@
 }
 
 .month-grid-cell.selected .date-num {
-  background: var(--text-primary) !important;
-  color: var(--bg-primary) !important;
+  background: var(--accent) !important;
+  color: var(--text-inverse) !important;
   font-weight: 600;
 }
 
@@ -124,8 +124,8 @@
 }
 
 .week-date-cell.selected .week-date-num {
-  background: var(--text-primary);
-  color: var(--bg-primary);
+  background: var(--accent);
+  color: var(--text-inverse);
   font-weight: 600;
 }
 
@@ -133,6 +133,18 @@
   background: var(--accent-bg);
   color: var(--accent);
   font-weight: 600;
+}
+
+.week-date-cell.selected .week-date-num.today {
+  background: var(--accent);
+  color: var(--text-inverse);
+  border-radius: var(--radius-full);
+}
+
+.week-date-num.selected {
+  background: var(--accent);
+  color: var(--text-inverse);
+  border-radius: var(--radius-full);
 }
 
 .event-dots {
