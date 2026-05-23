@@ -27,13 +27,13 @@
     <picker mode="date" value="{{startDate}}" bindchange="onStartDateChange">
       <view class="picker-row">开始日期: <text class="picker-val">{{startDate}}</text></view>
     </picker>
-    <picker mode="multiSelector" range="{{timeArray}}" value="{{startTimeIdx}}" bindchange="onStartTimeChange">
+    <picker mode="time" value="{{startTime}}" bindchange="onStartTimeChange">
       <view class="picker-row">开始时间: <text class="picker-val">{{startTime}}</text></view>
     </picker>
     <picker mode="date" value="{{endDate}}" bindchange="onEndDateChange">
       <view class="picker-row" style="margin-top:10px">结束日期: <text class="picker-val">{{endDate}}</text></view>
     </picker>
-    <picker mode="multiSelector" range="{{timeArray}}" value="{{endTimeIdx}}" bindchange="onEndTimeChange">
+    <picker mode="time" value="{{endTime}}" bindchange="onEndTimeChange">
       <view class="picker-row">结束时间: <text class="picker-val">{{endTime}}</text></view>
     </picker>
   </view>
