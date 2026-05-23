@@ -1,7 +1,7 @@
 import { 
   getWeekDates, getMonthGrid, getMonthName, isToday, isSameDay, 
   DAY_NAMES_SHORT, formatTime, getTimelinePosition, getNowLinePosition,
-  eventOnDate, addDays, addWeeks
+  eventOnDate, addDays, addWeeks, addMonths
 } from '../../utils/date.js';
 import { getEvents } from '../../utils/store.js';
 
@@ -11,15 +11,15 @@ Page({
   data: {
     currentDate: new Date().toISOString(),
     selectedDate: new Date().toISOString(),
-    currentMonthValue: '', // For picker "YYYY-MM"
     monthName: '',
     displayYear: '',
     dayNamesShort: DAY_NAMES_SHORT,
     
     isMonthView: false,
-    monthGrid: [],
     
-    // Swiper states
+    currentMonthGridIndex: 1,
+    monthGridList: [null, null, null],
+    
     currentWeekIndex: 1,
     weeksList: [null, null, null],
     
@@ -95,15 +95,15 @@ Page({
     this.setData({
       currentWeekIndex: 1,
       currentDayIndex: 1,
+      currentMonthGridIndex: 1,
       monthName: getMonthName(d.getMonth()),
-      displayYear: d.getFullYear(),
-      currentMonthValue: `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`
+      displayYear: d.getFullYear()
     });
     
     this.refreshWeekData();
     this.refreshDayData();
     if (this.data.isMonthView) {
-      this.refreshMonthData();
+      this.refreshMonthGridData();
     }
   },
 
@@ -127,8 +127,7 @@ Page({
     this.setData({ 
       weeksList,
       monthName: getMonthName(d.getMonth()),
-      displayYear: d.getFullYear(),
-      currentMonthValue: `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`
+      displayYear: d.getFullYear()
     });
   },
 
@@ -234,7 +233,6 @@ Page({
       this.setData({ currentDayIndex: 1 });
       this.refreshDayData();
     } else {
-      // Synced from day swiper, dates already updated
       this.refreshWeekData();
     }
   },
@@ -258,7 +256,6 @@ Page({
     
     this.refreshDayData();
     
-    // Check if we crossed week boundary
     if ((oldSelected.getDay() === 0 && direction === 1) || (oldSelected.getDay() === 1 && direction === -1)) {
       const nextWeekIndex = (this.data.currentWeekIndex + direction + 3) % 3;
       this.data._syncingFromDaySwiper = true;
@@ -279,7 +276,9 @@ Page({
     this.refreshWeekData();
     
     if (this.data.isMonthView) {
-      this.setData({ isMonthView: false }); 
+      // User picked a date from month view, let's close it and center the week
+      this.setData({ isMonthView: false, currentWeekIndex: 1 }); 
+      this.refreshWeekData();
     }
   },
 
@@ -287,13 +286,30 @@ Page({
     const willShow = !this.data.isMonthView;
     this.setData({ isMonthView: willShow });
     if (willShow) {
-      this.refreshMonthData();
+      // Sync month view to currently selected month
+      this.setData({ currentMonthGridIndex: 1 });
+      this.refreshMonthGridData();
     }
   },
 
-  refreshMonthData() {
-    const d = new Date(this.data.currentDate);
-    const days = getMonthGrid(d.getFullYear(), d.getMonth());
+  refreshMonthGridData() {
+    const { currentDate, currentMonthGridIndex } = this.data;
+    const base = new Date(currentDate);
+    // Use the 1st of the month to safely add/subtract months
+    const baseFirstDay = new Date(base.getFullYear(), base.getMonth(), 1);
+
+    const indices = this.getCircularIndices(currentMonthGridIndex);
+    
+    const monthGridList = [...this.data.monthGridList];
+    monthGridList[indices.prev] = this.buildMonthGridData(addMonths(baseFirstDay, -1));
+    monthGridList[indices.current] = this.buildMonthGridData(baseFirstDay);
+    monthGridList[indices.next] = this.buildMonthGridData(addMonths(baseFirstDay, 1));
+    
+    this.setData({ monthGridList });
+  },
+
+  buildMonthGridData(dateObj) {
+    const days = getMonthGrid(dateObj.getFullYear(), dateObj.getMonth());
     const sel = new Date(this.data.selectedDate);
     const allEvents = this.data.allEvents || [];
     
@@ -314,27 +330,31 @@ Page({
         dots
       };
     });
-    
-    this.setData({ monthGrid });
+    return { id: dateObj.getTime(), grid: monthGrid };
   },
 
-  onMonthPickerChange(e) {
-    const [year, month] = e.detail.value.split('-');
-    const newDate = new Date(year, parseInt(month) - 1, 1);
+  onMonthSwiperChange(e) {
+    if (e.detail.source !== 'touch') return;
+    const current = e.detail.current;
+    const oldCurrent = this.data.currentMonthGridIndex;
+    let direction = 1;
+    if ((oldCurrent === 1 && current === 0) || (oldCurrent === 0 && current === 2) || (oldCurrent === 2 && current === 1)) {
+      direction = -1;
+    }
     
-    this.data.currentDate = newDate.toISOString();
-    this.data.selectedDate = newDate.toISOString();
+    this.data.currentMonthGridIndex = current;
+    
+    const base = new Date(this.data.currentDate);
+    const baseFirstDay = new Date(base.getFullYear(), base.getMonth(), 1);
+    const newBase = addMonths(baseFirstDay, direction);
     
     this.setData({
-      currentWeekIndex: 1,
-      currentDayIndex: 1
+      currentDate: newBase.toISOString(),
+      monthName: getMonthName(newBase.getMonth()),
+      displayYear: newBase.getFullYear()
     });
     
-    this.refreshWeekData();
-    this.refreshDayData();
-    if (this.data.isMonthView) {
-      this.refreshMonthData();
-    }
+    this.refreshMonthGridData();
   },
 
   goToday() {

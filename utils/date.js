@@ -57,6 +57,13 @@ export function addWeeks(date, weeks) {
   return d;
 }
 
+/** Add months to a date */
+export function addMonths(date, months) {
+  const d = new Date(date);
+  d.setMonth(d.getMonth() + months);
+  return d;
+}
+
 /** Format time as HH:MM */
 export function formatTime(date) {
   const d = new Date(date);

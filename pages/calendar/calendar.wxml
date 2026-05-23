@@ -1,13 +1,10 @@
 <!--pages/calendar/calendar.wxml-->
 <view class="calendar-page">
   <view class="header-bar">
-    <picker mode="date" fields="month" value="{{currentMonthValue}}" bindchange="onMonthPickerChange">
-      <view class="month-label">
-        {{monthName}} {{displayYear}} <text class="icon-arrow-down" style="font-size:12px; margin-left:4px;">▼</text>
-      </view>
-    </picker>
+    <view class="month-label" bindtap="toggleMonthView">
+      {{monthName}} {{displayYear}} <text class="icon-arrow-down" style="font-size:12px; margin-left:4px;">{{isMonthView ? '▲' : '▼'}}</text>
+    </view>
     <view class="header-actions" style="display:flex; align-items:center; gap:8px;">
-      <view class="btn btn-secondary" style="padding: 4px 10px; font-size: 12px; min-width: 40px;" bindtap="toggleMonthView">{{isMonthView ? '收起' : '展开'}}</view>
       <view class="btn btn-secondary" style="padding: 4px 10px; font-size: 12px; min-width: 40px;" bindtap="goToday">今日</view>
       <view class="btn btn-primary" style="padding: 4px 16px; font-size: 14px; min-width: 40px;" bindtap="goCreate">＋</view>
     </view>
@@ -17,15 +14,21 @@
     <text class="week-day-label" wx:for="{{dayNamesShort}}" wx:key="*this">{{item}}</text>
   </view>
 
-  <!-- Month Grid View -->
-  <view class="month-grid" wx:if="{{isMonthView}}">
-    <view class="month-grid-cell {{item.currentMonth ? '' : 'other-month'}} {{item.isToday ? 'today' : ''}} {{item.isSelected ? 'selected' : ''}}"
-          wx:for="{{monthGrid}}" wx:key="dateStr" data-date="{{item.dateStr}}" bindtap="selectDate">
-      <view class="date-num">{{item.dateNum}}</view>
-      <view class="event-dots">
-        <view class="event-dot" wx:for="{{item.dots}}" wx:for-item="dot" wx:key="*this" style="background:{{dot}}"></view>
-      </view>
-    </view>
+  <!-- Month Grid Swiper View -->
+  <view class="month-swiper-container" wx:if="{{isMonthView}}">
+    <swiper class="month-swiper" current="{{currentMonthGridIndex}}" circular="true" bindchange="onMonthSwiperChange" duration="250">
+      <swiper-item wx:for="{{monthGridList}}" wx:key="id" wx:for-item="monthObj">
+        <view class="month-grid">
+          <view class="month-grid-cell {{item.currentMonth ? '' : 'other-month'}} {{item.isToday ? 'today' : ''}} {{item.isSelected ? 'selected' : ''}}"
+                wx:for="{{monthObj.grid}}" wx:key="dateStr" data-date="{{item.dateStr}}" bindtap="selectDate">
+            <view class="date-num">{{item.dateNum}}</view>
+            <view class="event-dots">
+              <view class="event-dot" wx:for="{{item.dots}}" wx:for-item="dot" wx:key="*this" style="background:{{dot}}"></view>
+            </view>
+          </view>
+        </view>
+      </swiper-item>
+    </swiper>
   </view>
 
   <!-- Week Swiper View -->

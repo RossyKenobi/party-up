@@ -34,13 +34,22 @@
   font-weight: 500;
 }
 
-/* Month Grid */
+/* Month Grid Swiper */
+.month-swiper-container {
+  height: 300px;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--divider);
+}
+
+.month-swiper {
+  height: 100%;
+}
+
 .month-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   padding: var(--space-sm);
-  background: var(--bg-card);
-  border-bottom: 1px solid var(--divider);
+  height: 100%;
 }
 
 .month-grid-cell {
