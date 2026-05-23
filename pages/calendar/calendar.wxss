@@ -11,7 +11,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 4px var(--space-md) 16px;
+  padding: 4px 8px 16px var(--space-md);
 }
 
 .month-label {
