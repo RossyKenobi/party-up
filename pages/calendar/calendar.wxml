@@ -62,7 +62,7 @@
             <view wx:if="{{dayData.isToday}}" class="timeline-now-line" style="top:{{nowLineTop}}px"></view>
 
             <view class="timeline-event" wx:for="{{dayData.events}}" wx:key="id" 
-                  style="top:{{item.top}}px; height:{{item.height}}px; background-color:{{item.bgColor}}; border-left:3px solid {{item.color}}; color:{{item.color}};"
+                  style="top:{{item.top}}px; height:{{item.height}}px; left:calc({{item.left}}% + 8px); width:calc({{item.width}}% - 12px); background-color:{{item.bgColor}}; border-left:3px solid {{item.color}}; color:{{item.color}};"
                   data-id="{{item.id}}" bindtap="goDetail">
               <view class="event-title">{{item.emoji}} {{item.title}}</view>
               <view class="event-time" style="opacity:0.7">{{item.timeStr}}</view>

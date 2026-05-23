@@ -184,7 +184,7 @@ Page({
         return eStart < endTimeLimit && eEnd > baseDate;
     });
     
-    const events = dayEvents.map(e => {
+    let events = dayEvents.map(e => {
       const pos = getTimelinePosition(e.startTime, e.endTime, this.data.hourHeight, baseDate);
       const cat = CATEGORIES.find(c => c.id === e.categoryId);
       const bgColor = cat ? cat.bg : 'var(--bg-secondary)';
@@ -201,6 +201,53 @@ Page({
         timeStr: `${formatTime(start)} - ${formatTime(end)}`
       };
     });
+    
+    // Calculate overlap clusters
+    events.sort((a, b) => a.top - b.top || b.height - a.height);
+    let columns = [];
+    let lastEventEnding = null;
+
+    const packEvents = (cols) => {
+      const numCols = cols.length;
+      for (let i = 0; i < numCols; i++) {
+        for (const ev of cols[i]) {
+          ev.left = (i / numCols) * 100;
+          ev.width = (1 / numCols) * 100;
+        }
+      }
+    };
+
+    events.forEach((ev) => {
+      if (lastEventEnding !== null && ev.top >= lastEventEnding) {
+        packEvents(columns);
+        columns = [];
+        lastEventEnding = null;
+      }
+
+      let placed = false;
+      for (let i = 0; i < columns.length; i++) {
+        let col = columns[i];
+        let lastEventInCol = col[col.length - 1];
+        if (ev.top >= lastEventInCol.top + lastEventInCol.height) {
+          col.push(ev);
+          placed = true;
+          break;
+        }
+      }
+
+      if (!placed) {
+        columns.push([ev]);
+      }
+
+      let evEnd = ev.top + ev.height;
+      if (lastEventEnding === null || evEnd > lastEventEnding) {
+        lastEventEnding = evEnd;
+      }
+    });
+
+    if (columns.length > 0) {
+      packEvents(columns);
+    }
     
     return {
       id: dateObj.getTime(),
