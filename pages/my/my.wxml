@@ -32,17 +32,13 @@
       </view>
 
       <view class="stats-grid">
-        <view class="stat-item" data-tab="all" bindtap="goToMyEvents">
-          <view class="stat-num">{{allCount}}</view>
-          <view class="stat-label">全部活动</view>
+        <view class="stat-item" data-type="created" bindtap="goToMyEvents">
+          <view class="stat-num">{{createdCount}}</view>
+          <view class="stat-label">我发起的</view>
         </view>
-        <view class="stat-item" data-tab="upcoming" bindtap="goToMyEvents">
-          <view class="stat-num">{{upcomingCount}}</view>
-          <view class="stat-label">即将到来</view>
-        </view>
-        <view class="stat-item" data-tab="past" bindtap="goToMyEvents">
-          <view class="stat-num past-num">{{pastCount}}</view>
-          <view class="stat-label past-label">已结束</view>
+        <view class="stat-item" data-type="joined" bindtap="goToMyEvents">
+          <view class="stat-num">{{joinedCount}}</view>
+          <view class="stat-label">我参与的</view>
         </view>
       </view>
     </view>

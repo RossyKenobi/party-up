@@ -6,10 +6,17 @@ Page({
     activeTab: 'upcoming',
     allMyEvents: [],
     filteredEvents: [],
-    currentUserId: null
+    currentUserId: null,
+    eventType: 'joined'
   },
 
   onLoad(options) {
+    if (options.type) {
+      this.setData({ eventType: options.type });
+      wx.setNavigationBarTitle({
+        title: options.type === 'created' ? '我发起的' : '我参与的'
+      });
+    }
     if (options.tab) {
       this.setData({ activeTab: options.tab });
     }
@@ -29,9 +36,13 @@ Page({
     this.setData({ currentUserId: user.id });
 
     const allEvents = getEvents();
-    const myEvents = allEvents.filter(e => 
-      e.creatorId === user.id || e.participants.includes(user.id)
-    );
+    let myEvents = [];
+    
+    if (this.data.eventType === 'created') {
+      myEvents = allEvents.filter(e => e.creatorId === user.id);
+    } else {
+      myEvents = allEvents.filter(e => e.participants.includes(user.id));
+    }
 
     // Format events for display
     const formatted = myEvents.map(e => {

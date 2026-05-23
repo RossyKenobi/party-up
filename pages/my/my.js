@@ -3,9 +3,8 @@ import { getCurrentUser, getEvents, login } from '../../utils/store.js';
 Page({
   data: {
     currentUser: null,
-    allCount: 0,
-    upcomingCount: 0,
-    pastCount: 0,
+    createdCount: 0,
+    joinedCount: 0,
     showLoginModal: false,
     tempNickname: ''
   },
@@ -20,27 +19,12 @@ Page({
 
     if (user) {
       const allEvents = getEvents();
-      // Filter events where user is creator or participant
-      const myEvents = allEvents.filter(e => 
-        e.creatorId === user.id || e.participants.includes(user.id)
-      );
-
-      const now = new Date();
-      let upcoming = 0;
-      let past = 0;
-
-      myEvents.forEach(e => {
-        if (new Date(e.endTime) < now) {
-          past++;
-        } else {
-          upcoming++;
-        }
-      });
+      const created = allEvents.filter(e => e.creatorId === user.id);
+      const joined = allEvents.filter(e => e.participants.includes(user.id));
 
       this.setData({
-        allCount: myEvents.length,
-        upcomingCount: upcoming,
-        pastCount: past
+        createdCount: created.length,
+        joinedCount: joined.length
       });
     }
   },
@@ -87,9 +71,9 @@ Page({
   },
 
   goToMyEvents(e) {
-    const tab = e.currentTarget.dataset.tab;
+    const type = e.currentTarget.dataset.type;
     wx.navigateTo({
-      url: `/pages/my-events/my-events?tab=${tab}`
+      url: `/pages/my-events/my-events?type=${type}`
     });
   },
 

@@ -4,6 +4,7 @@
     <text class="month-label" bindtap="switchToMonth">{{monthName}} {{displayYear}}</text>
     <view class="view-toggle">
       <view class="btn btn-secondary" style="padding: 4px 12px; font-size: 12px;" bindtap="goToday">今日</view>
+      <view class="btn btn-primary" style="padding: 4px 12px; font-size: 16px; margin-left: 8px;" bindtap="goCreate">＋</view>
     </view>
   </view>
 

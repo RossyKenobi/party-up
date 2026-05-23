@@ -170,6 +170,12 @@ Page({
     wx.showToast({ title: '月视图即将上线', icon: 'none' });
   },
   
+  goCreate() {
+    wx.navigateTo({
+      url: '/pages/create/create'
+    });
+  },
+
   goDetail(e) {
     const id = e.currentTarget.dataset.id;
     wx.navigateTo({
