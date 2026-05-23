@@ -80,9 +80,12 @@
   left: 0;
   right: 0;
   padding: var(--space-md);
+  padding-bottom: calc(var(--space-md) + env(safe-area-inset-bottom));
   background: var(--bg-primary);
   border-top: 1px solid var(--divider);
   z-index: 100;
+  display: flex;
+  gap: var(--space-md);
 }
 
 .empty-state {

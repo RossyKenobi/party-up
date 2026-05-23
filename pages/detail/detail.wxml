@@ -27,10 +27,10 @@
   </view>
 
   <view class="actions-panel">
-    <button class="btn btn-primary" wx:if="{{!hasJoined && !isPast}}" bindtap="handleJoin">加入活动</button>
-    <button class="btn btn-secondary" wx:if="{{hasJoined && !isCreator && !isPast}}" bindtap="handleLeave">退出活动</button>
-    <button class="btn btn-secondary" wx:if="{{isCreator && !isPast}}" bindtap="handleEdit">编辑活动</button>
-    <button class="btn btn-secondary" style="color:var(--danger)" wx:if="{{isCreator || isAdmin}}" bindtap="handleDelete">删除活动</button>
+    <button class="btn btn-primary" style="flex:1" wx:if="{{!hasJoined && !isPast}}" bindtap="handleJoin">加入活动</button>
+    <button class="btn btn-secondary" style="flex:1" wx:if="{{hasJoined && !isCreator && !isPast}}" bindtap="handleLeave">退出活动</button>
+    <button class="btn btn-secondary" style="flex:1" wx:if="{{isCreator && !isPast}}" bindtap="handleEdit">编辑活动</button>
+    <button class="btn btn-secondary" style="flex:1; color:var(--danger)" wx:if="{{isCreator || isAdmin}}" bindtap="handleDelete">删除活动</button>
   </view>
 </view>
 <view wx:else class="empty-state">
