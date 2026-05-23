@@ -30,7 +30,6 @@
     <view class="card my-events-module">
       <view class="module-header">
         <text class="module-title">我的活动</text>
-        <text class="module-subtitle">（包含发起的和参与的）</text>
       </view>
 
       <view class="stats-grid">
