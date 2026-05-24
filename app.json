@@ -1,5 +1,6 @@
 {
   "pages": [
+    "pages/splash/splash",
     "pages/calendar/calendar",
     "pages/my/my",
     "pages/my-events/my-events",

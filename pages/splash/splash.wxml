@@ -1,0 +1,7 @@
+<view class="splash-container">
+  <image class="splash-bg" src="/assets/Start Page.jpg" mode="aspectFill"></image>
+  
+  <view class="skip-btn" bindtap="skip">
+    跳过 {{timeLeft}}
+  </view>
+</view>
