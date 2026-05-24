@@ -108,6 +108,10 @@ Page({
     if (this.data.isMonthView) {
       this.refreshMonthGridData();
     }
+    
+    if (this.data.daysList && this.data.daysList[1]) {
+      this.scrollToDefaultTime(this.data.daysList[1]);
+    }
   },
 
   getCircularIndices(current) {

@@ -177,12 +177,12 @@ export const REMINDER_OPTIONS = [
 /** Event categories */
 export const CATEGORIES = [
   { id: 'fitness', emoji: '🏋️', name: '健身', color: '#9CAF88', bg: '#E5EBE0' },
-  { id: 'drinks', emoji: '🍺', name: '聚饮', color: '#C8A882', bg: '#F4EAE2' },
+  { id: 'drinks', emoji: '🍺', name: '小酌', color: '#C8A882', bg: '#F4EAE2' },
   { id: 'outdoor', emoji: '⛰️', name: '户外', color: '#8FA3B0', bg: '#E3E9ED' },
-  { id: 'food', emoji: '🍔', name: '佳肴', color: '#D98A6C', bg: '#F8E7E1' },
+  { id: 'food', emoji: '🍽️', name: '聚餐', color: '#D98A6C', bg: '#F8E7E1' },
   { id: 'coffee', emoji: '☕️', name: '咖啡', color: '#A68A6D', bg: '#EFE7E1' },
-  { id: 'karaoke', emoji: '🎤', name: 'K歌', color: '#A084B6', bg: '#EBE3F0' },
   { id: 'game', emoji: '🎮', name: '游戏', color: '#769C8A', bg: '#DDE9E3' },
+  { id: 'karaoke', emoji: '🎤', name: 'K歌', color: '#A084B6', bg: '#EBE3F0' },
   { id: 'party', emoji: '🎉', name: '派对', color: '#D47B85', bg: '#F6E1E3' },
   { id: 'other', emoji: '👾', name: '其他', color: '#9B9A97', bg: '#EAE9E7' }
 ];
