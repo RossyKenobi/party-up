@@ -83,6 +83,7 @@ Page({
   selectCategory(e) { this.setData({ categoryId: e.currentTarget.dataset.id }); },
 
   _updateEndTimeAutomatically(startDate, startTime) {
+    if (this.data.isEdit) return;
     if (!startDate || !startTime) return;
     try {
       const d = new Date(`${startDate}T${startTime}`);
