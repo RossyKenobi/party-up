@@ -83,15 +83,22 @@ Page({
   selectCategory(e) { this.setData({ categoryId: e.currentTarget.dataset.id }); },
 
   _updateEndTimeAutomatically(startDate, startTime) {
-    if (this.data.isEdit) return;
     if (!startDate || !startTime) return;
     try {
-      const d = new Date(`${startDate}T${startTime}`);
-      if (!isNaN(d.getTime())) {
-        d.setHours(d.getHours() + 1);
+      const startDateTime = new Date(`${startDate}T${startTime}`);
+      
+      if (this.data.isEdit && this.data.endDate && this.data.endTime) {
+        const endDateTime = new Date(`${this.data.endDate}T${this.data.endTime}`);
+        if (startDateTime < endDateTime) {
+          return;
+        }
+      }
+
+      if (!isNaN(startDateTime.getTime())) {
+        startDateTime.setHours(startDateTime.getHours() + 1);
         this.setData({
-          endDate: this.formatDate(d),
-          endTime: this.formatTime(d)
+          endDate: this.formatDate(startDateTime),
+          endTime: this.formatTime(startDateTime)
         });
       }
     } catch (e) {}
