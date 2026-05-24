@@ -3,7 +3,7 @@ import {
   DAY_NAMES_SHORT, formatTime, getTimelinePosition, getNowLinePosition,
   eventOnDate, addDays, addWeeks, addMonths, CATEGORIES
 } from '../../utils/date.js';
-import { getEvents } from '../../utils/store.js';
+import { getEvents, getCurrentUser } from '../../utils/store.js';
 
 const app = getApp();
 
@@ -457,6 +457,10 @@ Page({
   },
 
   goCreate() {
+    if (!getCurrentUser()) {
+      wx.showToast({ title: '请先前往“我的”页面登录', icon: 'none' });
+      return;
+    }
     wx.navigateTo({ url: '/pages/create/create' });
   },
 

@@ -131,6 +131,12 @@ Page({
 
     const startDateTime = new Date(`${startDate}T${startTime}`);
     const endDateTime = new Date(`${endDate}T${endTime}`);
+    const now = new Date();
+
+    if (startDateTime < now) {
+      wx.showToast({ title: '开始时间不能早于当前时间', icon: 'none' });
+      return;
+    }
 
     if (endDateTime <= startDateTime) {
       wx.showToast({ title: '结束时间必须在开始时间之后', icon: 'none' });

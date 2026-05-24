@@ -21,8 +21,8 @@
   right: 60rpx;
   z-index: 10;
   padding: 12rpx 30rpx;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.02);
+  backdrop-filter: blur(2px);
   border-radius: 40rpx;
   color: #ffffff;
   font-size: 28rpx;
