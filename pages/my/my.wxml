@@ -50,8 +50,10 @@
 <view class="modal-overlay {{showLoginModal ? 'active' : ''}}" wx:if="{{showLoginModal}}">
   <view class="modal-card">
     <view class="modal-title">完善个人信息</view>
-    <view class="modal-desc" style="white-space: pre-wrap;">为了能在活动中展示您的身份，
-请设置头像和昵称。</view>
+    <view class="modal-desc">
+      <view>为了能在活动中展示您的身份，</view>
+      <view>请设置头像和昵称。</view>
+    </view>
     
     <button class="avatar-wrapper" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
       <image class="avatar" src="{{tempAvatarUrl || defaultAvatarUrl}}"></image>
