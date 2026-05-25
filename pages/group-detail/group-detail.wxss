@@ -222,6 +222,8 @@
   color: var(--text-secondary);
   white-space: nowrap;
   flex-shrink: 0;
+  width: 72px;
+  text-align: right;
 }
 
 /* Empty State */
