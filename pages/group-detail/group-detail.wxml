@@ -67,7 +67,15 @@
 
     <view class="chart-list">
       <view class="chart-row" wx:for="{{chartPlaces}}" wx:key="id">
-        <text class="chart-label">{{item.text}}</text>
+        <view class="chart-row-header">
+          <text class="chart-label">{{item.text}}</text>
+          <view class="chart-voters" wx:if="{{!group.isAnonymous && item.votersInfo && item.votersInfo.length > 0}}">
+            <view class="chart-voter-avatar" wx:for="{{item.votersInfo}}" wx:key="userId" wx:for-item="voter" style="background: {{voter.avatarColor || '#e8eceb'}}">
+              <image wx:if="{{voter.avatarUrl}}" src="{{voter.avatarUrl}}" class="chart-voter-img"/>
+              <text wx:else class="chart-voter-text">{{voter.nickname[0]}}</text>
+            </view>
+          </view>
+        </view>
         <view class="chart-bar-wrap">
           <view class="chart-bar-bg">
             <view
@@ -76,12 +84,6 @@
             ></view>
           </view>
           <text class="chart-stat">{{item.voteCount}}票 ({{item.pct}}%)</text>
-        </view>
-        <view class="chart-voters" wx:if="{{!group.isAnonymous && item.votersInfo && item.votersInfo.length > 0}}">
-          <view class="chart-voter-avatar" wx:for="{{item.votersInfo}}" wx:key="userId" wx:for-item="voter" style="background: {{voter.avatarColor || '#e8eceb'}}">
-            <image wx:if="{{voter.avatarUrl}}" src="{{voter.avatarUrl}}" class="chart-voter-img"/>
-            <text wx:else class="chart-voter-text">{{voter.nickname[0]}}</text>
-          </view>
         </view>
       </view>
     </view>

@@ -227,10 +227,9 @@
 /* Chart Voters */
 .chart-voters {
   display: flex;
+  align-items: center;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 6px;
-  padding-left: 2px;
+  gap: 4px;
 }
 
 .chart-voter-avatar {
