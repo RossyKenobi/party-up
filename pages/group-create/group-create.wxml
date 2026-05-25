@@ -1,0 +1,58 @@
+<view class="container">
+  <!-- Group Name -->
+  <view class="section">
+    <text class="label">小组名称</text>
+    <input
+      class="name-input"
+      placeholder="输入小组名称"
+      maxlength="20"
+      value="{{name}}"
+      bindinput="onNameInput"
+    />
+  </view>
+
+  <!-- Max Members -->
+  <view class="section">
+    <text class="label">最大人数</text>
+    <view class="chip-row">
+      <view
+        class="chip {{maxMembers === 5 ? 'chip-selected' : ''}}"
+        bindtap="onSelectMax"
+        data-value="{{5}}"
+      >5</view>
+      <view
+        class="chip {{maxMembers === 10 ? 'chip-selected' : ''}}"
+        bindtap="onSelectMax"
+        data-value="{{10}}"
+      >10</view>
+      <view
+        class="chip {{maxMembers === 15 ? 'chip-selected' : ''}}"
+        bindtap="onSelectMax"
+        data-value="{{15}}"
+      >15</view>
+    </view>
+  </view>
+
+  <!-- Voting Mode -->
+  <view class="section">
+    <text class="label">投票模式</text>
+    <view class="chip-row">
+      <view
+        class="chip {{!isAnonymous ? 'chip-selected' : ''}}"
+        bindtap="onSelectAnonymous"
+        data-value="{{false}}"
+      >实名投票</view>
+      <view
+        class="chip {{isAnonymous ? 'chip-selected' : ''}}"
+        bindtap="onSelectAnonymous"
+        data-value="{{true}}"
+      >匿名投票</view>
+    </view>
+  </view>
+
+  <!-- Bottom Buttons -->
+  <view class="btn-row">
+    <button class="btn btn-secondary flex-1" bindtap="onCancel">取消</button>
+    <button class="btn btn-primary flex-1" bindtap="onCreate">创建</button>
+  </view>
+</view>

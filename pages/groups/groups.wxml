@@ -1,0 +1,75 @@
+<!--pages/groups/groups.wxml-->
+<view class="container fade-in" wx:if="{{loaded}}">
+
+  <!-- Not logged in -->
+  <view class="not-logged-in" wx:if="{{!currentUser}}">
+    <view class="empty-icon">🔒</view>
+    <view class="empty-title">请先登录</view>
+    <view class="empty-subtitle">前往「我的」页面登录后即可使用小组功能</view>
+  </view>
+
+  <!-- Logged in -->
+  <block wx:else>
+
+    <!-- Notification Banner -->
+    <view class="notification-list" wx:if="{{notifications.length > 0}}">
+      <view
+        class="card notification-card {{item.dismissing ? 'fade-out' : ''}}"
+        wx:for="{{notifications}}"
+        wx:key="_id"
+      >
+        <view class="notif-content">
+          <text class="notif-icon">{{item.type === 'kicked' ? '⚠️' : '📢'}}</text>
+          <text class="notif-msg">{{item.message}}</text>
+        </view>
+        <view class="notif-close" data-id="{{item._id}}" bindtap="dismissNotification">✕</view>
+      </view>
+    </view>
+
+    <!-- Empty State -->
+    <view class="empty-state" wx:if="{{groups.length === 0}}">
+      <view class="empty-icon">✈️</view>
+      <view class="empty-title">还没有加入任何小组</view>
+      <view class="empty-subtitle">创建或加入一个小组，邀请朋友一起投票去哪儿玩！</view>
+      <button class="btn btn-primary create-first-btn" bindtap="goCreate">创建或加入一个小组</button>
+    </view>
+
+    <!-- Group List -->
+    <block wx:else>
+      <view
+        class="card group-card"
+        wx:for="{{groups}}"
+        wx:key="id"
+        data-id="{{item.id}}"
+        bindtap="goToGroup"
+      >
+        <view class="group-card-left">
+          <view class="group-name">{{item.name}}</view>
+          <view class="group-creator">
+            <view
+              class="creator-avatar"
+              style="background: {{item.creator.avatarColor || '#e8eceb'}}"
+            >
+              <image
+                wx:if="{{item.creator.avatarUrl}}"
+                src="{{item.creator.avatarUrl}}"
+                class="creator-avatar-img"
+              />
+              <text wx:else class="creator-avatar-text">{{item.creator.nickname[0]}}</text>
+            </view>
+            <text class="creator-name">{{item.creator.nickname}}</text>
+          </view>
+        </view>
+        <view class="group-card-right">
+          <text class="member-badge">👤 {{item.memberIds.length}}/{{item.maxMembers}}</text>
+        </view>
+      </view>
+
+      <!-- Floating Create Button -->
+      <view class="fab" bindtap="goCreate">
+        <text class="fab-icon">+</text>
+      </view>
+    </block>
+
+  </block>
+</view>

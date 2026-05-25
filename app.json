@@ -2,6 +2,10 @@
   "pages": [
     "pages/splash/splash",
     "pages/calendar/calendar",
+    "pages/groups/groups",
+    "pages/group-create/group-create",
+    "pages/group-detail/group-detail",
+    "pages/group-settings/group-settings",
     "pages/my/my",
     "pages/my-events/my-events",
     "pages/create/create",
@@ -23,6 +27,12 @@
       {
         "pagePath": "pages/calendar/calendar",
         "text": "📅 日历",
+        "iconPath": "assets/tab-calendar.png",
+        "selectedIconPath": "assets/tab-calendar-active.png"
+      },
+      {
+        "pagePath": "pages/groups/groups",
+        "text": "✈️ 去哪玩",
         "iconPath": "assets/tab-calendar.png",
         "selectedIconPath": "assets/tab-calendar-active.png"
       },

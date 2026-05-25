@@ -1,0 +1,84 @@
+<!--pages/group-detail/group-detail.wxml-->
+<view class="container fade-in" wx:if="{{group}}">
+  <!-- Header Info Bar -->
+  <view class="header-bar">
+    <view class="header-left">
+      <text class="header-meta">👤 {{group.memberIds.length}}/{{group.maxMembers}}</text>
+      <text class="header-meta">· {{group.isAnonymous ? '匿名投票' : '实名投票'}}</text>
+    </view>
+    <view class="header-right">
+      <view class="settings-btn" wx:if="{{isCreator}}" bindtap="handleGoSettings">⚙️</view>
+      <button class="share-btn" open-type="share">📤 分享</button>
+    </view>
+  </view>
+
+  <!-- Places Section -->
+  <view class="section">
+    <view class="section-title">📍 目的地 ({{places.length}})</view>
+
+    <view class="places-list">
+      <view
+        class="place-item"
+        wx:for="{{places}}"
+        wx:key="id"
+        data-place-id="{{item.id}}"
+        data-index="{{index}}"
+        bindlongpress="handlePlaceLongPress"
+      >
+        <view class="place-content">
+          <text class="place-text">{{item.text}}</text>
+          <text class="place-voters" wx:if="{{!group.isAnonymous && item.voterNamesStr}}">{{item.voterNamesStr}}</text>
+        </view>
+        <view
+          class="vote-btn {{group.allowVoting ? '' : 'vote-disabled'}}"
+          data-place-id="{{item.id}}"
+          data-index="{{index}}"
+          catchtap="handleVote"
+        >
+          <text class="vote-icon {{item.voted ? 'voted' : ''}}">{{item.voted ? '❤️' : '🤍'}}</text>
+          <text class="vote-count">{{item.voteCount}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Add Place Input -->
+    <view class="add-place-row" wx:if="{{group.allowVoting && isMember}}">
+      <input
+        class="add-place-input"
+        placeholder="添加新地点..."
+        value="{{newPlaceText}}"
+        bindinput="onNewPlaceInput"
+        bindconfirm="handleAddPlace"
+        confirm-type="done"
+      />
+      <view class="add-place-btn" bindtap="handleAddPlace">添加</view>
+    </view>
+    <view class="voting-closed-notice" wx:if="{{!group.allowVoting}}">
+      <text>投票已关闭</text>
+    </view>
+  </view>
+
+  <!-- Statistics Chart Section -->
+  <view class="section card" wx:if="{{chartPlaces.length > 0}}">
+    <view class="section-title">📊 投票统计</view>
+
+    <view class="chart-list">
+      <view class="chart-row" wx:for="{{chartPlaces}}" wx:key="id">
+        <text class="chart-label">{{item.text}}</text>
+        <view class="chart-bar-wrap">
+          <view class="chart-bar-bg">
+            <view
+              class="chart-bar-fill {{item.isTop ? 'bar-top' : 'bar-normal'}}"
+              style="width: {{item.barWidth}}"
+            ></view>
+          </view>
+          <text class="chart-stat">{{item.voteCount}}票 ({{item.pct}}%)</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- Loading / Empty State -->
+<view wx:if="{{loading}}" class="empty-state">加载中...</view>
+<view wx:elif="{{!group}}" class="empty-state">小组不存在</view>

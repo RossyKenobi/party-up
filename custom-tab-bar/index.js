@@ -9,6 +9,10 @@ Component({
         text: "📅 日历"
       },
       {
+        pagePath: "/pages/groups/groups",
+        text: "✈️ 去哪玩"
+      },
+      {
         pagePath: "/pages/my/my",
         text: "👤 我的"
       }

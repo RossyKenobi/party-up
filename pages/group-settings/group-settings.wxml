@@ -1,0 +1,73 @@
+<!--pages/group-settings/group-settings.wxml-->
+<view class="container fade-in" wx:if="{{group}}">
+  <!-- Section 1: Member Management -->
+  <view class="card section-card">
+    <view class="section-title">
+      成员管理
+      <text class="member-count">({{members.length}}/{{group.maxMembers}})</text>
+    </view>
+    <view class="member-list">
+      <view
+        class="member-row {{index === members.length - 1 ? 'no-border' : ''}}"
+        wx:for="{{members}}"
+        wx:key="userId"
+      >
+        <view class="member-avatar" style="background:{{item.avatarColor}}">
+          <image wx:if="{{item.avatarUrl}}" src="{{item.avatarUrl}}" class="avatar-img" />
+          <text wx:else>{{item.initial}}</text>
+        </view>
+        <view class="member-info">
+          <text class="member-name">{{item.nickname}}</text>
+          <text wx:if="{{item.isCreator}}" class="creator-badge">(组长)</text>
+        </view>
+        <view
+          wx:if="{{!item.isCreator}}"
+          class="kick-btn"
+          data-userid="{{item.userId}}"
+          data-nickname="{{item.nickname}}"
+          bindtap="handleKick"
+        >移出</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- Section 2: Group Settings -->
+  <view class="card section-card">
+    <view class="section-title">小组设置</view>
+    <view class="setting-row">
+      <text class="setting-label">允许新成员加入</text>
+      <switch
+        checked="{{group.allowNewMembers}}"
+        data-field="allowNewMembers"
+        bindchange="handleToggle"
+        color="#c4a381"
+      />
+    </view>
+    <view class="setting-row">
+      <text class="setting-label">允许投票</text>
+      <switch
+        checked="{{group.allowVoting}}"
+        data-field="allowVoting"
+        bindchange="handleToggle"
+        color="#c4a381"
+      />
+    </view>
+    <view class="setting-row no-border">
+      <text class="setting-label">匿名投票</text>
+      <switch
+        checked="{{group.isAnonymous}}"
+        data-field="isAnonymous"
+        bindchange="handleToggle"
+        color="#c4a381"
+      />
+    </view>
+  </view>
+
+  <!-- Section 3: Danger Zone -->
+  <view class="card section-card danger-card">
+    <view class="section-title danger-title">危险操作</view>
+    <view class="dissolve-btn" bindtap="handleDissolve">解散小组</view>
+  </view>
+</view>
+
+<view wx:else class="empty-state">加载中...</view>
