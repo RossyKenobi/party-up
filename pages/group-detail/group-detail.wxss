@@ -181,6 +181,12 @@
   gap: var(--space-xs);
 }
 
+.chart-row-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
 .chart-label {
   font-size: var(--font-sm);
   color: var(--text-primary);
