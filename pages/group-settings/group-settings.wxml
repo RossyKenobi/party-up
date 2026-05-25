@@ -63,10 +63,9 @@
     </view>
   </view>
 
-  <!-- Section 3: Danger Zone -->
-  <view class="card section-card danger-card">
-    <view class="section-title danger-title">危险操作</view>
-    <view class="dissolve-btn" bindtap="handleDissolve">解散小组</view>
+  <!-- Section 3: Dissolve Group -->
+  <view class="card dissolve-card" bindtap="handleDissolve">
+    解散小组
   </view>
 </view>
 

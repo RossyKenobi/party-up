@@ -94,21 +94,17 @@
   color: var(--text-primary);
 }
 
-/* Danger zone */
-.danger-card {
-  background: var(--tertiary-bg);
-}
-
-.danger-title {
-  color: var(--danger);
-}
-
-.dissolve-btn {
+/* Dissolve button */
+.dissolve-card {
   text-align: center;
   padding: var(--space-md) 0;
-  color: var(--danger);
+  color: var(--text-secondary);
   font-size: var(--font-base);
   font-weight: 600;
+  margin-bottom: var(--space-md);
+}
+.dissolve-card:active {
+  opacity: 0.7;
 }
 
 /* Empty state */
