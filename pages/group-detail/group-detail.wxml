@@ -37,7 +37,7 @@
           data-index="{{index}}"
           catchtap="handleVote"
         >
-          <text class="vote-icon {{item.voted ? 'voted' : ''}}">{{item.voted ? '❤️' : '🤍'}}</text>
+          <image class="vote-icon-img" src="{{item.voted ? '/assets/heart-filled.svg' : '/assets/heart-outline.svg'}}" mode="aspectFit" />
           <text class="vote-count">{{item.voteCount}}</text>
         </view>
       </view>
