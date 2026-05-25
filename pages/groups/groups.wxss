@@ -18,8 +18,14 @@
 }
 
 .empty-icon {
-  font-size: 64px;
   margin-bottom: var(--space-lg);
+  display: flex;
+  justify-content: center;
+}
+
+.plane-svg {
+  width: 64px;
+  height: 64px;
 }
 
 .empty-title {

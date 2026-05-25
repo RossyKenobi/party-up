@@ -28,7 +28,9 @@
 
     <!-- Empty State -->
     <view class="empty-state" wx:if="{{groups.length === 0}}">
-      <view class="empty-icon">✈️</view>
+      <view class="empty-icon">
+        <image src="/assets/plane-icon.svg" class="plane-svg" mode="aspectFit" />
+      </view>
       <view class="empty-title">还没有加入任何小组</view>
       <view class="empty-subtitle">
         <view>创建你的第一个小组，</view>
