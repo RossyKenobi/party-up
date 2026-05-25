@@ -94,13 +94,18 @@ Page({
         const voteCount = (place.voters || []).length;
         const isPlaceCreator = userId ? place.creatorId === userId : false;
 
-        // Resolve voter nicknames from group members (already loaded)
-        let voterNames = [];
+        // Resolve voter info from group members (already loaded)
+        let votersInfo = [];
         if (!group.isAnonymous && place.voters && place.voters.length > 0) {
-          voterNames = place.voters
+          votersInfo = place.voters
             .map(vid => {
               const member = (group.members || []).find(m => m.userId === vid);
-              return member ? member.nickname : null;
+              return member ? {
+                userId: member.userId,
+                nickname: member.nickname || '?',
+                avatarUrl: member.avatarUrl,
+                avatarColor: member.avatarColor
+              } : null;
             })
             .filter(Boolean);
         }
@@ -110,8 +115,7 @@ Page({
           voted,
           voteCount,
           isPlaceCreator,
-          voterNames,
-          voterNamesStr: voterNames.join('、'),
+          votersInfo,
         };
       }));
 
@@ -129,6 +133,7 @@ Page({
             pct,
             barWidth: pct + '%',
             opacity,
+            votersInfo: p.votersInfo,
           };
         });
 
