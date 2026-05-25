@@ -8,7 +8,9 @@
     </view>
     <view class="header-right">
       <view class="settings-btn" wx:if="{{isCreator}}" bindtap="handleGoSettings">⚙️</view>
-      <button class="share-btn" open-type="share">📤 分享</button>
+      <button class="share-btn" open-type="share">
+        <image src="/assets/share-icon.svg" class="share-icon" mode="aspectFit" />
+      </button>
     </view>
   </view>
 
@@ -68,8 +70,8 @@
         <view class="chart-bar-wrap">
           <view class="chart-bar-bg">
             <view
-              class="chart-bar-fill {{item.isTop ? 'bar-top' : 'bar-normal'}}"
-              style="width: {{item.barWidth}}"
+              class="chart-bar-fill"
+              style="width: {{item.barWidth}}; background: var(--accent); opacity: {{item.opacity}}"
             ></view>
           </view>
           <text class="chart-stat">{{item.voteCount}}票 ({{item.pct}}%)</text>

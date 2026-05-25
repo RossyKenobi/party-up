@@ -4,7 +4,7 @@
     <text class="label">小组名称</text>
     <input
       class="name-input"
-      placeholder="输入小组名称"
+      placeholder="必填"
       maxlength="20"
       value="{{name}}"
       bindinput="onNameInput"

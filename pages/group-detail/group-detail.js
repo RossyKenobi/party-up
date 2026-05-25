@@ -115,20 +115,20 @@ Page({
         };
       }));
 
-      // Chart data: only places with votes, sorted desc
+      // Chart data: all places, sorted desc
       const totalMembers = (group.memberIds || []).length;
-      const chartPlaces = places
-        .filter(p => p.voteCount > 0)
+      const chartPlaces = [...places]
         .sort((a, b) => b.voteCount - a.voteCount)
         .map((p, index) => {
           const pct = totalMembers > 0 ? Math.round(p.voteCount / totalMembers * 100) : 0;
+          const opacity = Math.max(0.3, 1 - index * 0.2); // Fading opacity
           return {
             id: p.id,
             text: p.text,
             voteCount: p.voteCount,
             pct,
             barWidth: pct + '%',
-            isTop: index === 0,
+            opacity,
           };
         });
 

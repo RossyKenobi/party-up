@@ -39,15 +39,20 @@
 .share-btn {
   background: none;
   border: none;
-  font-size: var(--font-sm);
-  color: var(--accent);
-  padding: var(--space-xs) var(--space-sm);
-  line-height: 1.4;
+  padding: var(--space-xs);
   margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .share-btn::after {
   border: none;
+}
+
+.share-icon {
+  width: 24px;
+  height: 24px;
 }
 
 /* Section */

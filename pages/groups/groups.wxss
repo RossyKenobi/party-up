@@ -178,7 +178,8 @@
 .fab {
   position: fixed;
   bottom: calc(100px + env(safe-area-inset-bottom));
-  right: 24px;
+  left: 50%;
+  transform: translateX(-50%);
   width: 56px;
   height: 56px;
   border-radius: var(--radius-full);
@@ -193,7 +194,7 @@
 }
 
 .fab:active {
-  transform: scale(0.9);
+  transform: translateX(-50%) scale(0.9);
 }
 
 .fab-icon {
