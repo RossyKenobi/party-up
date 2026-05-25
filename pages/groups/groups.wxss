@@ -18,14 +18,14 @@
 }
 
 .empty-icon {
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-xl);
   display: flex;
   justify-content: center;
 }
 
 .plane-svg {
-  width: 64px;
-  height: 64px;
+  width: 96px;
+  height: 96px;
 }
 
 .empty-title {
@@ -43,7 +43,6 @@
 }
 
 .create-first-btn {
-  margin-top: var(--space-md);
   font-size: var(--font-sm);
   padding: 12px 32px;
   border-radius: var(--radius-full);

@@ -33,8 +33,8 @@
       </view>
       <view class="empty-title">还没有加入任何小组</view>
       <view class="empty-subtitle">
-        <view>创建你的第一个小组，</view>
-        <view>邀请朋友一起加入吧！</view>
+        <view>创建你的第一个小组</view>
+        <view>邀请朋友一起加入吧</view>
       </view>
       <button class="btn btn-primary create-first-btn" bindtap="goCreate">创建小组</button>
     </view>
