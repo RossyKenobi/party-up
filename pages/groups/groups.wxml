@@ -72,7 +72,7 @@
 
       <!-- Floating Create Button -->
       <view class="fab" bindtap="goCreate">
-        <text class="fab-icon">+</text>
+        <image src="/assets/plus-icon.svg" class="fab-icon-img" mode="aspectFit" />
       </view>
     </block>
 
