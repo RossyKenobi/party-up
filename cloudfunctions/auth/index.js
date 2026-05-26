@@ -11,7 +11,17 @@ exports.main = async (event) => {
   const { action } = event;
 
   try {
-    if (action === 'login') {
+    if (action === 'silentLogin') {
+      const byOpenId = await db.collection('users').where({ _openid: OPENID }).get();
+      if (byOpenId.data.length > 0) {
+        const user = byOpenId.data[0];
+        return {
+          success: true,
+          user: { id: user.id, nickname: user.nickname, avatarColor: user.avatarColor, avatarUrl: user.avatarUrl, role: user.role }
+        };
+      }
+      return { success: false, error: '未找到该 OpenID 的用户记录' };
+    } else if (action === 'login') {
       const { nickname, avatarColor, avatarUrl } = event;
       if (!nickname || !nickname.trim()) {
         return { success: false, error: '昵称不能为空' };

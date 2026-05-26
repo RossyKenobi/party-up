@@ -54,7 +54,21 @@ export async function login(nickname, avatarColor, avatarUrl = '') {
 
 export async function refreshUserSession() {
   const cached = getCurrentUser();
-  if (!cached) return null;
+  if (!cached) {
+    try {
+      const res = await wx.cloud.callFunction({
+        name: 'auth',
+        data: { action: 'silentLogin' }
+      });
+      if (res.result && res.result.success) {
+        wx.setStorageSync(CURRENT_USER_KEY, res.result.user);
+        return res.result.user;
+      }
+    } catch (e) {
+      console.warn('Silent login failed:', e);
+    }
+    return null;
+  }
 
   try {
     const res = await wx.cloud.callFunction({

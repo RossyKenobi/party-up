@@ -18,7 +18,8 @@
 
   <view wx:if="{{currentUser}}">
     <!-- Admin Controls -->
-    <view class="card admin-panel" wx:if="{{currentUser.role === 'admin'}}">
+    <!-- TODO: Remove false condition to re-enable when development is ready -->
+    <view class="card admin-panel" wx:if="{{false && currentUser.role === 'admin'}}">
       <view class="admin-title">🛠️ 管理员选项</view>
       <view class="menu-item" bindtap="manageCategories">
         <text>编辑活动分类 (颜色/Emoji)</text>
