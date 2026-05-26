@@ -81,7 +81,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--space-md) 0;
+  padding: 12px 0; /* Reduced vertical padding */
   border-bottom: 1px solid var(--divider);
 }
 
@@ -98,8 +98,13 @@
 .deadline-value {
   display: flex;
   align-items: center;
-  gap: 2px;
-  margin-right: 14px; /* Move left to precisely align with switch active track */
+  gap: 4px;
+  margin-right: 8px; /* Slightly right shifted to align with button */
+}
+
+.arrow {
+  line-height: 1;
+  margin-top: -2px; /* Vertically align arrow with text */
 }
 
 .deadline-text {
@@ -117,7 +122,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-sm);
-  margin-bottom: var(--space-md);
+  margin-bottom: var(--space-xs); /* Reduce bottom margin */
   justify-content: flex-end;
   align-items: center;
 }

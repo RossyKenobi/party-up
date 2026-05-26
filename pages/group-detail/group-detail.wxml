@@ -28,7 +28,10 @@
   <view class="section">
     <view class="section-header">
       <view class="section-title">📍 目的地 ({{places.length}})</view>
-      <view class="edit-btn" wx:if="{{isCreator}}" bindtap="toggleEditMode">{{isEditMode ? 'Done' : 'Edit'}}</view>
+      <view class="edit-actions-header" wx:if="{{isCreator}}">
+        <view class="edit-btn cancel-btn-header" wx:if="{{isEditMode}}" bindtap="toggleEditMode">Cancel</view>
+        <view class="edit-btn" bindtap="toggleEditMode">{{isEditMode ? 'Done' : 'Edit'}}</view>
+      </view>
     </view>
 
     <view class="places-list">
@@ -48,7 +51,7 @@
           
           <!-- Vote Button -->
           <view wx:if="{{!isEditMode}}" class="vote-btn {{effectiveAllowVoting ? '' : 'vote-disabled'}} {{item.voted ? 'voted' : ''}}" catchtap="handleVote" data-place-id="{{item.id}}" data-index="{{index}}">
-            <text class="vote-icon">🤎</text>
+            <image class="vote-icon-img" src="{{item.voted ? '/assets/heart-filled.svg' : '/assets/heart-outline.svg'}}" mode="aspectFit" />
             <text class="vote-count">{{item.voteCount}}</text>
           </view>
           

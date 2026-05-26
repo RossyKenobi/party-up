@@ -131,6 +131,16 @@
   padding: var(--space-xs) var(--space-sm);
 }
 
+.edit-actions-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cancel-btn-header {
+  color: var(--text-tertiary);
+}
+
 /* Places List */
 .places-list {
   display: flex;
@@ -202,6 +212,7 @@
   align-items: center;
   gap: var(--space-md);
   margin-right: var(--space-sm);
+  min-height: 32px; /* Prevents row shrinking in edit mode */
 }
 
 .edit-icon {
@@ -217,8 +228,10 @@
 }
 
 .delete-icon {
-  background: #ff4d4f20;
+  background: transparent;
   color: #ff4d4f;
+  font-size: 20px;
+  width: auto;
 }
 
 .drag-icon {
@@ -308,6 +321,8 @@
   background: var(--bg-card);
   border-radius: var(--radius-full);
   min-width: 0;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .comment-send {
