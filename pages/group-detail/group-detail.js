@@ -19,6 +19,8 @@ Page({
     // Comments
     expandedPlaceId: null,
     commentText: '',
+    // Edit mode
+    isEditMode: false,
   },
 
   _countdownTimer: null,
@@ -308,6 +310,66 @@ Page({
           }
         }
       },
+    });
+  },
+
+  toggleEditMode() {
+    this.setData({ isEditMode: !this.data.isEditMode });
+  },
+
+  async handleMoveUp(e) {
+    const { index } = e.currentTarget.dataset;
+    if (index === 0) return;
+    const current = this.data.places[index];
+    const prev = this.data.places[index - 1];
+    
+    const db = wx.cloud.database();
+    wx.showLoading({ title: '排序中...' });
+    try {
+      await db.collection('places').doc(current.id).update({ data: { createdAt: prev.createdAt } });
+      await db.collection('places').doc(prev.id).update({ data: { createdAt: current.createdAt } });
+      await this.refreshData();
+    } catch (error) {
+      wx.showToast({ title: '排序失败', icon: 'none' });
+    } finally {
+      wx.hideLoading();
+    }
+  },
+
+  async handleMoveDown(e) {
+    const { index } = e.currentTarget.dataset;
+    if (index === this.data.places.length - 1) return;
+    const current = this.data.places[index];
+    const next = this.data.places[index + 1];
+    
+    const db = wx.cloud.database();
+    wx.showLoading({ title: '排序中...' });
+    try {
+      await db.collection('places').doc(current.id).update({ data: { createdAt: next.createdAt } });
+      await db.collection('places').doc(next.id).update({ data: { createdAt: current.createdAt } });
+      await this.refreshData();
+    } catch (error) {
+      wx.showToast({ title: '排序失败', icon: 'none' });
+    } finally {
+      wx.hideLoading();
+    }
+  },
+
+  handleDeletePlaceIcon(e) {
+    const { placeId } = e.currentTarget.dataset;
+    wx.showModal({
+      title: '删除目的地',
+      content: '确定要删除这个地点吗？',
+      success: async (res) => {
+        if (res.confirm) {
+          try {
+            await deletePlace(placeId, this.data.groupId);
+            await this.refreshData();
+          } catch (error) {
+            wx.showToast({ title: '删除失败', icon: 'none' });
+          }
+        }
+      }
     });
   },
 

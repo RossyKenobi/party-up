@@ -5,6 +5,12 @@
     <view class="header-left">
       <text class="header-meta">👤 {{group.memberIds.length}}/{{group.maxMembers}}</text>
       <text class="header-meta">· {{group.isAnonymous ? '匿名投票' : '实名投票'}}</text>
+      <view class="member-wall-inline" wx:if="{{group.members.length > 0}}">
+        <view class="wall-avatar-inline" wx:for="{{group.members}}" wx:key="userId" style="background: {{item.avatarColor || '#e8eceb'}}">
+          <image wx:if="{{item.avatarUrl}}" src="{{item.avatarUrl}}" class="wall-avatar-img"/>
+          <text wx:else class="wall-avatar-text">{{item.nickname[0]}}</text>
+        </view>
+      </view>
       <text class="deadline-countdown" wx:if="{{deadline && !isExpired}}">· ⏰ {{countdownText}}</text>
       <text class="deadline-expired" wx:if="{{isExpired}}">· 已截止</text>
     </view>
@@ -18,22 +24,12 @@
     </view>
   </view>
 
-  <!-- Member Avatar Wall -->
-  <view class="member-wall" wx:if="{{group.members.length > 0}}">
-    <view
-      class="wall-avatar"
-      wx:for="{{group.members}}"
-      wx:key="userId"
-      style="background: {{item.avatarColor || '#e8eceb'}}"
-    >
-      <image wx:if="{{item.avatarUrl}}" src="{{item.avatarUrl}}" class="wall-avatar-img"/>
-      <text wx:else class="wall-avatar-text">{{item.nickname[0]}}</text>
-    </view>
-  </view>
-
   <!-- Places Section -->
   <view class="section">
-    <view class="section-title">📍 目的地 ({{places.length}})</view>
+    <view class="section-header">
+      <view class="section-title">📍 目的地 ({{places.length}})</view>
+      <view class="edit-btn" wx:if="{{isCreator}}" bindtap="toggleEditMode">{{isEditMode ? '完成' : 'Edit'}}</view>
+    </view>
 
     <view class="places-list">
       <view wx:for="{{places}}" wx:key="id">
@@ -49,14 +45,18 @@
               💬 {{item.commentCount > 0 ? item.commentCount : ''}}
             </view>
           </view>
-          <view
-            class="vote-btn {{effectiveAllowVoting ? '' : 'vote-disabled'}}"
-            data-place-id="{{item.id}}"
-            data-index="{{index}}"
-            catchtap="handleVote"
-          >
-            <image class="vote-icon-img" src="{{item.voted ? '/assets/heart-filled.svg' : '/assets/heart-outline.svg'}}" mode="aspectFit" />
+          
+          <!-- Vote Button -->
+          <view wx:if="{{!isEditMode}}" class="vote-btn {{effectiveAllowVoting ? '' : 'vote-disabled'}} {{item.voted ? 'voted' : ''}}" catchtap="handleVote" data-place-id="{{item.id}}" data-index="{{index}}">
+            <text class="vote-icon">🤎</text>
             <text class="vote-count">{{item.voteCount}}</text>
+          </view>
+          
+          <!-- Edit Actions -->
+          <view wx:else class="edit-actions">
+            <view class="edit-icon" catchtap="handleMoveUp" data-index="{{index}}" wx:if="{{index > 0}}">↑</view>
+            <view class="edit-icon" catchtap="handleMoveDown" data-index="{{index}}" wx:if="{{index < places.length - 1}}">↓</view>
+            <view class="edit-icon delete-icon" catchtap="handleDeletePlaceIcon" data-place-id="{{item.id}}">✕</view>
           </view>
         </view>
 
@@ -83,19 +83,12 @@
           <view class="comment-input-row" wx:if="{{isMember}}">
             <input
               class="comment-input"
-              placeholder="说点什么..."
+              placeholder="Add Comment"
               value="{{commentText}}"
               bindinput="onCommentInput"
-              bindconfirm="submitComment"
-              confirm-type="send"
-              maxlength="50"
-              data-place-id="{{item.id}}"
+              cursor-spacing="20"
             />
-            <view
-              class="comment-send"
-              data-place-id="{{item.id}}"
-              bindtap="submitComment"
-            >发送</view>
+            <view class="comment-send" catchtap="submitComment" data-place-id="{{item.id}}">Send</view>
           </view>
         </view>
       </view>

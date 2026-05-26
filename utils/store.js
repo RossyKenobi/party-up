@@ -297,12 +297,17 @@ export async function votePlace(placeId) {
 
 export async function getCommentsByGroup(groupId) {
   const database = getDB();
-  const res = await database.collection('comments')
-    .where({ groupId })
-    .orderBy('createdAt', 'asc')
-    .limit(200)
-    .get();
-  return res.data;
+  try {
+    const res = await database.collection('comments')
+      .where({ groupId })
+      .orderBy('createdAt', 'asc')
+      .limit(200)
+      .get();
+    return res.data;
+  } catch (e) {
+    console.warn('getCommentsByGroup failed (collection may not exist yet):', e);
+    return [];
+  }
 }
 
 export async function addComment(groupId, placeId, text) {
