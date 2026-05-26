@@ -1,4 +1,4 @@
-import { getCurrentUser, getGroupById, joinGroup, getPlacesByGroup, addPlace, deletePlace, votePlace, getCommentsByGroup, addComment, deleteComment } from '../../utils/store.js';
+import { getCurrentUser, getGroupById, joinGroup, getPlacesByGroup, addPlace, deletePlace, votePlace, reorderPlaces, getCommentsByGroup, addComment, deleteComment } from '../../utils/store.js';
 
 Page({
   data: {
@@ -327,18 +327,12 @@ Page({
     this.setData({ places });
 
     wx.showLoading({ title: '保存排序...' });
-    const db = wx.cloud.database();
-    const baseTime = Date.now();
-    const updates = places.map((place, i) => {
-      return db.collection('places').doc(place.id).update({
-        data: { createdAt: new Date(baseTime + i * 1000).toISOString() }
-      });
-    });
     try {
-      await Promise.all(updates);
+      const placeIds = places.map(p => p.id);
+      await reorderPlaces(this.data.groupId, placeIds);
     } catch(err) {
       wx.showToast({ title: '排序保存失败', icon: 'none' });
-      await this.refreshData(); // Revert on failure
+      await this.refreshData();
     } finally {
       wx.hideLoading();
     }

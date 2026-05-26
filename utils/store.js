@@ -10,9 +10,9 @@ function getDB() {
   return db;
 }
 
-// -----------------------------------------------------------------------------
+// =============================================================================
 // USER API
-// -----------------------------------------------------------------------------
+// =============================================================================
 
 export function getCurrentUser() {
   try {
@@ -23,105 +23,137 @@ export function getCurrentUser() {
 }
 
 export async function login(nickname, avatarColor, avatarUrl = '') {
-  const database = getDB();
-  const res = await database.collection('users').where({ nickname }).get();
-  
-  let user;
-  if (res.data.length > 0) {
-    user = res.data[0];
-    if (avatarUrl && user.avatarUrl !== avatarUrl) {
-      await database.collection('users').doc(user._id).update({
-        data: { avatarUrl }
-      });
-      user.avatarUrl = avatarUrl;
-    }
-  } else {
-    user = {
-      id: 'u_' + Date.now().toString(36),
-      nickname,
-      avatarColor,
-      avatarUrl,
-      role: 'user'
-    };
-    await database.collection('users').add({ data: user });
+  const res = await wx.cloud.callFunction({
+    name: 'auth',
+    data: { action: 'login', nickname, avatarColor, avatarUrl }
+  });
+
+  if (!res.result || !res.result.success) {
+    throw new Error((res.result && res.result.error) || '登录失败');
   }
-  
+
+  const user = res.result.user;
   wx.setStorageSync(CURRENT_USER_KEY, user);
   return user;
+}
+
+export async function refreshUserSession() {
+  const cached = getCurrentUser();
+  if (!cached) return null;
+
+  try {
+    const res = await wx.cloud.callFunction({
+      name: 'auth',
+      data: { action: 'login', nickname: cached.nickname, avatarColor: cached.avatarColor, avatarUrl: cached.avatarUrl }
+    });
+    if (res.result && res.result.success) {
+      wx.setStorageSync(CURRENT_USER_KEY, res.result.user);
+      return res.result.user;
+    }
+  } catch (e) {
+    console.warn('Silent re-auth failed:', e);
+  }
+  return cached;
 }
 
 export function logout() {
   wx.removeStorageSync(CURRENT_USER_KEY);
 }
 
-// -----------------------------------------------------------------------------
-// EVENT API
-// -----------------------------------------------------------------------------
-
-export async function getEvents() {
-  const database = getDB();
-  // Note: By default, get() returns up to 20 records. For a production app, pagination is needed.
-  const res = await database.collection('events').get();
-  return res.data;
-}
+// =============================================================================
+// EVENT API — All writes go through eventService cloud function
+// =============================================================================
 
 export async function createEvent(eventData) {
-  const database = getDB();
-  const currentUser = getCurrentUser();
-  
-  const newEvent = {
-    ...eventData,
-    id: generateId(),
-    creatorId: currentUser ? currentUser.id : 'anonymous',
-    participants: currentUser ? [currentUser.id] : [],
-    createdAt: new Date().toISOString(),
-  };
-  
-  await database.collection('events').add({ data: newEvent });
-  return newEvent;
-}
-
-export async function joinEvent(eventId) {
-  const currentUser = getCurrentUser();
-  if (!currentUser) throw new Error('需登录');
-  
-  const database = getDB();
-  const _ = database.command;
-  
-  await database.collection('events').where({ id: eventId }).update({
-    data: {
-      participants: _.addToSet(currentUser.id)
-    }
+  const res = await wx.cloud.callFunction({
+    name: 'eventService',
+    data: { action: 'create', eventData }
   });
-}
-
-export async function leaveEvent(eventId) {
-  const currentUser = getCurrentUser();
-  if (!currentUser) throw new Error('需登录');
-  
-  const database = getDB();
-  const _ = database.command;
-  
-  await database.collection('events').where({ id: eventId }).update({
-    data: {
-      participants: _.pull(currentUser.id)
-    }
-  });
-}
-
-export async function deleteEvent(eventId) {
-  const database = getDB();
-  await database.collection('events').where({ id: eventId }).remove();
+  if (!res.result || !res.result.success) {
+    throw new Error((res.result && res.result.error) || '创建失败');
+  }
+  return res.result.event;
 }
 
 export async function updateEvent(eventId, eventData) {
-  const currentUser = getCurrentUser();
-  if (!currentUser) throw new Error('需登录');
-  
-  const database = getDB();
-  await database.collection('events').where({ id: eventId, creatorId: currentUser.id }).update({
-    data: eventData
+  const res = await wx.cloud.callFunction({
+    name: 'eventService',
+    data: { action: 'update', eventId, eventData }
   });
+  if (!res.result || !res.result.success) {
+    throw new Error((res.result && res.result.error) || '更新失败');
+  }
+}
+
+export async function deleteEvent(eventId) {
+  const res = await wx.cloud.callFunction({
+    name: 'eventService',
+    data: { action: 'delete', eventId }
+  });
+  if (!res.result || !res.result.success) {
+    throw new Error((res.result && res.result.error) || '删除失败');
+  }
+}
+
+export async function joinEvent(eventId) {
+  const res = await wx.cloud.callFunction({
+    name: 'eventService',
+    data: { action: 'join', eventId }
+  });
+  if (!res.result || !res.result.success) {
+    throw new Error((res.result && res.result.error) || '加入失败');
+  }
+}
+
+export async function leaveEvent(eventId) {
+  const res = await wx.cloud.callFunction({
+    name: 'eventService',
+    data: { action: 'leave', eventId }
+  });
+  if (!res.result || !res.result.success) {
+    throw new Error((res.result && res.result.error) || '退出失败');
+  }
+}
+
+// --- Event Read Operations (still client-side for now, optimized in Phase 3) ---
+
+export async function getEvents() {
+  const database = getDB();
+  const res = await database.collection('events').limit(100).get();
+  return res.data;
+}
+
+export async function getEventsByDateRange(startDate, endDate) {
+  const res = await wx.cloud.callFunction({
+    name: 'eventService',
+    data: { action: 'listByDateRange', startDate, endDate }
+  });
+  if (!res.result || !res.result.success) {
+    throw new Error((res.result && res.result.error) || '查询失败');
+  }
+  return res.result.events;
+}
+
+export async function getMyEventsList(type, page = 0, pageSize = 20) {
+  const res = await wx.cloud.callFunction({
+    name: 'eventService',
+    data: { action: 'listByUser', type, page, pageSize }
+  });
+  if (!res.result || !res.result.success) {
+    throw new Error((res.result && res.result.error) || '查询失败');
+  }
+  return res.result;
+}
+
+export async function getMyEventCounts() {
+  const res = await wx.cloud.callFunction({
+    name: 'eventService',
+    data: { action: 'countByUser' }
+  });
+  if (!res.result || !res.result.success) {
+    throw new Error((res.result && res.result.error) || '查询失败');
+  }
+  return res.result;
 }
 
 export async function getEventById(id) {
@@ -130,15 +162,9 @@ export async function getEventById(id) {
   return res.data.length > 0 ? res.data[0] : null;
 }
 
-export async function getUserById(id) {
-  const database = getDB();
-  const res = await database.collection('users').where({ id }).get();
-  return res.data.length > 0 ? res.data[0] : null;
-}
-
-// -----------------------------------------------------------------------------
-// GROUP API
-// -----------------------------------------------------------------------------
+// =============================================================================
+// GROUP API — All writes go through groupService cloud function
+// =============================================================================
 
 export async function getMyGroups() {
   const currentUser = getCurrentUser();
@@ -157,84 +183,39 @@ export async function getGroupById(id) {
 }
 
 export async function createGroup({ name, maxMembers = 10, isAnonymous = false, voteDeadline = null }) {
-  const currentUser = getCurrentUser();
-  if (!currentUser) throw new Error('需登录');
-  const database = getDB();
-
-  const group = {
-    id: 'g_' + generateId(),
-    name,
-    creatorId: currentUser.id,
-    memberIds: [currentUser.id],
-    members: [{
-      userId: currentUser.id,
-      nickname: currentUser.nickname,
-      avatarColor: currentUser.avatarColor,
-      avatarUrl: currentUser.avatarUrl || ''
-    }],
-    maxMembers,
-    isAnonymous,
-    allowNewMembers: true,
-    allowVoting: true,
-    voteDeadline,
-    createdAt: new Date().toISOString()
-  };
-
-  await database.collection('groups').add({ data: group });
-  return group;
+  const res = await wx.cloud.callFunction({
+    name: 'groupService',
+    data: { action: 'create', name, maxMembers, isAnonymous, voteDeadline }
+  });
+  if (!res.result || !res.result.success) {
+    throw new Error((res.result && res.result.error) || '创建失败');
+  }
+  return res.result.group;
 }
 
 export async function joinGroup(groupId) {
-  const currentUser = getCurrentUser();
-  if (!currentUser) throw new Error('需登录');
-  const database = getDB();
-  const _ = database.command;
-
-  const group = await getGroupById(groupId);
-  if (!group) throw new Error('小组不存在');
-  if (!group.allowNewMembers) throw new Error('该小组已关闭加入');
-  if (group.memberIds.includes(currentUser.id)) throw new Error('你已在小组中');
-  if (group.memberIds.length >= group.maxMembers) throw new Error('小组人数已满');
-
-  await database.collection('groups').where({ id: groupId }).update({
-    data: {
-      memberIds: _.addToSet(currentUser.id),
-      members: _.push({
-        userId: currentUser.id,
-        nickname: currentUser.nickname,
-        avatarColor: currentUser.avatarColor,
-        avatarUrl: currentUser.avatarUrl || ''
-      })
-    }
+  const res = await wx.cloud.callFunction({
+    name: 'groupService',
+    data: { action: 'join', groupId }
   });
-}
-
-export async function leaveGroup(groupId) {
-  const currentUser = getCurrentUser();
-  if (!currentUser) throw new Error('需登录');
-  const database = getDB();
-  const _ = database.command;
-
-  await database.collection('groups').where({ id: groupId }).update({
-    data: {
-      memberIds: _.pull(currentUser.id),
-      members: _.pull({ userId: currentUser.id })
-    }
-  });
+  if (!res.result || !res.result.success) {
+    throw new Error((res.result && res.result.error) || '加入失败');
+  }
 }
 
 export async function updateGroupSettings(groupId, settings) {
-  const currentUser = getCurrentUser();
-  if (!currentUser) throw new Error('需登录');
-  const database = getDB();
-  await database.collection('groups').where({ id: groupId, creatorId: currentUser.id }).update({
-    data: settings
+  const res = await wx.cloud.callFunction({
+    name: 'groupService',
+    data: { action: 'updateSettings', groupId, settings }
   });
+  if (!res.result || !res.result.success) {
+    throw new Error((res.result && res.result.error) || '更新失败');
+  }
 }
 
-// -----------------------------------------------------------------------------
-// PLACE API
-// -----------------------------------------------------------------------------
+// =============================================================================
+// PLACE API — All writes go through placeService cloud function
+// =============================================================================
 
 export async function getPlacesByGroup(groupId) {
   const database = getDB();
@@ -243,57 +224,50 @@ export async function getPlacesByGroup(groupId) {
 }
 
 export async function addPlace(groupId, text) {
-  const currentUser = getCurrentUser();
-  if (!currentUser) throw new Error('需登录');
-  const database = getDB();
-
-  // Check limit
-  const existing = await database.collection('places').where({ groupId }).count();
-  if (existing.total >= 50) throw new Error('地点数量已达上限');
-
-  const place = {
-    id: 'p_' + generateId(),
-    groupId,
-    text: text.trim(),
-    creatorId: currentUser.id,
-    voters: [],
-    createdAt: new Date().toISOString()
-  };
-
-  await database.collection('places').add({ data: place });
-  return place;
+  const res = await wx.cloud.callFunction({
+    name: 'placeService',
+    data: { action: 'add', groupId, text }
+  });
+  if (!res.result || !res.result.success) {
+    throw new Error((res.result && res.result.error) || '添加失败');
+  }
+  return res.result.place;
 }
 
 export async function deletePlace(placeId, groupId) {
-  const database = getDB();
-  await database.collection('places').where({ id: placeId, groupId }).remove();
+  const res = await wx.cloud.callFunction({
+    name: 'placeService',
+    data: { action: 'delete', placeId, groupId }
+  });
+  if (!res.result || !res.result.success) {
+    throw new Error((res.result && res.result.error) || '删除失败');
+  }
 }
 
 export async function votePlace(placeId) {
-  const currentUser = getCurrentUser();
-  if (!currentUser) throw new Error('需登录');
-  const database = getDB();
-  const _ = database.command;
-
-  // Check current vote status
-  const res = await database.collection('places').where({ id: placeId }).get();
-  if (res.data.length === 0) throw new Error('地点不存在');
-
-  const place = res.data[0];
-  const hasVoted = place.voters.includes(currentUser.id);
-
-  await database.collection('places').where({ id: placeId }).update({
-    data: {
-      voters: hasVoted ? _.pull(currentUser.id) : _.addToSet(currentUser.id)
-    }
+  const res = await wx.cloud.callFunction({
+    name: 'placeService',
+    data: { action: 'vote', placeId }
   });
-
-  return !hasVoted; // returns new vote state
+  if (!res.result || !res.result.success) {
+    throw new Error((res.result && res.result.error) || '投票失败');
+  }
+  return res.result.voted;
 }
 
-// -----------------------------------------------------------------------------
-// COMMENT API
-// -----------------------------------------------------------------------------
+export async function reorderPlaces(groupId, placeIds) {
+  const res = await wx.cloud.callFunction({
+    name: 'placeService',
+    data: { action: 'reorder', groupId, placeIds }
+  });
+  if (!res.result || !res.result.success) {
+    throw new Error((res.result && res.result.error) || '排序失败');
+  }
+}
+
+// =============================================================================
+// COMMENT API — All writes go through commentService cloud function
+// =============================================================================
 
 export async function getCommentsByGroup(groupId) {
   const database = getDB();
@@ -311,34 +285,29 @@ export async function getCommentsByGroup(groupId) {
 }
 
 export async function addComment(groupId, placeId, text) {
-  const currentUser = getCurrentUser();
-  if (!currentUser) throw new Error('需登录');
-  const database = getDB();
-
-  const comment = {
-    id: 'c_' + generateId(),
-    groupId,
-    placeId,
-    userId: currentUser.id,
-    nickname: currentUser.nickname,
-    avatarColor: currentUser.avatarColor,
-    avatarUrl: currentUser.avatarUrl || '',
-    text: text.trim().slice(0, 50),
-    createdAt: new Date().toISOString()
-  };
-
-  await database.collection('comments').add({ data: comment });
-  return comment;
+  const res = await wx.cloud.callFunction({
+    name: 'commentService',
+    data: { action: 'add', groupId, placeId, text }
+  });
+  if (!res.result || !res.result.success) {
+    throw new Error((res.result && res.result.error) || '发送失败');
+  }
+  return res.result.comment;
 }
 
 export async function deleteComment(commentId) {
-  const database = getDB();
-  await database.collection('comments').where({ id: commentId }).remove();
+  const res = await wx.cloud.callFunction({
+    name: 'commentService',
+    data: { action: 'delete', commentId }
+  });
+  if (!res.result || !res.result.success) {
+    throw new Error((res.result && res.result.error) || '删除失败');
+  }
 }
 
-// -----------------------------------------------------------------------------
-// NOTIFICATION API
-// -----------------------------------------------------------------------------
+// =============================================================================
+// NOTIFICATION API — Read operations (client-side), writes only from cloud
+// =============================================================================
 
 export async function getUnreadNotifications() {
   const currentUser = getCurrentUser();

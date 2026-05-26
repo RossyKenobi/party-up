@@ -1,0 +1,9 @@
+{
+  "name": "groupService",
+  "version": "1.0.0",
+  "description": "Group operations: create, join, leave, settings, kick, dissolve",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

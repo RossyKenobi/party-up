@@ -1,0 +1,9 @@
+{
+  "name": "placeService",
+  "version": "1.0.0",
+  "description": "Place operations: add, delete, vote, reorder",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

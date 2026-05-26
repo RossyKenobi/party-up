@@ -1,4 +1,4 @@
-import { getCurrentUser, getEvents, login, logout } from '../../utils/store.js';
+import { getCurrentUser, getMyEventCounts, login, logout } from '../../utils/store.js';
 
 Page({
   data: {
@@ -25,14 +25,8 @@ Page({
     if (user) {
       wx.showLoading({ title: '加载中...', mask: true });
       try {
-        const allEvents = await getEvents();
-        const created = allEvents.filter(e => e.creatorId === user.id);
-        const joined = allEvents.filter(e => e.participants.includes(user.id));
-
-        this.setData({
-          createdCount: created.length,
-          joinedCount: joined.length
-        });
+        const { createdCount, joinedCount } = await getMyEventCounts();
+        this.setData({ createdCount, joinedCount });
       } catch (e) {
         console.error(e);
       } finally {

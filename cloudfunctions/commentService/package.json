@@ -1,0 +1,9 @@
+{
+  "name": "commentService",
+  "version": "1.0.0",
+  "description": "Comment operations: add, delete",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

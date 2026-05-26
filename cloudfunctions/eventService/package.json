@@ -1,0 +1,9 @@
+{
+  "name": "eventService",
+  "version": "1.0.0",
+  "description": "Event CRUD, join/leave, listing and counting",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

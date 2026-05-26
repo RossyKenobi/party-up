@@ -80,12 +80,11 @@ Page({
         wx.showLoading({ title: '处理中...', mask: true });
         try {
           await wx.cloud.callFunction({
-            name: 'groupAdmin',
+            name: 'groupService',
             data: {
               action: 'kick',
               groupId: this.data.groupId,
               targetUserId: userid,
-              callerId: this.data.currentUser.id,
             },
           });
           wx.showToast({ title: '已移出', icon: 'success' });
@@ -188,10 +187,10 @@ Page({
         wx.showLoading({ title: '处理中...', mask: true });
         try {
           await wx.cloud.callFunction({
-            name: 'leaveGroup',
+            name: 'groupService',
             data: {
+              action: 'leave',
               groupId: this.data.groupId,
-              callerId: this.data.currentUser.id,
             },
           });
           wx.showToast({ title: '已退出', icon: 'success' });
@@ -218,11 +217,10 @@ Page({
         wx.showLoading({ title: '处理中...', mask: true });
         try {
           await wx.cloud.callFunction({
-            name: 'groupAdmin',
+            name: 'groupService',
             data: {
               action: 'dissolve',
               groupId: this.data.groupId,
-              callerId: this.data.currentUser.id,
             },
           });
           wx.showToast({ title: '小组已解散', icon: 'success' });

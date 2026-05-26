@@ -1,4 +1,4 @@
-import { getEventById, getUserById, joinEvent, leaveEvent, deleteEvent, getCurrentUser } from '../../utils/store.js';
+import { getEventById, joinEvent, leaveEvent, deleteEvent, getCurrentUser } from '../../utils/store.js';
 import { CATEGORIES, formatDateFull, formatTime } from '../../utils/date.js';
 
 Page({
@@ -43,13 +43,17 @@ Page({
       const start = new Date(event.startTime);
       const end = new Date(event.endTime);
       
-      const participants = await Promise.all(event.participants.map(async pid => {
-        const u = await getUserById(pid) || { id: pid, nickname: '未知用户', avatarColor: '#ccc' };
-        return {
-          ...u,
-          initial: u.nickname ? u.nickname[0] : '?'
-        };
+      const participants = (event.participantsInfo || []).map(u => ({
+        ...u,
+        initial: u.nickname ? u.nickname[0] : '?'
       }));
+
+      // Fallback for old events without participantsInfo
+      if (participants.length === 0 && event.participants && event.participants.length > 0) {
+        event.participants.forEach(pid => {
+          participants.push({ userId: pid, nickname: '用户', initial: '?', avatarColor: '#ccc', avatarUrl: '' });
+        });
+      }
 
       const user = getCurrentUser();
       const hasJoined = user ? event.participants.includes(user.id) : false;

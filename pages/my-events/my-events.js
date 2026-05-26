@@ -1,4 +1,4 @@
-import { getCurrentUser, getEvents } from '../../utils/store.js';
+import { getCurrentUser, getMyEventsList } from '../../utils/store.js';
 import { formatDate, formatTime, CATEGORIES } from '../../utils/date.js';
 
 Page({
@@ -7,7 +7,10 @@ Page({
     allMyEvents: [],
     filteredEvents: [],
     currentUserId: null,
-    eventType: 'joined'
+    eventType: 'joined',
+    page: 0,
+    hasMore: false,
+    loadingMore: false
   },
 
   onLoad(options) {
@@ -33,25 +36,17 @@ Page({
       return;
     }
 
-    this.setData({ currentUserId: user.id });
+    this.setData({ currentUserId: user.id, page: 0 });
 
     wx.showLoading({ title: '加载中...', mask: true });
     try {
-      const allEvents = await getEvents();
-      let myEvents = [];
-      
-      if (this.data.eventType === 'created') {
-        myEvents = allEvents.filter(e => e.creatorId === user.id);
-      } else {
-        myEvents = allEvents.filter(e => e.participants.includes(user.id));
-      }
+      const { events, hasMore } = await getMyEventsList(this.data.eventType, 0, 50);
 
-      // Format events for display
-      const formatted = myEvents.map(e => {
+      const formatted = events.map(e => {
         const start = new Date(e.startTime);
         const end = new Date(e.endTime);
         const cat = CATEGORIES.find(c => c.id === e.categoryId) || CATEGORIES[0];
-        
+
         return {
           ...e,
           dateStr: formatDate(start),
@@ -60,10 +55,9 @@ Page({
         };
       });
 
-      // Sort: upcoming first (earliest first), past first (latest first)
       formatted.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
 
-      this.setData({ allMyEvents: formatted }, () => {
+      this.setData({ allMyEvents: formatted, hasMore }, () => {
         this.filterEvents();
       });
     } catch (e) {
@@ -85,7 +79,6 @@ Page({
       filtered = allMyEvents.filter(e => new Date(e.endTime) >= now);
     } else if (activeTab === 'past') {
       filtered = allMyEvents.filter(e => new Date(e.endTime) < now);
-      // reverse so newest past events are at top
       filtered.reverse();
     }
 

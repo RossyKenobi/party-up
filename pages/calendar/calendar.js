@@ -3,7 +3,7 @@ import {
   DAY_NAMES_SHORT, formatTime, getTimelinePosition, getNowLinePosition,
   eventOnDate, addDays, addWeeks, addMonths, CATEGORIES
 } from '../../utils/date.js';
-import { getEvents, getCurrentUser } from '../../utils/store.js';
+import { getEventsByDateRange, getCurrentUser } from '../../utils/store.js';
 
 const app = getApp();
 
@@ -82,7 +82,12 @@ Page({
   async refreshData() {
     wx.showLoading({ title: '加载中...', mask: true });
     try {
-      const allEvents = await getEvents();
+      // Load a ~6-week window around the current view
+      const d = new Date(this.data.selectedDate);
+      const rangeStart = new Date(d.getFullYear(), d.getMonth(), d.getDate() - 21);
+      const rangeEnd = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 21);
+
+      const allEvents = await getEventsByDateRange(rangeStart.toISOString(), rangeEnd.toISOString());
       this.setData({ allEvents }, () => {
         this.fullResetView(this.data.selectedDate);
       });

@@ -1,17 +1,13 @@
+import { refreshUserSession } from './utils/store.js';
+
 App({
   onLaunch: function () {
-    if (!wx.cloud) {
-      console.error('请使用 2.2.3 或以上的基础库以使用云能力');
-    } else {
-      wx.cloud.init({
-        // env 参数决定接下来小程序发起的云开发调用（wx.cloud.xxx）会默认请求到哪个云环境的资源
-        env: 'cloud1-d5g42sztr4cbc5dea',
-      });
-    }
+    wx.cloud.init({ env: 'cloud1-d5g42sztr4cbc5dea' });
+    this.globalData = { userInfo: null, theme: 'light' };
 
-    this.globalData = {
-      userInfo: null,
-      theme: 'light'
-    };
+    // Silent re-auth: sync local cache with cloud on app startup
+    refreshUserSession().catch(err => {
+      console.warn('Silent re-auth failed on launch:', err);
+    });
   }
 });
