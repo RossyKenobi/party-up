@@ -317,59 +317,31 @@ Page({
     this.setData({ isEditMode: !this.data.isEditMode });
   },
 
-  dragStart(e) {
-    this.startY = e.touches[0].clientY;
-    this.dragIndex = e.currentTarget.dataset.index;
-  },
+  async onDragEnd(e) {
+    const { startIndex, targetIndex } = e;
+    if (startIndex === undefined || targetIndex === undefined || startIndex === targetIndex) return;
 
-  dragMove(e) {
-    if (this.dragIndex === undefined) return;
-    const currentY = e.touches[0].clientY;
-    const diff = currentY - this.startY;
-    const itemHeight = 55; // Approximate height of place item
-    
-    let targetIndex = this.dragIndex;
-    if (diff > itemHeight) {
-      targetIndex = this.dragIndex + 1;
-    } else if (diff < -itemHeight) {
-      targetIndex = this.dragIndex - 1;
-    }
+    let places = [...this.data.places];
+    const item = places.splice(startIndex, 1)[0];
+    places.splice(targetIndex, 0, item);
+    this.setData({ places });
 
-    if (targetIndex !== this.dragIndex && targetIndex >= 0 && targetIndex < this.data.places.length) {
-      // Visually swap items
-      const places = [...this.data.places];
-      const temp = places[this.dragIndex];
-      places[this.dragIndex] = places[targetIndex];
-      places[targetIndex] = temp;
-      this.setData({ places });
-      
-      this.dragIndex = targetIndex;
-      this.startY = currentY;
-      this.hasDragged = true;
-    }
-  },
-
-  async dragEnd() {
-    if (this.hasDragged) {
-      wx.showLoading({ title: '保存排序...' });
-      const db = wx.cloud.database();
-      const baseTime = Date.now();
-      const updates = this.data.places.map((place, i) => {
-        return db.collection('places').doc(place.id).update({
-          data: { createdAt: new Date(baseTime + i * 1000).toISOString() }
-        });
+    wx.showLoading({ title: '保存排序...' });
+    const db = wx.cloud.database();
+    const baseTime = Date.now();
+    const updates = places.map((place, i) => {
+      return db.collection('places').doc(place.id).update({
+        data: { createdAt: new Date(baseTime + i * 1000).toISOString() }
       });
-      try {
-        await Promise.all(updates);
-        await this.refreshData();
-      } catch(e) {
-        wx.showToast({ title: '排序保存失败', icon: 'none' });
-      } finally {
-        wx.hideLoading();
-      }
-      this.hasDragged = false;
+    });
+    try {
+      await Promise.all(updates);
+    } catch(err) {
+      wx.showToast({ title: '排序保存失败', icon: 'none' });
+      await this.refreshData(); // Revert on failure
+    } finally {
+      wx.hideLoading();
     }
-    this.dragIndex = undefined;
   },
 
   handleDeletePlaceIcon(e) {

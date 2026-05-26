@@ -1,0 +1,98 @@
+var startIndex = -1;
+var startY = 0;
+var currentY = 0;
+var itemHeight = 57; // Approximate item height
+var maxIndex = 0;
+
+function touchStart(e, ownerInstance) {
+  var dataset = e.currentTarget.dataset;
+  startIndex = dataset.index;
+  maxIndex = dataset.max;
+  var touch = e.touches[0] || e.changedTouches[0];
+  startY = touch.clientY;
+  currentY = startY;
+
+  // Add dragging class to the moving element
+  var movingItem = ownerInstance.selectComponent('.place-item-wrapper[data-index="' + startIndex + '"]');
+  if (movingItem) {
+    movingItem.addClass('dragging');
+  }
+  return false;
+}
+
+function touchMove(e, ownerInstance) {
+  if (startIndex === -1) return false;
+  var touch = e.touches[0] || e.changedTouches[0];
+  currentY = touch.clientY;
+  var deltaY = currentY - startY;
+
+  // Move the dragging item
+  var movingItem = ownerInstance.selectComponent('.place-item-wrapper[data-index="' + startIndex + '"]');
+  if (movingItem) {
+    movingItem.setStyle({
+      transform: 'translateY(' + deltaY + 'px)',
+      'z-index': 10
+    });
+  }
+
+  // Calculate swap logic for siblings
+  var shiftCount = Math.round(deltaY / itemHeight);
+  var targetIndex = startIndex + shiftCount;
+  
+  if (targetIndex < 0) targetIndex = 0;
+  if (targetIndex > maxIndex) targetIndex = maxIndex;
+
+  // Get all items to apply push animations
+  var items = ownerInstance.selectAllComponents('.place-item-wrapper');
+  for (var i = 0; i < items.length; i++) {
+    if (i === startIndex) continue;
+    var shiftY = 0;
+    if (startIndex < targetIndex && i > startIndex && i <= targetIndex) {
+      shiftY = -itemHeight; // Push up
+    } else if (startIndex > targetIndex && i >= targetIndex && i < startIndex) {
+      shiftY = itemHeight; // Push down
+    }
+    
+    items[i].setStyle({
+      transform: 'translateY(' + shiftY + 'px)',
+      transition: 'transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1)'
+    });
+  }
+  return false;
+}
+
+function touchEnd(e, ownerInstance) {
+  if (startIndex === -1) return;
+  var deltaY = currentY - startY;
+  var shiftCount = Math.round(deltaY / itemHeight);
+  var targetIndex = startIndex + shiftCount;
+
+  if (targetIndex < 0) targetIndex = 0;
+  if (targetIndex > maxIndex) targetIndex = maxIndex;
+
+  // Cleanup styles
+  var items = ownerInstance.selectAllComponents('.place-item-wrapper');
+  for (var i = 0; i < items.length; i++) {
+    items[i].removeClass('dragging');
+    items[i].setStyle({
+      transform: 'translateY(0)',
+      transition: 'none',
+      'z-index': ''
+    });
+  }
+
+  if (targetIndex !== startIndex) {
+    ownerInstance.callMethod('onDragEnd', {
+      startIndex: startIndex,
+      targetIndex: targetIndex
+    });
+  }
+
+  startIndex = -1;
+}
+
+module.exports = {
+  touchStart: touchStart,
+  touchMove: touchMove,
+  touchEnd: touchEnd
+};

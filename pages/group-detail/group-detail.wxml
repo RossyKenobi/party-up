@@ -1,5 +1,6 @@
 <!--pages/group-detail/group-detail.wxml-->
-<view class="container fade-in" wx:if="{{group}}">
+<wxs module="drag" src="./drag.wxs"></wxs>
+<view class="container fade-in {{isEditMode ? 'edit-mode' : ''}}" wx:if="{{group}}">
   <!-- Header Info Bar -->
   <view class="header-bar">
     <view class="header-left">
@@ -35,7 +36,7 @@
     </view>
 
     <view class="places-list">
-      <view wx:for="{{places}}" wx:key="id">
+      <view class="place-item-wrapper" wx:for="{{places}}" wx:key="id" data-index="{{index}}">
         <view
           class="place-item"
           data-place-id="{{item.id}}"
@@ -57,7 +58,7 @@
           
           <!-- Edit Actions -->
           <view wx:else class="edit-actions">
-            <view class="edit-icon drag-icon" catchtouchstart="dragStart" catchtouchmove="dragMove" catchtouchend="dragEnd" data-index="{{index}}">≡</view>
+            <view class="edit-icon drag-icon" catchtouchstart="{{drag.touchStart}}" catchtouchmove="{{drag.touchMove}}" catchtouchend="{{drag.touchEnd}}" data-index="{{index}}" data-max="{{places.length - 1}}">≡</view>
             <view class="edit-icon delete-icon" catchtap="handleDeletePlaceIcon" data-place-id="{{item.id}}">✕</view>
           </view>
         </view>
