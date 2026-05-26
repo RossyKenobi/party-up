@@ -1,4 +1,4 @@
-import { getEventById, joinEvent, leaveEvent, deleteEvent, getCurrentUser } from '../../utils/store.js';
+import { getEventById, joinEvent, leaveEvent, deleteEvent, getCurrentUser, getUsersByIds } from '../../utils/store.js';
 import { CATEGORIES, formatDateFull, formatTime } from '../../utils/date.js';
 
 Page({
@@ -43,15 +43,21 @@ Page({
       const start = new Date(event.startTime);
       const end = new Date(event.endTime);
       
-      const participants = (event.participantsInfo || []).map(u => ({
+      let participants = (event.participantsInfo || []).map(u => ({
         ...u,
+        id: u.userId, // Map userId to id so detail.wxml can match item.id === event.creatorId
         initial: u.nickname ? u.nickname[0] : '?'
       }));
 
       // Fallback for old events without participantsInfo
       if (participants.length === 0 && event.participants && event.participants.length > 0) {
-        event.participants.forEach(pid => {
-          participants.push({ userId: pid, nickname: '用户', initial: '?', avatarColor: '#ccc', avatarUrl: '' });
+        const users = await getUsersByIds(event.participants);
+        participants = event.participants.map(pid => {
+          const u = users.find(x => x.id === pid) || { id: pid, nickname: '未知用户', avatarColor: '#ccc', avatarUrl: '' };
+          return {
+            ...u,
+            initial: u.nickname ? u.nickname[0] : '?'
+          };
         });
       }
 

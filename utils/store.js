@@ -14,6 +14,21 @@ function getDB() {
 // USER API
 // =============================================================================
 
+export async function getUsersByIds(userIds) {
+  if (!userIds || userIds.length === 0) return [];
+  const database = getDB();
+  const _ = database.command;
+  try {
+    const res = await database.collection('users').where({
+      id: _.in(userIds)
+    }).get();
+    return res.data;
+  } catch (e) {
+    console.error('getUsersByIds failed:', e);
+    return [];
+  }
+}
+
 export function getCurrentUser() {
   try {
     return wx.getStorageSync(CURRENT_USER_KEY) || null;
