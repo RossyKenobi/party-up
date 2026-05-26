@@ -85,7 +85,13 @@ exports.main = async (event, context) => {
         await db.collection('places').doc(place._id).remove();
       }
 
-      // 3. Delete the group
+      // 3. Delete all comments in the group
+      const allComments = await db.collection('comments').where({ groupId }).get();
+      for (const comment of allComments.data) {
+        await db.collection('comments').doc(comment._id).remove();
+      }
+
+      // 4. Delete the group
       await db.collection('groups').doc(group._id).remove();
 
       return { success: true };

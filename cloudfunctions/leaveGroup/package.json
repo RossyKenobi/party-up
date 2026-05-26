@@ -1,0 +1,9 @@
+{
+  "name": "leaveGroup",
+  "version": "1.0.0",
+  "description": "Leave group: remove member, clear votes, delete comments",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

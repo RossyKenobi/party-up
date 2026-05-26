@@ -59,6 +59,11 @@ Page({
     this.stopTimer();
   },
 
+  async onPullDownRefresh() {
+    await this.refreshData();
+    wx.stopPullDownRefresh();
+  },
+
   startTimer() {
     if (this.data.timer) clearInterval(this.data.timer);
     const timer = setInterval(() => {

@@ -1,4 +1,4 @@
-import { getCurrentUser, getGroupById, joinGroup, getPlacesByGroup, addPlace, deletePlace, votePlace } from '../../utils/store.js';
+import { getCurrentUser, getGroupById, joinGroup, getPlacesByGroup, addPlace, deletePlace, votePlace, getCommentsByGroup, addComment, deleteComment } from '../../utils/store.js';
 
 Page({
   data: {
@@ -8,9 +8,20 @@ Page({
     chartPlaces: [],
     isCreator: false,
     isMember: false,
+    currentUserId: null,
     newPlaceText: '',
     loading: true,
+    // Vote deadline
+    effectiveAllowVoting: true,
+    isExpired: false,
+    deadline: null,
+    countdownText: '',
+    // Comments
+    expandedPlaceId: null,
+    commentText: '',
   },
+
+  _countdownTimer: null,
 
   onLoad(options) {
     if (options.groupId) {
@@ -23,6 +34,19 @@ Page({
     if (this.data.groupId) {
       this.refreshData();
     }
+  },
+
+  onHide() {
+    this._clearCountdown();
+  },
+
+  onUnload() {
+    this._clearCountdown();
+  },
+
+  async onPullDownRefresh() {
+    await this.refreshData();
+    wx.stopPullDownRefresh();
   },
 
   async handleJoinFlow(groupId) {
@@ -76,7 +100,12 @@ Page({
     const user = getCurrentUser();
 
     try {
-      const group = await getGroupById(groupId);
+      const [group, rawPlaces, allComments] = await Promise.all([
+        getGroupById(groupId),
+        getPlacesByGroup(groupId),
+        getCommentsByGroup(groupId),
+      ]);
+
       if (!group) {
         wx.showToast({ title: '小组不存在', icon: 'none' });
         setTimeout(() => wx.navigateBack(), 1500);
@@ -85,16 +114,22 @@ Page({
 
       wx.setNavigationBarTitle({ title: group.name });
 
-      const rawPlaces = await getPlacesByGroup(groupId);
       const userId = user ? user.id : null;
 
-      // Process places with vote status and voter info
-      const places = await Promise.all(rawPlaces.map(async (place) => {
+      // Group comments by placeId
+      const commentMap = {};
+      allComments.forEach(c => {
+        if (!commentMap[c.placeId]) commentMap[c.placeId] = [];
+        commentMap[c.placeId].push(c);
+      });
+
+      // Process places with vote status, voter info, and comments
+      const places = rawPlaces.map(place => {
         const voted = userId ? (place.voters || []).includes(userId) : false;
         const voteCount = (place.voters || []).length;
         const isPlaceCreator = userId ? place.creatorId === userId : false;
 
-        // Resolve voter info from group members (already loaded)
+        // Resolve voter info
         let votersInfo = [];
         if (!group.isAnonymous && place.voters && place.voters.length > 0) {
           votersInfo = place.voters
@@ -110,14 +145,24 @@ Page({
             .filter(Boolean);
         }
 
+        const comments = commentMap[place.id] || [];
+
         return {
           ...place,
           voted,
           voteCount,
           isPlaceCreator,
           votersInfo,
+          comments,
+          commentCount: comments.length,
         };
-      }));
+      });
+
+      // Vote deadline logic
+      const now = new Date();
+      const deadline = group.voteDeadline ? new Date(group.voteDeadline) : null;
+      const isExpired = deadline && now > deadline;
+      const effectiveAllowVoting = group.allowVoting && !isExpired;
 
       // Chart data: all places, sorted desc
       const totalMembers = (group.memberIds || []).length;
@@ -125,7 +170,7 @@ Page({
         .sort((a, b) => b.voteCount - a.voteCount)
         .map((p, index) => {
           const pct = totalMembers > 0 ? Math.round(p.voteCount / totalMembers * 100) : 0;
-          const opacity = Math.max(0.3, 1 - index * 0.2); // Fading opacity
+          const opacity = Math.max(0.3, 1 - index * 0.2);
           return {
             id: p.id,
             text: p.text,
@@ -134,6 +179,7 @@ Page({
             barWidth: pct + '%',
             opacity,
             votersInfo: p.votersInfo,
+            isWinner: isExpired && index === 0 && p.voteCount > 0,
           };
         });
 
@@ -146,13 +192,57 @@ Page({
         chartPlaces,
         isCreator,
         isMember,
+        currentUserId: userId,
         loading: false,
+        effectiveAllowVoting,
+        isExpired,
+        deadline: group.voteDeadline || null,
       });
+
+      // Start countdown if deadline exists and not expired
+      this._clearCountdown();
+      if (deadline && !isExpired) {
+        this._updateCountdown(deadline);
+        this._countdownTimer = setInterval(() => {
+          this._updateCountdown(deadline);
+        }, 1000);
+      }
     } catch (e) {
       console.error('refreshData error:', e);
       wx.showToast({ title: '加载失败', icon: 'none' });
       this.setData({ loading: false });
     }
+  },
+
+  _clearCountdown() {
+    if (this._countdownTimer) {
+      clearInterval(this._countdownTimer);
+      this._countdownTimer = null;
+    }
+  },
+
+  _updateCountdown(deadline) {
+    const now = new Date();
+    const diff = deadline - now;
+    if (diff <= 0) {
+      this._clearCountdown();
+      this.setData({ isExpired: true, effectiveAllowVoting: false, countdownText: '已截止' });
+      this.refreshData();
+      return;
+    }
+    const hours = Math.floor(diff / 3600000);
+    const mins = Math.floor((diff % 3600000) / 60000);
+    const secs = Math.floor((diff % 60000) / 1000);
+    let text = '';
+    if (hours > 24) {
+      const days = Math.floor(hours / 24);
+      text = `${days}天${hours % 24}小时`;
+    } else if (hours > 0) {
+      text = `${hours}小时${mins}分`;
+    } else {
+      text = `${mins}分${secs}秒`;
+    }
+    this.setData({ countdownText: text });
   },
 
   onNewPlaceInput(e) {
@@ -174,7 +264,7 @@ Page({
   },
 
   async handleVote(e) {
-    if (!this.data.group.allowVoting) return;
+    if (!this.data.effectiveAllowVoting) return;
 
     const { placeId, index } = e.currentTarget.dataset;
 
@@ -219,6 +309,43 @@ Page({
         }
       },
     });
+  },
+
+  // --- Comment Methods ---
+  toggleComments(e) {
+    const { placeId } = e.currentTarget.dataset;
+    this.setData({
+      expandedPlaceId: this.data.expandedPlaceId === placeId ? null : placeId,
+      commentText: '',
+    });
+  },
+
+  onCommentInput(e) {
+    this.setData({ commentText: e.detail.value });
+  },
+
+  async submitComment(e) {
+    const text = this.data.commentText.trim();
+    if (!text) return;
+    const { placeId } = e.currentTarget.dataset;
+
+    try {
+      await addComment(this.data.groupId, placeId, text);
+      this.setData({ commentText: '' });
+      await this.refreshData();
+    } catch (e) {
+      wx.showToast({ title: '发送失败', icon: 'none' });
+    }
+  },
+
+  async handleDeleteComment(e) {
+    const { commentId } = e.currentTarget.dataset;
+    try {
+      await deleteComment(commentId);
+      await this.refreshData();
+    } catch (e) {
+      wx.showToast({ title: '删除失败', icon: 'none' });
+    }
   },
 
   handleGoSettings() {

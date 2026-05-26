@@ -50,6 +50,31 @@
     </view>
   </view>
 
+  <!-- Vote Deadline -->
+  <view class="section">
+    <text class="label">投票截止时间</text>
+    <view class="chip-row">
+      <view
+        class="chip {{!hasDeadline ? 'chip-selected' : ''}}"
+        bindtap="onToggleDeadline"
+        data-value="{{false}}"
+      >不限</view>
+      <view
+        class="chip {{hasDeadline ? 'chip-selected' : ''}}"
+        bindtap="onToggleDeadline"
+        data-value="{{true}}"
+      >设置截止</view>
+    </view>
+    <view class="deadline-pickers" wx:if="{{hasDeadline}}">
+      <picker mode="date" value="{{deadlineDate}}" start="{{today}}" bindchange="onDeadlineDateChange">
+        <view class="picker-btn">{{deadlineDate || '选择日期'}}</view>
+      </picker>
+      <picker mode="time" value="{{deadlineTime}}" bindchange="onDeadlineTimeChange">
+        <view class="picker-btn">{{deadlineTime || '选择时间'}}</view>
+      </picker>
+    </view>
+  </view>
+
   <!-- Bottom Buttons -->
   <view class="btn-row">
     <button class="btn btn-secondary flex-1" bindtap="onCancel">取消</button>

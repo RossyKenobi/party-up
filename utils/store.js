@@ -156,7 +156,7 @@ export async function getGroupById(id) {
   return res.data.length > 0 ? res.data[0] : null;
 }
 
-export async function createGroup({ name, maxMembers = 10, isAnonymous = false }) {
+export async function createGroup({ name, maxMembers = 10, isAnonymous = false, voteDeadline = null }) {
   const currentUser = getCurrentUser();
   if (!currentUser) throw new Error('需登录');
   const database = getDB();
@@ -176,6 +176,7 @@ export async function createGroup({ name, maxMembers = 10, isAnonymous = false }
     isAnonymous,
     allowNewMembers: true,
     allowVoting: true,
+    voteDeadline,
     createdAt: new Date().toISOString()
   };
 
@@ -288,6 +289,46 @@ export async function votePlace(placeId) {
   });
 
   return !hasVoted; // returns new vote state
+}
+
+// -----------------------------------------------------------------------------
+// COMMENT API
+// -----------------------------------------------------------------------------
+
+export async function getCommentsByGroup(groupId) {
+  const database = getDB();
+  const res = await database.collection('comments')
+    .where({ groupId })
+    .orderBy('createdAt', 'asc')
+    .limit(200)
+    .get();
+  return res.data;
+}
+
+export async function addComment(groupId, placeId, text) {
+  const currentUser = getCurrentUser();
+  if (!currentUser) throw new Error('需登录');
+  const database = getDB();
+
+  const comment = {
+    id: 'c_' + generateId(),
+    groupId,
+    placeId,
+    userId: currentUser.id,
+    nickname: currentUser.nickname,
+    avatarColor: currentUser.avatarColor,
+    avatarUrl: currentUser.avatarUrl || '',
+    text: text.trim().slice(0, 50),
+    createdAt: new Date().toISOString()
+  };
+
+  await database.collection('comments').add({ data: comment });
+  return comment;
+}
+
+export async function deleteComment(commentId) {
+  const database = getDB();
+  await database.collection('comments').where({ id: commentId }).remove();
 }
 
 // -----------------------------------------------------------------------------

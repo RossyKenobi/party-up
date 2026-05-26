@@ -15,6 +15,11 @@ Page({
     this.refreshData();
   },
 
+  async onPullDownRefresh() {
+    await this.refreshData();
+    wx.stopPullDownRefresh();
+  },
+
   async refreshData() {
     const user = getCurrentUser();
     this.setData({ currentUser: user });

@@ -5,6 +5,8 @@
     <view class="header-left">
       <text class="header-meta">👤 {{group.memberIds.length}}/{{group.maxMembers}}</text>
       <text class="header-meta">· {{group.isAnonymous ? '匿名投票' : '实名投票'}}</text>
+      <text class="deadline-countdown" wx:if="{{deadline && !isExpired}}">· ⏰ {{countdownText}}</text>
+      <text class="deadline-expired" wx:if="{{isExpired}}">· 已截止</text>
     </view>
     <view class="header-right">
       <view class="settings-btn" wx:if="{{isCreator}}" bindtap="handleGoSettings">
@@ -16,36 +18,91 @@
     </view>
   </view>
 
+  <!-- Member Avatar Wall -->
+  <view class="member-wall" wx:if="{{group.members.length > 0}}">
+    <view
+      class="wall-avatar"
+      wx:for="{{group.members}}"
+      wx:key="userId"
+      style="background: {{item.avatarColor || '#e8eceb'}}"
+    >
+      <image wx:if="{{item.avatarUrl}}" src="{{item.avatarUrl}}" class="wall-avatar-img"/>
+      <text wx:else class="wall-avatar-text">{{item.nickname[0]}}</text>
+    </view>
+  </view>
+
   <!-- Places Section -->
   <view class="section">
     <view class="section-title">📍 目的地 ({{places.length}})</view>
 
     <view class="places-list">
-      <view
-        class="place-item"
-        wx:for="{{places}}"
-        wx:key="id"
-        data-place-id="{{item.id}}"
-        data-index="{{index}}"
-        bindlongpress="handlePlaceLongPress"
-      >
-        <view class="place-content">
-          <text class="place-text">{{item.text}}</text>
-        </view>
+      <view wx:for="{{places}}" wx:key="id">
         <view
-          class="vote-btn {{group.allowVoting ? '' : 'vote-disabled'}}"
+          class="place-item"
           data-place-id="{{item.id}}"
           data-index="{{index}}"
-          catchtap="handleVote"
+          bindlongpress="handlePlaceLongPress"
         >
-          <image class="vote-icon-img" src="{{item.voted ? '/assets/heart-filled.svg' : '/assets/heart-outline.svg'}}" mode="aspectFit" />
-          <text class="vote-count">{{item.voteCount}}</text>
+          <view class="place-content">
+            <text class="place-text">{{item.text}}</text>
+            <view class="comment-toggle" data-place-id="{{item.id}}" catchtap="toggleComments">
+              💬 {{item.commentCount > 0 ? item.commentCount : ''}}
+            </view>
+          </view>
+          <view
+            class="vote-btn {{effectiveAllowVoting ? '' : 'vote-disabled'}}"
+            data-place-id="{{item.id}}"
+            data-index="{{index}}"
+            catchtap="handleVote"
+          >
+            <image class="vote-icon-img" src="{{item.voted ? '/assets/heart-filled.svg' : '/assets/heart-outline.svg'}}" mode="aspectFit" />
+            <text class="vote-count">{{item.voteCount}}</text>
+          </view>
+        </view>
+
+        <!-- Expanded Comment Section -->
+        <view class="comment-section" wx:if="{{expandedPlaceId === item.id}}">
+          <view class="comment-item" wx:for="{{item.comments}}" wx:key="id" wx:for-item="comment">
+            <view class="comment-avatar" style="background: {{comment.avatarColor || '#e8eceb'}}">
+              <image wx:if="{{comment.avatarUrl}}" src="{{comment.avatarUrl}}" class="comment-avatar-img"/>
+              <text wx:else class="comment-avatar-text">{{comment.nickname[0]}}</text>
+            </view>
+            <view class="comment-body">
+              <text class="comment-author">{{comment.nickname}}</text>
+              <text class="comment-text">{{comment.text}}</text>
+            </view>
+            <view
+              wx:if="{{comment.userId === currentUserId || isCreator}}"
+              class="comment-delete"
+              data-comment-id="{{comment.id}}"
+              catchtap="handleDeleteComment"
+            >×</view>
+          </view>
+
+          <!-- Comment Input -->
+          <view class="comment-input-row" wx:if="{{isMember}}">
+            <input
+              class="comment-input"
+              placeholder="说点什么..."
+              value="{{commentText}}"
+              bindinput="onCommentInput"
+              bindconfirm="submitComment"
+              confirm-type="send"
+              maxlength="50"
+              data-place-id="{{item.id}}"
+            />
+            <view
+              class="comment-send"
+              data-place-id="{{item.id}}"
+              bindtap="submitComment"
+            >发送</view>
+          </view>
         </view>
       </view>
     </view>
 
     <!-- Add Place Input -->
-    <view class="add-place-row" wx:if="{{group.allowVoting && isMember}}">
+    <view class="add-place-row" wx:if="{{effectiveAllowVoting && isMember}}">
       <input
         class="add-place-input"
         placeholder="添加新地点..."
@@ -56,8 +113,8 @@
       />
       <view class="add-place-btn" bindtap="handleAddPlace">添加</view>
     </view>
-    <view class="voting-closed-notice" wx:if="{{!group.allowVoting}}">
-      <text>投票已关闭</text>
+    <view class="voting-closed-notice" wx:if="{{!effectiveAllowVoting}}">
+      <text>{{isExpired ? '投票已截止' : '投票已关闭'}}</text>
     </view>
   </view>
 
@@ -66,7 +123,7 @@
     <view class="section-title">📊 投票统计</view>
 
     <view class="chart-list">
-      <view class="chart-row" wx:for="{{chartPlaces}}" wx:key="id">
+      <view class="chart-row {{item.isWinner ? 'chart-winner' : ''}}" wx:for="{{chartPlaces}}" wx:key="id">
         <view class="chart-row-header">
           <text class="chart-label">{{item.text}}</text>
           <view class="chart-voters" wx:if="{{!group.isAnonymous && item.votersInfo && item.votersInfo.length > 0}}">

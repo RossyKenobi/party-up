@@ -62,3 +62,19 @@
 .flex-1 {
   flex: 1;
 }
+
+/* Deadline pickers */
+.deadline-pickers {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+}
+
+.picker-btn {
+  padding: 8px 16px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  text-align: center;
+}

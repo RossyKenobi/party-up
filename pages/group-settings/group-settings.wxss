@@ -94,8 +94,25 @@
   color: var(--text-primary);
 }
 
-/* Dissolve button */
-.dissolve-card {
+/* Deadline picker */
+.deadline-value {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.deadline-text {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+}
+
+.deadline-arrow {
+  font-size: var(--font-md);
+  color: var(--text-tertiary);
+}
+
+/* Action cards */
+.action-card {
   text-align: center;
   padding: var(--space-md) 0;
   color: var(--text-secondary);
@@ -103,8 +120,13 @@
   font-weight: 600;
   margin-bottom: var(--space-md);
 }
-.dissolve-card:active {
+
+.action-card:active {
   opacity: 0.7;
+}
+
+.dissolve-card {
+  color: var(--danger);
 }
 
 /* Empty state */

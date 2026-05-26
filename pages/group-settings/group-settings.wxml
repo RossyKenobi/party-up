@@ -21,7 +21,7 @@
           <text wx:if="{{item.isCreator}}" class="creator-badge">(组长)</text>
         </view>
         <view
-          wx:if="{{!item.isCreator}}"
+          wx:if="{{isCreator && !item.isCreator}}"
           class="kick-btn"
           data-userid="{{item.userId}}"
           data-nickname="{{item.nickname}}"
@@ -34,7 +34,7 @@
   <!-- Section 2: Group Settings -->
   <view class="card section-card">
     <view class="section-title">小组设置</view>
-    <view class="setting-row">
+    <view class="setting-row" wx:if="{{isCreator}}">
       <text class="setting-label">允许新成员加入</text>
       <switch
         checked="{{group.allowNewMembers}}"
@@ -43,7 +43,7 @@
         color="#c4a381"
       />
     </view>
-    <view class="setting-row">
+    <view class="setting-row" wx:if="{{isCreator}}">
       <text class="setting-label">允许投票</text>
       <switch
         checked="{{group.allowVoting}}"
@@ -52,7 +52,7 @@
         color="#c4a381"
       />
     </view>
-    <view class="setting-row no-border">
+    <view class="setting-row" wx:if="{{isCreator}}">
       <text class="setting-label">匿名投票</text>
       <switch
         checked="{{group.isAnonymous}}"
@@ -61,10 +61,22 @@
         color="#c4a381"
       />
     </view>
+    <view class="setting-row no-border" wx:if="{{isCreator}}" bindtap="pickDeadline">
+      <text class="setting-label">投票截止时间</text>
+      <view class="deadline-value">
+        <text class="deadline-text">{{deadlineDisplay}}</text>
+        <text class="deadline-arrow">›</text>
+      </view>
+    </view>
   </view>
 
-  <!-- Section 3: Dissolve Group -->
-  <view class="card dissolve-card" bindtap="handleDissolve">
+  <!-- Leave Group (non-creator) -->
+  <view class="card action-card" wx:if="{{!isCreator}}" bindtap="handleLeave">
+    退出小组
+  </view>
+
+  <!-- Dissolve Group (creator only) -->
+  <view class="card action-card dissolve-card" wx:if="{{isCreator}}" bindtap="handleDissolve">
     解散小组
   </view>
 </view>
