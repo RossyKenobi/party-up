@@ -69,8 +69,8 @@
 }
 
 .share-icon {
-  align-items: center;
-  gap: var(--space-xs);
+  width: 24px;
+  height: 24px;
 }
 
 /* Inline Avatar Wall */
