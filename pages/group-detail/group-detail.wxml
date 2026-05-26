@@ -28,7 +28,7 @@
   <view class="section">
     <view class="section-header">
       <view class="section-title">📍 目的地 ({{places.length}})</view>
-      <view class="edit-btn" wx:if="{{isCreator}}" bindtap="toggleEditMode">{{isEditMode ? '完成' : 'Edit'}}</view>
+      <view class="edit-btn" wx:if="{{isCreator}}" bindtap="toggleEditMode">{{isEditMode ? 'Done' : 'Edit'}}</view>
     </view>
 
     <view class="places-list">
@@ -54,8 +54,7 @@
           
           <!-- Edit Actions -->
           <view wx:else class="edit-actions">
-            <view class="edit-icon" catchtap="handleMoveUp" data-index="{{index}}" wx:if="{{index > 0}}">↑</view>
-            <view class="edit-icon" catchtap="handleMoveDown" data-index="{{index}}" wx:if="{{index < places.length - 1}}">↓</view>
+            <view class="edit-icon drag-icon" catchtouchstart="dragStart" catchtouchmove="dragMove" catchtouchend="dragEnd" data-index="{{index}}">≡</view>
             <view class="edit-icon delete-icon" catchtap="handleDeletePlaceIcon" data-place-id="{{item.id}}">✕</view>
           </view>
         </view>

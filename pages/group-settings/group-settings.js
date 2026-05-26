@@ -157,6 +157,10 @@ Page({
     this.setData({ customTime: e.detail.value });
   },
 
+  cancelCustomDeadline() {
+    this.setData({ showCustomPicker: false });
+  },
+
   confirmCustomDeadline() {
     const { customDate, customTime } = this.data;
     if (!customDate || !customTime) {

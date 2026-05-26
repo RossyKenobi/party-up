@@ -99,7 +99,7 @@
   display: flex;
   align-items: center;
   gap: 2px;
-  margin-right: 4px; /* Right align perfectly with switches */
+  margin-right: 14px; /* Move left to precisely align with switch active track */
 }
 
 .deadline-text {
@@ -115,9 +115,11 @@
 
 .deadline-pickers {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--space-sm);
   margin-bottom: var(--space-md);
   justify-content: flex-end;
+  align-items: center;
 }
 
 .picker-btn {
@@ -129,10 +131,23 @@
   text-align: center;
 }
 
+.picker-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.cancel-btn {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
 .confirm-btn {
   background: var(--accent);
   color: var(--text-inverse);
   font-weight: 600;
+  border: 1px solid var(--accent);
 }
 
 /* Action cards */

@@ -77,7 +77,10 @@
       <picker mode="time" value="{{customTime}}" bindchange="onCustomTime">
         <view class="picker-btn">{{customTime || '选择时间'}}</view>
       </picker>
-      <view class="picker-btn confirm-btn" bindtap="confirmCustomDeadline">确定</view>
+      <view class="picker-actions">
+        <view class="picker-btn cancel-btn" bindtap="cancelCustomDeadline">取消</view>
+        <view class="picker-btn confirm-btn" bindtap="confirmCustomDeadline">确定</view>
+      </view>
     </view>
   </view>
 

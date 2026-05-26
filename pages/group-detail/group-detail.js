@@ -317,42 +317,59 @@ Page({
     this.setData({ isEditMode: !this.data.isEditMode });
   },
 
-  async handleMoveUp(e) {
-    const { index } = e.currentTarget.dataset;
-    if (index === 0) return;
-    const current = this.data.places[index];
-    const prev = this.data.places[index - 1];
+  dragStart(e) {
+    this.startY = e.touches[0].clientY;
+    this.dragIndex = e.currentTarget.dataset.index;
+  },
+
+  dragMove(e) {
+    if (this.dragIndex === undefined) return;
+    const currentY = e.touches[0].clientY;
+    const diff = currentY - this.startY;
+    const itemHeight = 55; // Approximate height of place item
     
-    const db = wx.cloud.database();
-    wx.showLoading({ title: '排序中...' });
-    try {
-      await db.collection('places').doc(current.id).update({ data: { createdAt: prev.createdAt } });
-      await db.collection('places').doc(prev.id).update({ data: { createdAt: current.createdAt } });
-      await this.refreshData();
-    } catch (error) {
-      wx.showToast({ title: '排序失败', icon: 'none' });
-    } finally {
-      wx.hideLoading();
+    let targetIndex = this.dragIndex;
+    if (diff > itemHeight) {
+      targetIndex = this.dragIndex + 1;
+    } else if (diff < -itemHeight) {
+      targetIndex = this.dragIndex - 1;
+    }
+
+    if (targetIndex !== this.dragIndex && targetIndex >= 0 && targetIndex < this.data.places.length) {
+      // Visually swap items
+      const places = [...this.data.places];
+      const temp = places[this.dragIndex];
+      places[this.dragIndex] = places[targetIndex];
+      places[targetIndex] = temp;
+      this.setData({ places });
+      
+      this.dragIndex = targetIndex;
+      this.startY = currentY;
+      this.hasDragged = true;
     }
   },
 
-  async handleMoveDown(e) {
-    const { index } = e.currentTarget.dataset;
-    if (index === this.data.places.length - 1) return;
-    const current = this.data.places[index];
-    const next = this.data.places[index + 1];
-    
-    const db = wx.cloud.database();
-    wx.showLoading({ title: '排序中...' });
-    try {
-      await db.collection('places').doc(current.id).update({ data: { createdAt: next.createdAt } });
-      await db.collection('places').doc(next.id).update({ data: { createdAt: current.createdAt } });
-      await this.refreshData();
-    } catch (error) {
-      wx.showToast({ title: '排序失败', icon: 'none' });
-    } finally {
-      wx.hideLoading();
+  async dragEnd() {
+    if (this.hasDragged) {
+      wx.showLoading({ title: '保存排序...' });
+      const db = wx.cloud.database();
+      const baseTime = Date.now();
+      const updates = this.data.places.map((place, i) => {
+        return db.collection('places').doc(place.id).update({
+          data: { createdAt: new Date(baseTime + i * 1000).toISOString() }
+        });
+      });
+      try {
+        await Promise.all(updates);
+        await this.refreshData();
+      } catch(e) {
+        wx.showToast({ title: '排序保存失败', icon: 'none' });
+      } finally {
+        wx.hideLoading();
+      }
+      this.hasDragged = false;
     }
+    this.dragIndex = undefined;
   },
 
   handleDeletePlaceIcon(e) {
