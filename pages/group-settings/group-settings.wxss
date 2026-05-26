@@ -103,8 +103,9 @@
 }
 
 .arrow {
-  line-height: 1;
-  margin-top: -2px; /* Vertically align arrow with text */
+  color: var(--text-tertiary);
+  font-family: Arial, sans-serif;
+  margin-top: 1px;
 }
 
 .deadline-text {

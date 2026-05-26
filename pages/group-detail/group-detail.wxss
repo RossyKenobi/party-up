@@ -229,7 +229,7 @@
 
 .delete-icon {
   background: transparent;
-  color: #ff4d4f;
+  color: var(--text-tertiary);
   font-size: 20px;
   width: auto;
 }
@@ -317,7 +317,10 @@
 .comment-input {
   flex: 1;
   font-size: var(--font-sm);
-  padding: 8px 16px;
+  height: 36px;
+  min-height: 36px;
+  line-height: 36px;
+  padding: 0 16px;
   background: var(--bg-card);
   border-radius: var(--radius-full);
   min-width: 0;
