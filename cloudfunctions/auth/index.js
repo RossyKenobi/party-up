@@ -79,6 +79,14 @@ exports.main = async (event) => {
         user: { id: merged.id, nickname: merged.nickname, avatarColor: merged.avatarColor, avatarUrl: merged.avatarUrl, role: merged.role }
       };
 
+    } else if (action === 'makeMeAdmin') {
+      const res = await db.collection('users').where({ _openid: OPENID }).get();
+      if (res.data.length === 0) return { success: false, error: '用户不存在' };
+
+      const user = res.data[0];
+      await db.collection('users').doc(user._id).update({ data: { role: 'admin' } });
+      return { success: true, message: '已成功设置为管理员' };
+
     } else {
       return { success: false, error: '未知操作' };
     }
