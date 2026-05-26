@@ -13,9 +13,9 @@ function touchStart(e, ownerInstance) {
   currentY = startY;
 
   // Add dragging class to the moving element
-  var movingItem = ownerInstance.selectComponent('.place-item-wrapper[data-index="' + startIndex + '"]');
-  if (movingItem) {
-    movingItem.addClass('dragging');
+  var items = ownerInstance.selectAllComponents('.place-item-wrapper');
+  if (items && items[startIndex]) {
+    items[startIndex].addClass('dragging');
   }
   return false;
 }
@@ -27,9 +27,9 @@ function touchMove(e, ownerInstance) {
   var deltaY = currentY - startY;
 
   // Move the dragging item
-  var movingItem = ownerInstance.selectComponent('.place-item-wrapper[data-index="' + startIndex + '"]');
-  if (movingItem) {
-    movingItem.setStyle({
+  var items = ownerInstance.selectAllComponents('.place-item-wrapper');
+  if (items && items[startIndex]) {
+    items[startIndex].setStyle({
       transform: 'translateY(' + deltaY + 'px)',
       'z-index': 10
     });
@@ -43,7 +43,6 @@ function touchMove(e, ownerInstance) {
   if (targetIndex > maxIndex) targetIndex = maxIndex;
 
   // Get all items to apply push animations
-  var items = ownerInstance.selectAllComponents('.place-item-wrapper');
   for (var i = 0; i < items.length; i++) {
     if (i === startIndex) continue;
     var shiftY = 0;
