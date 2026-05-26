@@ -7,8 +7,9 @@ Page({
     currentUser: null,
     members: [],
     isCreator: false,
-    deadlineDisplay: '不限',
-    showCustomPicker: false,
+    members: [],
+    isCreator: false,
+    hasDeadline: false,
     customDate: '',
     customTime: '',
     today: '',
@@ -48,22 +49,19 @@ Page({
       }));
 
       // Format deadline display
-      let deadlineDisplay = '不限';
+      let hasDeadline = false;
+      let customDate = this.data.customDate;
+      let customTime = this.data.customTime;
       if (group.voteDeadline) {
         const d = new Date(group.voteDeadline);
-        const now = new Date();
-        if (d <= now) {
-          deadlineDisplay = '已截止';
-        } else {
-          const month = d.getMonth() + 1;
-          const day = d.getDate();
-          const hour = String(d.getHours()).padStart(2, '0');
-          const min = String(d.getMinutes()).padStart(2, '0');
-          deadlineDisplay = `${month}月${day}日 ${hour}:${min}`;
+        if (d > new Date()) {
+          hasDeadline = true;
+          customDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+          customTime = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
         }
       }
 
-      this.setData({ group, currentUser, members, isCreator, deadlineDisplay });
+      this.setData({ group, currentUser, members, isCreator, hasDeadline, customDate, customTime });
     } catch (e) {
       console.error('loadData failed', e);
       wx.showToast({ title: '加载失败', icon: 'none' });
@@ -120,60 +118,47 @@ Page({
     }
   },
 
-  pickDeadline(e) {
-    const idx = parseInt(e.detail.value);
-    let deadline = null;
-
-    if (idx === 0) {
-      deadline = null;
-      this.setData({ showCustomPicker: false });
-    } else if (idx === 1) {
-      deadline = new Date(Date.now() + 3600000).toISOString();
-      this.setData({ showCustomPicker: false });
-    } else if (idx === 2) {
-      const d = new Date();
-      d.setHours(23, 59, 59, 0);
-      deadline = d.toISOString();
-      this.setData({ showCustomPicker: false });
-    } else if (idx === 3) {
-      const d = new Date();
-      d.setDate(d.getDate() + 1);
-      d.setHours(23, 59, 59, 0);
-      deadline = d.toISOString();
-      this.setData({ showCustomPicker: false });
-    } else if (idx === 4) {
-      this.setData({ showCustomPicker: true, customDate: '', customTime: '' });
-      return;
+  onDeadlineSwitchChange(e) {
+    const hasDeadline = e.detail.value;
+    if (hasDeadline) {
+      let { customDate, customTime } = this.data;
+      if (customDate && customTime) {
+        const d = new Date(`${customDate.replace(/-/g, '/')} ${customTime}:00`);
+        if (d <= new Date()) {
+          customDate = '';
+          customTime = '';
+        }
+      }
+      this.setData({ hasDeadline, customDate, customTime });
+      if (customDate && customTime) {
+        this._saveDeadline(new Date(`${customDate.replace(/-/g, '/')} ${customTime}:00`).toISOString());
+      }
+    } else {
+      this.setData({ hasDeadline: false });
+      this._saveDeadline(null);
     }
-
-    this._saveDeadline(deadline);
   },
 
   onCustomDate(e) {
     this.setData({ customDate: e.detail.value });
+    this.checkAndSaveDeadline();
   },
 
   onCustomTime(e) {
     this.setData({ customTime: e.detail.value });
+    this.checkAndSaveDeadline();
   },
 
-  cancelCustomDeadline() {
-    this.setData({ showCustomPicker: false });
-  },
-
-  confirmCustomDeadline() {
+  checkAndSaveDeadline() {
     const { customDate, customTime } = this.data;
-    if (!customDate || !customTime) {
-      wx.showToast({ title: '请选择完整的日期和时间', icon: 'none' });
-      return;
+    if (customDate && customTime) {
+      const d = new Date(`${customDate.replace(/-/g, '/')} ${customTime}:00`);
+      if (d <= new Date()) {
+        wx.showToast({ title: '不能早于当前时间', icon: 'none' });
+        return;
+      }
+      this._saveDeadline(d.toISOString());
     }
-    const d = new Date(`${customDate}T${customTime}`);
-    if (d <= new Date()) {
-      wx.showToast({ title: '截止时间需晚于当前时间', icon: 'none' });
-      return;
-    }
-    this._saveDeadline(d.toISOString());
-    this.setData({ showCustomPicker: false });
   },
 
   async _saveDeadline(deadline) {
@@ -181,7 +166,11 @@ Page({
     try {
       await updateGroupSettings(this.data.groupId, { voteDeadline: deadline });
       await this.loadData();
-      wx.showToast({ title: '已更新', icon: 'success' });
+      if (deadline) {
+        wx.showToast({ title: '已设置截止时间', icon: 'success' });
+      } else {
+        wx.showToast({ title: '已取消截止时间', icon: 'success' });
+      }
     } catch (e) {
       console.error('save deadline failed', e);
       wx.showToast({ title: '更新失败', icon: 'none' });

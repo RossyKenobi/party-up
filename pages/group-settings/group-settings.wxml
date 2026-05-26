@@ -61,26 +61,18 @@
         color="#c4a381"
       />
     </view>
-    <view class="setting-row no-border" wx:if="{{isCreator}}">
+    <view class="setting-row {{hasDeadline ? 'no-border' : ''}}" wx:if="{{isCreator}}">
       <text class="setting-label">投票截止时间</text>
-      <picker mode="selector" range="{{['不限', '1小时后', '今天24:00', '明天24:00', '自定义时间']}}" bindchange="pickDeadline">
-        <view class="deadline-value">
-          <text class="deadline-text">{{deadlineDisplay}}</text>
-          <text class="deadline-arrow">›</text>
-        </view>
-      </picker>
+      <switch checked="{{hasDeadline}}" bindchange="onDeadlineSwitchChange" color="#d3a778"/>
     </view>
-    <view class="deadline-pickers" wx:if="{{isCreator && showCustomPicker}}">
+
+    <view class="deadline-pickers" wx:if="{{isCreator && hasDeadline}}">
       <picker mode="date" value="{{customDate}}" start="{{today}}" bindchange="onCustomDate">
-        <view class="picker-btn">{{customDate || '选择日期'}}</view>
+        <view class="picker-btn {{customDate ? 'active-picker' : ''}}">{{customDate || '选择日期'}}</view>
       </picker>
       <picker mode="time" value="{{customTime}}" bindchange="onCustomTime">
-        <view class="picker-btn">{{customTime || '选择时间'}}</view>
+        <view class="picker-btn {{customTime ? 'active-picker' : ''}}">{{customTime || '选择时间'}}</view>
       </picker>
-      <view class="picker-actions">
-        <view class="picker-btn cancel-btn" bindtap="cancelCustomDeadline">取消</view>
-        <view class="picker-btn confirm-btn" bindtap="confirmCustomDeadline">确定</view>
-      </view>
     </view>
   </view>
 
