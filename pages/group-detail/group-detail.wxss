@@ -583,5 +583,5 @@
 }
 
 .poster-action-btn.share-action-btn {
-  background: var(--primary);
+  background: rgba(255, 255, 255, 0.95);
 }

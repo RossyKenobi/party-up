@@ -155,12 +155,14 @@
   <view class="poster-content">
     <image src="{{posterTempFilePath}}" mode="widthFix" class="poster-image"></image>
     <view class="poster-actions">
-      <view class="poster-action-btn close-btn" bindtap="closePosterPopup">✕</view>
+      <view class="poster-action-btn close-btn" bindtap="closePosterPopup">
+        <image src="/assets/close-icon.svg" style="width: 36rpx; height: 36rpx;" />
+      </view>
       <view class="poster-action-btn save-btn" bindtap="savePosterToAlbum">
-        <text style="font-size: 48rpx; font-weight: bold; line-height: 1; transform: translateY(-2rpx);">⤓</text>
+        <image src="/assets/download-icon.svg" style="width: 36rpx; height: 36rpx;" />
       </view>
       <button class="poster-action-btn share-action-btn" open-type="share">
-        <image src="/assets/share-icon.svg" style="width: 44rpx; height: 44rpx; filter: brightness(0) invert(1);" />
+        <image src="/assets/share-icon-thin.svg" style="width: 36rpx; height: 36rpx;" />
       </button>
     </view>
   </view>
