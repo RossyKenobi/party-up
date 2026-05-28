@@ -499,14 +499,14 @@ Page({
 
           // Texts - Group Name
           ctx.fillStyle = '#666666';
-          ctx.font = 'bold 48px "Cormorant Garamond", "Kaiti SC", STKaiti, "KaiTi", serif';
+          ctx.font = 'bold 48px "Cormorant Garamond", "Kaiti SC", STKaiti, "楷体", "KaiTi", serif';
           let groupName = this.data.group ? this.data.group.name : "Let's Go Party";
           if (groupName.length > 10) groupName = groupName.substring(0, 9) + '...';
           ctx.fillText(groupName, 60, 100);
 
           // Creator info
           const creator = this.data.group && this.data.group.members ? this.data.group.members.find(m => m.userId === this.data.group.creatorId) : null;
-          ctx.font = '300 32px "Cormorant Garamond", serif';
+          ctx.font = 'bold 32px "Cormorant Garamond", serif';
           ctx.fillStyle = '#666666';
           ctx.fillText('ORGANISER', 60, 195);
           
@@ -543,7 +543,7 @@ Page({
           // Bottom section - QR Code
           ctx.fillStyle = '#666666';
           ctx.textAlign = 'center';
-          ctx.font = '300 36px "Cormorant Garamond", serif';
+          ctx.font = 'bold 36px "Cormorant Garamond", serif';
           ctx.fillText('SCAN TO JOIN', width / 2, 790); // moved down
 
           // QR Code image
