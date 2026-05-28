@@ -138,8 +138,8 @@
 }
 
 .creator-avatar {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   border-radius: var(--radius-full);
   display: flex;
   align-items: center;
@@ -154,13 +154,13 @@
 }
 
 .creator-avatar-text {
-  font-size: var(--font-xs);
+  font-size: 10px;
   color: var(--text-inverse);
   font-weight: 600;
 }
 
 .creator-name {
-  font-size: var(--font-sm);
+  font-size: var(--font-xs);
   color: var(--text-tertiary);
 }
 
@@ -170,7 +170,7 @@
 }
 
 .member-badge {
-  font-size: var(--font-sm);
+  font-size: var(--font-xs);
   color: var(--text-secondary);
 }
 
