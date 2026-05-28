@@ -1,5 +1,5 @@
 <view class="splash-container">
-  <image class="splash-bg" src="/assets/start_page.jpg" mode="aspectFill"></image>
+  <image class="splash-bg" src="cloud://cloud1-d5g42sztr4cbc5dea.636c-cloud1-d5g42sztr4cbc5dea-1436156475/Start Page.jpg" mode="aspectFill"></image>
   
   <view class="skip-btn" bindtap="skip">
     Skip {{timeLeft}}
