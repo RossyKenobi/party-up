@@ -484,16 +484,18 @@ Page({
           ctx.stroke();
           ctx.restore();
 
-          // Notches
+          // Notches (cut out using destination-out)
+          ctx.globalCompositeOperation = 'destination-out';
           ctx.beginPath();
           ctx.arc(0, 400, 30, -Math.PI / 2, Math.PI / 2, false);
-          ctx.fillStyle = '#FFFFFF'; // Assuming white screen background or just transparent (requires complex clipping to be transparent, fill with white for simplicity)
           ctx.fill();
 
           ctx.beginPath();
           ctx.arc(width, 400, 30, Math.PI / 2, -Math.PI / 2, false);
-          ctx.fillStyle = '#FFFFFF';
           ctx.fill();
+          
+          // Reset composite operation
+          ctx.globalCompositeOperation = 'source-over';
 
           // Texts - Group Name
           ctx.fillStyle = '#333333';
@@ -511,21 +513,21 @@ Page({
           if (creator) {
             ctx.fillStyle = '#333333';
             ctx.font = 'bold 36px sans-serif';
-            ctx.fillText(creator.nickname, 150, 240);
+            ctx.fillText(creator.nickname, 150, 260); // moved down
             
             // Draw creator avatar
             const avatarImg = canvas.createImage();
-            avatarImg.src = creator.avatarUrl || '/assets/default-avatar.png'; // Need to ensure it loads
+            avatarImg.src = creator.avatarUrl || '/assets/default-avatar.png';
             await new Promise((imgResolve) => {
               avatarImg.onload = imgResolve;
               avatarImg.onerror = imgResolve;
             });
             ctx.save();
             ctx.beginPath();
-            ctx.arc(95, 230, 35, 0, 2 * Math.PI, false);
+            ctx.arc(95, 250, 35, 0, 2 * Math.PI, false); // moved down
             ctx.clip();
             if (creator.avatarUrl) {
-              ctx.drawImage(avatarImg, 60, 195, 70, 70);
+              ctx.drawImage(avatarImg, 60, 215, 70, 70); // moved down
             } else {
               ctx.fillStyle = creator.avatarColor || '#ccc';
               ctx.fill();
@@ -533,7 +535,7 @@ Page({
               ctx.font = '36px sans-serif';
               ctx.textAlign = 'center';
               ctx.textBaseline = 'middle';
-              ctx.fillText(creator.nickname[0], 95, 230);
+              ctx.fillText(creator.nickname[0], 95, 250); // moved down
             }
             ctx.restore();
           }
@@ -541,11 +543,11 @@ Page({
           // Bottom section - QR Code
           ctx.fillStyle = '#FFFFFF';
           ctx.textAlign = 'center';
-          ctx.font = 'bold 42px sans-serif';
-          ctx.fillText('SCAN TO JOIN', width / 2, 780);
-          ctx.font = '28px sans-serif';
+          ctx.font = 'bold 36px sans-serif'; // shrink font
+          ctx.fillText('SCAN TO JOIN', width / 2, 760); // move up slightly
+          ctx.font = '24px sans-serif'; // shrink font
           ctx.fillStyle = '#F0F0F0';
-          ctx.fillText('OR SHARE WITH FRIENDS', width / 2, 830);
+          ctx.fillText('OR SHARE WITH FRIENDS', width / 2, 805); // move up slightly
 
           // QR Code image
           const qrImg = canvas.createImage();
@@ -558,16 +560,17 @@ Page({
           // Draw white circle background for QR code
           ctx.save();
           ctx.beginPath();
-          ctx.arc(width / 2, 580, 130, 0, 2 * Math.PI);
+          ctx.arc(width / 2, 580, 110, 0, 2 * Math.PI); // shrink radius
           ctx.fillStyle = '#FFFFFF';
           ctx.fill();
           ctx.clip();
-          ctx.drawImage(qrImg, width / 2 - 120, 580 - 120, 240, 240);
+          ctx.drawImage(qrImg, width / 2 - 100, 580 - 100, 200, 200); // shrink image
           ctx.restore();
 
           // Export image
           wx.canvasToTempFilePath({
             canvas: canvas,
+            fileType: 'png', // Export as PNG to preserve transparency
             success: (res) => {
               wx.previewImage({
                 urls: [res.tempFilePath],
