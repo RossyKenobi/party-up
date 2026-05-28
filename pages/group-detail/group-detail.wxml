@@ -151,4 +151,15 @@
 <view wx:elif="{{!group}}" class="empty-state">小组不存在</view>
 
 <!-- Hidden Canvas for Poster Generation -->
-<canvas type="2d" id="posterCanvas" style="position: absolute; left: -9999px; width: 600px; height: 900px;"></canvas>
+<canvas type="2d" id="posterCanvas" style="position: fixed; left: -9999px; width: 600px; height: 900px;"></canvas>
+
+<!-- Poster Popup -->
+<view class="poster-overlay fade-in" wx:if="{{showPosterPopup}}" catchtouchmove="true">
+  <view class="poster-content">
+    <image src="{{posterTempFilePath}}" mode="widthFix" class="poster-image"></image>
+    <view class="poster-actions">
+      <view class="poster-action-btn close-btn" bindtap="closePosterPopup">✕</view>
+      <view class="poster-action-btn save-btn" bindtap="savePosterToAlbum">保存到相册</view>
+    </view>
+  </view>
+</view>

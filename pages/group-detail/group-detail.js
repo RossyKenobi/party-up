@@ -572,9 +572,9 @@ Page({
             canvas: canvas,
             fileType: 'png', // Export as PNG to preserve transparency
             success: (res) => {
-              wx.previewImage({
-                urls: [res.tempFilePath],
-                current: res.tempFilePath
+              this.setData({
+                posterTempFilePath: res.tempFilePath,
+                showPosterPopup: true
               });
               resolve();
             },
@@ -608,10 +608,45 @@ Page({
     ctx.closePath();
   },
 
+  closePosterPopup() {
+    this.setData({ showPosterPopup: false });
+  },
+
+  savePosterToAlbum() {
+    wx.saveImageToPhotosAlbum({
+      filePath: this.data.posterTempFilePath,
+      success: () => {
+        wx.showToast({ title: '保存成功', icon: 'success' });
+        this.closePosterPopup();
+      },
+      fail: (err) => {
+        // Handle denied permission gracefully
+        if (err.errMsg && err.errMsg.indexOf('auth deny') > -1) {
+          wx.showModal({
+            title: '提示',
+            content: '需要您授权保存相册的权限哦～',
+            success: (res) => {
+              if (res.confirm) wx.openSetting();
+            }
+          });
+        } else {
+          wx.showToast({ title: '保存失败', icon: 'none' });
+        }
+      }
+    });
+  },
+
   onShareAppMessage() {
     return {
       title: `来一起投票！「${this.data.group ? this.data.group.name : '小组'}」`,
       path: `/pages/group-detail/group-detail?groupId=${this.data.groupId}`,
     };
   },
+
+  onShareTimeline() {
+    return {
+      title: `来一起投票！「${this.data.group ? this.data.group.name : '小组'}」`,
+      query: `groupId=${this.data.groupId}`,
+    };
+  }
 });
