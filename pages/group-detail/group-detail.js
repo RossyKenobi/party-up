@@ -480,7 +480,7 @@ Page({
           ctx.moveTo(30, 400);
           ctx.lineTo(width - 30, 400);
           ctx.lineWidth = 3;
-          ctx.strokeStyle = '#c4a381'; // Theme accent color
+          ctx.strokeStyle = '#cccccc'; // Light grey
           ctx.stroke();
           ctx.restore();
 
