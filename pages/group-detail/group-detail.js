@@ -508,11 +508,11 @@ Page({
           const creator = this.data.group && this.data.group.members ? this.data.group.members.find(m => m.userId === this.data.group.creatorId) : null;
           ctx.font = '300 32px "Cormorant Garamond", serif';
           ctx.fillStyle = '#666666';
-          ctx.fillText('ORGANIZER', 60, 195);
+          ctx.fillText('ORGANISER', 60, 195);
           
           if (creator) {
             ctx.fillStyle = '#333333';
-            ctx.font = 'bold 36px sans-serif';
+            ctx.font = '300 36px "Cormorant Garamond", serif';
             ctx.fillText(creator.nickname, 150, 290); // moved down more
             
             // Draw creator avatar
@@ -532,7 +532,7 @@ Page({
               ctx.fillStyle = creator.avatarColor || '#ccc';
               ctx.fill();
               ctx.fillStyle = '#fff';
-              ctx.font = '36px sans-serif';
+              ctx.font = '300 36px "Cormorant Garamond", serif';
               ctx.textAlign = 'center';
               ctx.textBaseline = 'middle';
               ctx.fillText(creator.nickname[0], 95, 280); // moved down more
@@ -541,9 +541,9 @@ Page({
           }
 
           // Bottom section - QR Code
-          ctx.fillStyle = '#FFFFFF';
+          ctx.fillStyle = '#666666';
           ctx.textAlign = 'center';
-          ctx.font = 'bold 36px sans-serif';
+          ctx.font = '300 36px "Cormorant Garamond", serif';
           ctx.fillText('SCAN TO JOIN', width / 2, 790); // moved down
 
           // QR Code image
