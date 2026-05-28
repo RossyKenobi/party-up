@@ -499,7 +499,7 @@ Page({
 
           // Texts - Group Name
           ctx.fillStyle = '#666666';
-          ctx.font = 'bold 48px "Cormorant Garamond", "KaiTi-Custom", "Kaiti SC", STKaiti, "楷体", "KaiTi", serif';
+          ctx.font = 'bold 48px "Cormorant Garamond", "Songti SC", STSong, "SimSun", serif';
           let groupName = this.data.group ? this.data.group.name : "Let's Go Party";
           if (groupName.length > 10) groupName = groupName.substring(0, 9) + '...';
           ctx.fillText(groupName, 60, 100);
