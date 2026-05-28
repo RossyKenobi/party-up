@@ -480,7 +480,7 @@ Page({
           ctx.moveTo(30, 400);
           ctx.lineTo(width - 30, 400);
           ctx.lineWidth = 3;
-          ctx.strokeStyle = '#cccccc'; // Light grey
+          ctx.strokeStyle = '#999999'; // Darker grey
           ctx.stroke();
           ctx.restore();
 
