@@ -498,7 +498,7 @@ Page({
           // Texts - Group Name
           ctx.fillStyle = '#333333';
           ctx.font = 'bold 48px sans-serif';
-          let groupName = this.data.group ? this.data.group.name : 'Let\\'s Go Party';
+          let groupName = this.data.group ? this.data.group.name : "Let's Go Party";
           if (groupName.length > 10) groupName = groupName.substring(0, 9) + '...';
           ctx.fillText(groupName, 60, 100);
 
