@@ -506,9 +506,9 @@ Page({
 
           // Creator info
           const creator = this.data.group && this.data.group.members ? this.data.group.members.find(m => m.userId === this.data.group.creatorId) : null;
-          ctx.font = '32px sans-serif';
+          ctx.font = '300 32px "Cormorant Garamond", serif';
           ctx.fillStyle = '#666666';
-          ctx.fillText('发起人 / ORGANIZER', 60, 180);
+          ctx.fillText('ORGANIZER', 60, 195);
           
           if (creator) {
             ctx.fillStyle = '#333333';
