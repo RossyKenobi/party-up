@@ -498,7 +498,7 @@ Page({
           ctx.globalCompositeOperation = 'source-over';
 
           // Texts - Group Name
-          ctx.fillStyle = '#333333';
+          ctx.fillStyle = '#3d3b38';
           ctx.font = 'bold 48px sans-serif';
           let groupName = this.data.group ? this.data.group.name : "Let's Go Party";
           if (groupName.length > 10) groupName = groupName.substring(0, 9) + '...';
@@ -511,7 +511,7 @@ Page({
           ctx.fillText('ORGANISER', 60, 195);
           
           if (creator) {
-            ctx.fillStyle = '#333333';
+            ctx.fillStyle = '#c4a381';
             ctx.font = '300 36px "Cormorant Garamond", serif';
             ctx.fillText(creator.nickname, 150, 290); // moved down more
             
