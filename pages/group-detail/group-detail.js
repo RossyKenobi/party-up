@@ -26,9 +26,13 @@ Page({
   _countdownTimer: null,
 
   onLoad(options) {
-    if (options.groupId) {
-      this.setData({ groupId: options.groupId });
-      this.handleJoinFlow(options.groupId);
+    let groupId = options.groupId;
+    if (options.scene) {
+      groupId = decodeURIComponent(options.scene);
+    }
+    if (groupId) {
+      this.setData({ groupId });
+      this.handleJoinFlow(groupId);
     }
   },
 
@@ -397,6 +401,208 @@ Page({
     wx.navigateTo({
       url: `/pages/group-settings/group-settings?groupId=${this.data.groupId}`,
     });
+  },
+
+  async handleGeneratePoster() {
+    if (this.data.posterLoading) return;
+    this.setData({ posterLoading: true });
+    wx.showLoading({ title: '生成入场券...', mask: true });
+
+    try {
+      const { envVersion } = wx.getAccountInfoSync().miniProgram;
+      
+      const res = await wx.cloud.callFunction({
+        name: 'groupService',
+        data: {
+          action: 'getQRCode',
+          groupId: this.data.groupId,
+          envVersion: envVersion || 'release'
+        }
+      });
+
+      if (!res.result || !res.result.success) {
+        throw new Error((res.result && res.result.error) || '获取太阳码失败');
+      }
+
+      const qrFileId = res.result.fileID;
+
+      // Swap cloud file ID to temp file path
+      const fileRes = await wx.cloud.downloadFile({ fileID: qrFileId });
+      const qrPath = fileRes.tempFilePath;
+
+      // Draw poster
+      await this.drawPoster(qrPath);
+
+    } catch (e) {
+      console.error('generate poster error:', e);
+      wx.showToast({ title: e.message || '生成海报失败', icon: 'none' });
+    } finally {
+      this.setData({ posterLoading: false });
+      wx.hideLoading();
+    }
+  },
+
+  drawPoster(qrPath) {
+    return new Promise((resolve, reject) => {
+      const query = wx.createSelectorQuery();
+      query.select('#posterCanvas')
+        .fields({ node: true, size: true })
+        .exec(async (res) => {
+          if (!res[0] || !res[0].node) {
+            reject(new Error('Canvas not found'));
+            return;
+          }
+          
+          const canvas = res[0].node;
+          const ctx = canvas.getContext('2d');
+          const dpr = wx.getSystemInfoSync().pixelRatio;
+
+          const width = 600;
+          const height = 900;
+          canvas.width = width * dpr;
+          canvas.height = height * dpr;
+          ctx.scale(dpr, dpr);
+
+          // Draw ticket background
+          ctx.fillStyle = '#C8B9B1'; // Soft warm brown/mocha
+          this._roundRect(ctx, 0, 0, width, height, 40);
+          ctx.fill();
+
+          // Top Header Background
+          ctx.fillStyle = '#E8E1D9'; // Light beige
+          this._roundRect(ctx, 0, 0, width, 400, {tl: 40, tr: 40, bl: 0, br: 0});
+          ctx.fill();
+
+          // Perforated line
+          ctx.save();
+          ctx.beginPath();
+          ctx.setLineDash([15, 15]);
+          ctx.moveTo(30, 400);
+          ctx.lineTo(width - 30, 400);
+          ctx.lineWidth = 4;
+          ctx.strokeStyle = '#FFFFFF';
+          ctx.stroke();
+          ctx.restore();
+
+          // Notches
+          ctx.beginPath();
+          ctx.arc(0, 400, 30, -Math.PI / 2, Math.PI / 2, false);
+          ctx.fillStyle = '#FFFFFF'; // Assuming white screen background or just transparent (requires complex clipping to be transparent, fill with white for simplicity)
+          ctx.fill();
+
+          ctx.beginPath();
+          ctx.arc(width, 400, 30, Math.PI / 2, -Math.PI / 2, false);
+          ctx.fillStyle = '#FFFFFF';
+          ctx.fill();
+
+          // Texts - Group Name
+          ctx.fillStyle = '#333333';
+          ctx.font = 'bold 48px sans-serif';
+          let groupName = this.data.group ? this.data.group.name : 'Let\\'s Go Party';
+          if (groupName.length > 10) groupName = groupName.substring(0, 9) + '...';
+          ctx.fillText(groupName, 60, 100);
+
+          // Creator info
+          const creator = this.data.group && this.data.group.members ? this.data.group.members.find(m => m.userId === this.data.group.creatorId) : null;
+          ctx.font = '32px sans-serif';
+          ctx.fillStyle = '#666666';
+          ctx.fillText('发起人 / ORGANIZER', 60, 180);
+          
+          if (creator) {
+            ctx.fillStyle = '#333333';
+            ctx.font = 'bold 36px sans-serif';
+            ctx.fillText(creator.nickname, 150, 240);
+            
+            // Draw creator avatar
+            const avatarImg = canvas.createImage();
+            avatarImg.src = creator.avatarUrl || '/assets/default-avatar.png'; // Need to ensure it loads
+            await new Promise((imgResolve) => {
+              avatarImg.onload = imgResolve;
+              avatarImg.onerror = imgResolve;
+            });
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(95, 230, 35, 0, 2 * Math.PI, false);
+            ctx.clip();
+            if (creator.avatarUrl) {
+              ctx.drawImage(avatarImg, 60, 195, 70, 70);
+            } else {
+              ctx.fillStyle = creator.avatarColor || '#ccc';
+              ctx.fill();
+              ctx.fillStyle = '#fff';
+              ctx.font = '36px sans-serif';
+              ctx.textAlign = 'center';
+              ctx.textBaseline = 'middle';
+              ctx.fillText(creator.nickname[0], 95, 230);
+            }
+            ctx.restore();
+          }
+
+          // Bottom section - QR Code
+          ctx.fillStyle = '#FFFFFF';
+          ctx.textAlign = 'center';
+          ctx.font = 'bold 42px sans-serif';
+          ctx.fillText('SCAN TO JOIN', width / 2, 780);
+          ctx.font = '28px sans-serif';
+          ctx.fillStyle = '#F0F0F0';
+          ctx.fillText('OR SHARE WITH FRIENDS', width / 2, 830);
+
+          // QR Code image
+          const qrImg = canvas.createImage();
+          qrImg.src = qrPath;
+          await new Promise((imgResolve) => {
+            qrImg.onload = imgResolve;
+            qrImg.onerror = imgResolve;
+          });
+          
+          // Draw white circle background for QR code
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(width / 2, 580, 130, 0, 2 * Math.PI);
+          ctx.fillStyle = '#FFFFFF';
+          ctx.fill();
+          ctx.clip();
+          ctx.drawImage(qrImg, width / 2 - 120, 580 - 120, 240, 240);
+          ctx.restore();
+
+          // Export image
+          wx.canvasToTempFilePath({
+            canvas: canvas,
+            success: (res) => {
+              wx.previewImage({
+                urls: [res.tempFilePath],
+                current: res.tempFilePath
+              });
+              resolve();
+            },
+            fail: (err) => {
+              reject(err);
+            }
+          });
+        });
+    });
+  },
+
+  _roundRect(ctx, x, y, width, height, radius) {
+    if (typeof radius === 'number') {
+      radius = {tl: radius, tr: radius, br: radius, bl: radius};
+    } else {
+      var defaultRadius = {tl: 0, tr: 0, br: 0, bl: 0};
+      for (var side in defaultRadius) {
+        radius[side] = radius[side] || defaultRadius[side];
+      }
+    }
+    ctx.beginPath();
+    ctx.moveTo(x + radius.tl, y);
+    ctx.lineTo(x + width - radius.tr, y);
+    ctx.quadraticCurveTo(x + width, y, x + width, y + radius.tr);
+    ctx.lineTo(x + width, y + height - radius.br);
+    ctx.quadraticCurveTo(x + width, y + height, x + width - radius.br, y + height);
+    ctx.lineTo(x + radius.bl, y + height);
+    ctx.quadraticCurveTo(x, y + height, x, y + height - radius.bl);
+    ctx.lineTo(x, y + radius.tl);
+    ctx.quadraticCurveTo(x, y, x + radius.tl, y);
+    ctx.closePath();
   },
 
   onShareAppMessage() {

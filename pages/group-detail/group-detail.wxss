@@ -456,6 +456,29 @@
 }
 
 /* Chart Voters */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.settings-btn,
+.share-btn {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 32rpx;
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+}
+
+.poster-btn {
+  font-size: 32rpx;
+  line-height: 1;
+}
+
 .chart-voters {
   display: flex;
   align-items: center;

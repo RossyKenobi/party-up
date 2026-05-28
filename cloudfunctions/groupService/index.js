@@ -215,6 +215,41 @@ exports.main = async (event) => {
 
       return { success: true };
 
+    // ---------- GET QR CODE ----------
+    } else if (action === 'getQRCode') {
+      // NOTE: getCallerUser is NOT checked here because anyone with group ID might want the poster,
+      // but usually only members generate it. Let's enforce membership just in case.
+      const user = await getCallerUser();
+      const { groupId, envVersion } = event;
+      
+      const group = await getGroup(groupId);
+      if (!group) return { success: false, error: '小组不存在' };
+      if (!group.memberIds.includes(user.id)) return { success: false, error: '非小组成员无法生成分享码' };
+      
+      try {
+        const qrResult = await cloud.openapi.wxacode.getUnlimited({
+          scene: groupId,
+          page: 'pages/group-detail/group-detail',
+          envVersion: envVersion || 'release',
+          checkPath: false,
+          width: 430
+        });
+
+        // qrResult.buffer contains the image data
+        const ext = qrResult.contentType === 'image/jpeg' ? 'jpg' : 'png';
+        const cloudPath = `qrcodes/${groupId}_${envVersion || 'release'}_${Date.now()}.${ext}`;
+
+        const uploadResult = await cloud.uploadFile({
+          cloudPath: cloudPath,
+          fileContent: qrResult.buffer
+        });
+
+        return { success: true, fileID: uploadResult.fileID };
+      } catch (err) {
+        console.error('getUnlimited error', err);
+        return { success: false, error: '生成二维码失败: ' + err.message };
+      }
+
     } else {
       return { success: false, error: '未知操作' };
     }
