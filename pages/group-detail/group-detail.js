@@ -513,7 +513,7 @@ Page({
           if (creator) {
             ctx.fillStyle = '#333333';
             ctx.font = 'bold 36px sans-serif';
-            ctx.fillText(creator.nickname, 150, 260); // moved down
+            ctx.fillText(creator.nickname, 150, 290); // moved down more
             
             // Draw creator avatar
             const avatarImg = canvas.createImage();
@@ -524,10 +524,10 @@ Page({
             });
             ctx.save();
             ctx.beginPath();
-            ctx.arc(95, 250, 35, 0, 2 * Math.PI, false); // moved down
+            ctx.arc(95, 280, 35, 0, 2 * Math.PI, false); // moved down more
             ctx.clip();
             if (creator.avatarUrl) {
-              ctx.drawImage(avatarImg, 60, 215, 70, 70); // moved down
+              ctx.drawImage(avatarImg, 60, 245, 70, 70); // moved down more
             } else {
               ctx.fillStyle = creator.avatarColor || '#ccc';
               ctx.fill();
@@ -535,7 +535,7 @@ Page({
               ctx.font = '36px sans-serif';
               ctx.textAlign = 'center';
               ctx.textBaseline = 'middle';
-              ctx.fillText(creator.nickname[0], 95, 250); // moved down
+              ctx.fillText(creator.nickname[0], 95, 280); // moved down more
             }
             ctx.restore();
           }
@@ -543,11 +543,8 @@ Page({
           // Bottom section - QR Code
           ctx.fillStyle = '#FFFFFF';
           ctx.textAlign = 'center';
-          ctx.font = 'bold 36px sans-serif'; // shrink font
-          ctx.fillText('SCAN TO JOIN', width / 2, 760); // move up slightly
-          ctx.font = '24px sans-serif'; // shrink font
-          ctx.fillStyle = '#F0F0F0';
-          ctx.fillText('OR SHARE WITH FRIENDS', width / 2, 805); // move up slightly
+          ctx.font = 'bold 36px sans-serif';
+          ctx.fillText('SCAN TO JOIN', width / 2, 790); // moved down
 
           // QR Code image
           const qrImg = canvas.createImage();
@@ -560,11 +557,11 @@ Page({
           // Draw white circle background for QR code
           ctx.save();
           ctx.beginPath();
-          ctx.arc(width / 2, 580, 110, 0, 2 * Math.PI); // shrink radius
+          ctx.arc(width / 2, 600, 110, 0, 2 * Math.PI); // moved down
           ctx.fillStyle = '#FFFFFF';
           ctx.fill();
           ctx.clip();
-          ctx.drawImage(qrImg, width / 2 - 100, 580 - 100, 200, 200); // shrink image
+          ctx.drawImage(qrImg, width / 2 - 100, 600 - 100, 200, 200); // moved down
           ctx.restore();
 
           // Export image

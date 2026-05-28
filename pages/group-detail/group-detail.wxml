@@ -19,10 +19,7 @@
       <view class="settings-btn" wx:if="{{isCreator}}" bindtap="handleGoSettings">
         <image src="/assets/settings-icon.svg" class="settings-icon" mode="aspectFit" />
       </view>
-      <view class="share-btn poster-btn" bindtap="handleGeneratePoster">
-        🎫
-      </view>
-      <button class="share-btn" open-type="share">
+      <button class="share-btn" bindtap="handleGeneratePoster">
         <image src="/assets/share-icon.svg" class="share-icon" mode="aspectFit" />
       </button>
     </view>
@@ -159,7 +156,12 @@
     <image src="{{posterTempFilePath}}" mode="widthFix" class="poster-image"></image>
     <view class="poster-actions">
       <view class="poster-action-btn close-btn" bindtap="closePosterPopup">✕</view>
-      <view class="poster-action-btn save-btn" bindtap="savePosterToAlbum">保存到相册</view>
+      <view class="poster-action-btn save-btn" bindtap="savePosterToAlbum">
+        <text style="font-size: 48rpx; font-weight: bold; line-height: 1; transform: translateY(-2rpx);">⤓</text>
+      </view>
+      <button class="poster-action-btn share-action-btn" open-type="share">
+        <image src="/assets/share-icon.svg" style="width: 44rpx; height: 44rpx; filter: brightness(0) invert(1);" />
+      </button>
     </view>
   </view>
 </view>

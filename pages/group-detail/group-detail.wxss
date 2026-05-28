@@ -555,6 +555,7 @@
 }
 
 .poster-action-btn {
+  width: 80rpx;
   height: 80rpx;
   border-radius: 40rpx;
   background: rgba(255, 255, 255, 0.95);
@@ -565,14 +566,22 @@
   box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.2);
   color: var(--text-primary);
   font-weight: 500;
+  margin: 0;
+  padding: 0;
+}
+
+.poster-action-btn::after {
+  display: none;
 }
 
 .poster-action-btn.close-btn {
-  width: 80rpx;
+  background: rgba(255, 255, 255, 0.95);
 }
 
 .poster-action-btn.save-btn {
-  padding: 0 var(--space-xl);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.poster-action-btn.share-action-btn {
   background: var(--primary);
-  color: white;
 }
