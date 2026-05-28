@@ -476,11 +476,11 @@ Page({
           // Perforated line
           ctx.save();
           ctx.beginPath();
-          ctx.setLineDash([15, 15]);
+          ctx.setLineDash([8, 8]);
           ctx.moveTo(30, 400);
           ctx.lineTo(width - 30, 400);
-          ctx.lineWidth = 4;
-          ctx.strokeStyle = '#FFFFFF';
+          ctx.lineWidth = 3;
+          ctx.strokeStyle = '#c4a381'; // Theme accent color
           ctx.stroke();
           ctx.restore();
 
