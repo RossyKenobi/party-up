@@ -572,6 +572,11 @@
   padding: 0;
 }
 
+.poster-action-btn image {
+  filter: brightness(0) invert(1);
+  opacity: 0.8;
+}
+
 .poster-action-btn::after {
   display: none;
 }
