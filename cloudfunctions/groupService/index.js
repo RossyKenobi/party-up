@@ -232,7 +232,8 @@ exports.main = async (event) => {
           page: 'pages/group-detail/group-detail',
           envVersion: envVersion || 'release',
           checkPath: false,
-          width: 430
+          width: 430,
+          is_hyaline: true
         });
 
         // qrResult.buffer contains the image data

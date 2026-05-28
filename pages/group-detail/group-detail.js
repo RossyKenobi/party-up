@@ -558,7 +558,7 @@ Page({
           ctx.save();
           ctx.beginPath();
           ctx.arc(width / 2, 600, 110, 0, 2 * Math.PI); // moved down
-          ctx.fillStyle = '#FFFFFF';
+          ctx.fillStyle = '#E8E1D9'; // Light beige theme color
           ctx.fill();
           ctx.clip();
           ctx.drawImage(qrImg, width / 2 - 100, 600 - 100, 200, 200); // moved down
