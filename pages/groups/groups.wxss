@@ -123,7 +123,7 @@
 
 .group-name {
   font-size: var(--font-md);
-  font-weight: 700;
+  font-weight: 400;
   color: var(--text-primary);
   margin-bottom: var(--space-xs);
   overflow: hidden;
