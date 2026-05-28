@@ -613,8 +613,8 @@ Page({
     wx.saveImageToPhotosAlbum({
       filePath: this.data.posterTempFilePath,
       success: () => {
-        wx.showToast({ title: '保存成功', icon: 'success' });
-        this.closePosterPopup();
+        wx.showToast({ title: '已保存到相册', icon: 'success' });
+        // The user requested not to auto-close the popup after saving
       },
       fail: (err) => {
         // Handle denied permission gracefully
@@ -637,6 +637,8 @@ Page({
     return {
       title: `来一起投票！「${this.data.group ? this.data.group.name : '小组'}」`,
       path: `/pages/group-detail/group-detail?groupId=${this.data.groupId}`,
+      // If we have a generated poster, use it as the share card's thumbnail
+      imageUrl: this.data.posterTempFilePath || ''
     };
   },
 
@@ -644,6 +646,7 @@ Page({
     return {
       title: `来一起投票！「${this.data.group ? this.data.group.name : '小组'}」`,
       query: `groupId=${this.data.groupId}`,
+      imageUrl: this.data.posterTempFilePath || ''
     };
   }
 });
