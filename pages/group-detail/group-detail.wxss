@@ -544,8 +544,10 @@
 
 .poster-image {
   width: 100%;
-  border-radius: 40rpx; /* Matches canvas rect */
-  box-shadow: 0 16rpx 40rpx rgba(0, 0, 0, 0.15);
+  border-radius: 40rpx;
+  box-shadow: 0 16rpx 48rpx rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 .poster-actions {

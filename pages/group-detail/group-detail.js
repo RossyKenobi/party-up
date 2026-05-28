@@ -463,13 +463,24 @@ Page({
           canvas.height = height * dpr;
           ctx.scale(dpr, dpr);
 
-          // Draw ticket background
-          ctx.fillStyle = '#C8B9B1'; // Soft warm brown/mocha
+          // Draw ticket background (Glass lower part)
+          const lowerGradient = ctx.createLinearGradient(0, 400, 0, height);
+          lowerGradient.addColorStop(0, 'rgba(255, 255, 255, 0.6)');
+          lowerGradient.addColorStop(1, 'rgba(255, 255, 255, 0.2)');
+          ctx.fillStyle = lowerGradient;
           this._roundRect(ctx, 0, 0, width, height, 40);
           ctx.fill();
+          
+          // Draw glass border
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+          ctx.stroke();
 
-          // Top Header Background
-          ctx.fillStyle = '#E8E1D9'; // Light beige
+          // Top Header Background (Glass upper part)
+          const upperGradient = ctx.createLinearGradient(0, 0, 0, 400);
+          upperGradient.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
+          upperGradient.addColorStop(1, 'rgba(255, 255, 255, 0.4)');
+          ctx.fillStyle = upperGradient;
           this._roundRect(ctx, 0, 0, width, 400, {tl: 40, tr: 40, bl: 0, br: 0});
           ctx.fill();
 
@@ -480,7 +491,7 @@ Page({
           ctx.moveTo(30, 400);
           ctx.lineTo(width - 30, 400);
           ctx.lineWidth = 4;
-          ctx.strokeStyle = '#FFFFFF';
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
           ctx.stroke();
           ctx.restore();
 
@@ -498,8 +509,8 @@ Page({
           ctx.globalCompositeOperation = 'source-over';
 
           // Texts - Group Name
-          ctx.fillStyle = '#3d3b38';
-          ctx.font = 'bold 48px sans-serif';
+          ctx.fillStyle = '#666666';
+          ctx.font = 'bold 48px "Cormorant Garamond", serif';
           let groupName = this.data.group ? this.data.group.name : "Let's Go Party";
           if (groupName.length > 10) groupName = groupName.substring(0, 9) + '...';
           ctx.fillText(groupName, 60, 100);
@@ -511,7 +522,7 @@ Page({
           ctx.fillText('ORGANISER', 60, 195);
           
           if (creator) {
-            ctx.fillStyle = '#c4a381';
+            ctx.fillStyle = '#666666';
             ctx.font = '300 36px "Cormorant Garamond", serif';
             ctx.fillText(creator.nickname, 150, 290); // moved down more
             
