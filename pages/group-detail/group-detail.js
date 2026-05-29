@@ -482,10 +482,12 @@ Page({
           
           // PARTY on upper half, right aligned
           ctx.textBaseline = 'bottom';
+          ctx.font = 'bold 160px "Big Caslon"';
           ctx.strokeText('PARTY', width - 20, 390);
 
           // UP on lower half, right aligned
           ctx.textBaseline = 'top';
+          ctx.font = 'bold 260px "Big Caslon"'; // Occupies roughly half width
           ctx.strokeText('UP', width - 20, 410);
           ctx.restore();
 
@@ -525,12 +527,12 @@ Page({
           ctx.font = 'bold 32px serif';
           ctx.fillStyle = '#666666';
           ctx.textAlign = 'left';
-          ctx.fillText('ORGANISED BY', 60, 195);
+          ctx.fillText('ORGANISED BY', 60, 165); // Moved up
           
           if (creator) {
             ctx.fillStyle = '#666666';
             ctx.font = '36px serif';
-            ctx.fillText(creator.nickname, 60, 245);
+            ctx.fillText(creator.nickname, 60, 215); // Moved up
           }
 
           // Bottom section - QR Code
