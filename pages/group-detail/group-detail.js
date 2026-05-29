@@ -492,7 +492,7 @@ Page({
           const scaleRatio = partyWidth / upBaseWidth;
           // Big Caslon has complex kerning and serif overhangs (especially on 'Y' and 'P'). 
           // We add a tuning factor to overscale UP slightly so it perfectly left-aligns with PARTY.
-          const tuningFactor = 1.05; 
+          const tuningFactor = 1.04; 
           const upFontSize = Math.floor(160 * scaleRatio * tuningFactor);
           ctx.font = `bold ${upFontSize}px "Big Caslon"`;
           ctx.strokeText('UP', width - 20, 410);
