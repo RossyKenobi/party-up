@@ -498,7 +498,7 @@ Page({
           
           ctx.save();
           ctx.translate(width - 20, 410);
-          ctx.scale(1, 0.85); // Squash vertically to make it slightly flatter
+          ctx.scale(1, 0.9); // Squash vertically by 10% to make it slightly flatter
           ctx.font = `${upFontSize}px "Big Caslon"`;
           ctx.strokeText('UP', 0, 0);
           ctx.restore();
