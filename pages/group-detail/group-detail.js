@@ -488,13 +488,14 @@ Page({
 
           // UP on lower half, right aligned
           ctx.textBaseline = 'top';
-          const upBaseWidth = ctx.measureText('UP').width; // Measured at 160px
+          ctx.font = '160px "Big Caslon"'; // Normal weight for UP
+          const upBaseWidth = ctx.measureText('UP').width; // Measured at 160px normal
           const scaleRatio = partyWidth / upBaseWidth;
           // Big Caslon has complex kerning and serif overhangs (especially on 'Y' and 'P'). 
           // We add a tuning factor to overscale UP slightly so it perfectly left-aligns with PARTY.
           const tuningFactor = 1.035; 
           const upFontSize = Math.floor(160 * scaleRatio * tuningFactor);
-          ctx.font = `bold ${upFontSize}px "Big Caslon"`;
+          ctx.font = `${upFontSize}px "Big Caslon"`;
           ctx.strokeText('UP', width - 20, 410);
           ctx.restore();
 
