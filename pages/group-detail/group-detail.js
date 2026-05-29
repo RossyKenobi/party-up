@@ -487,7 +487,7 @@ Page({
 
           // UP on lower half, right aligned
           ctx.textBaseline = 'top';
-          ctx.font = 'bold 260px "Big Caslon"'; // Occupies roughly half width
+          ctx.font = 'bold 380px "Big Caslon"'; // Scaled to roughly match the width of 'PARTY'
           ctx.strokeText('UP', width - 20, 410);
           ctx.restore();
 
