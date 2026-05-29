@@ -486,22 +486,16 @@ Page({
           const partyWidth = ctx.measureText('PARTY').width;
           ctx.strokeText('PARTY', width - 20, 390);
 
-          // UP on lower half, distributed to match PARTY's width without getting too tall
+          // UP on lower half, right aligned
           ctx.textBaseline = 'top';
+          const upBaseWidth = ctx.measureText('UP').width; // Measured at 160px
+          const scaleRatio = partyWidth / upBaseWidth;
+          // Big Caslon has complex kerning and serif overhangs (especially on 'Y' and 'P'). 
+          // We add a tuning factor to overscale UP slightly so it perfectly left-aligns with PARTY.
           const tuningFactor = 1.035; 
-          
-          // We use a reasonable font size so the letters aren't monstrously tall (which caused huge hollow spaces)
-          const upFontSize = 220; 
+          const upFontSize = Math.floor(160 * scaleRatio * tuningFactor);
           ctx.font = `bold ${upFontSize}px "Big Caslon"`;
-          
-          // Draw 'P' right-aligned
-          ctx.textAlign = 'right';
-          ctx.strokeText('P', width - 20, 410);
-          
-          // Draw 'U' left-aligned to precisely match PARTY's left edge
-          ctx.textAlign = 'left';
-          const leftEdge = width - 20 - (partyWidth * tuningFactor);
-          ctx.strokeText('U', leftEdge, 410);
+          ctx.strokeText('UP', width - 20, 410);
           ctx.restore();
 
           // Perforated line
