@@ -475,7 +475,7 @@ Page({
 
           // Hollow Background Text
           ctx.save();
-          ctx.font = 'bold 120px "Big Caslon"';
+          ctx.font = 'bold 160px "Big Caslon"';
           ctx.strokeStyle = 'rgba(0, 0, 0, 0.08)'; // Light grey / translucent watermark
           ctx.lineWidth = 2;
           ctx.textAlign = 'right';
@@ -524,36 +524,13 @@ Page({
           const creator = this.data.group && this.data.group.members ? this.data.group.members.find(m => m.userId === this.data.group.creatorId) : null;
           ctx.font = 'bold 32px serif';
           ctx.fillStyle = '#666666';
-          ctx.fillText('ORGANISER', 60, 195);
+          ctx.textAlign = 'left';
+          ctx.fillText('ORGANISED BY', 60, 195);
           
           if (creator) {
             ctx.fillStyle = '#666666';
             ctx.font = '36px serif';
-            ctx.fillText(creator.nickname, 150, 290); // moved down more
-            
-            // Draw creator avatar
-            const avatarImg = canvas.createImage();
-            avatarImg.src = creator.avatarUrl || '/assets/default-avatar.png';
-            await new Promise((imgResolve) => {
-              avatarImg.onload = imgResolve;
-              avatarImg.onerror = imgResolve;
-            });
-            ctx.save();
-            ctx.beginPath();
-            ctx.arc(95, 280, 35, 0, 2 * Math.PI, false); // moved down more
-            ctx.clip();
-            if (creator.avatarUrl) {
-              ctx.drawImage(avatarImg, 60, 245, 70, 70); // moved down more
-            } else {
-              ctx.fillStyle = creator.avatarColor || '#ccc';
-              ctx.fill();
-              ctx.fillStyle = '#fff';
-              ctx.font = '36px serif';
-              ctx.textAlign = 'center';
-              ctx.textBaseline = 'middle';
-              ctx.fillText(creator.nickname[0], 95, 280); // moved down more
-            }
-            ctx.restore();
+            ctx.fillText(creator.nickname, 60, 245);
           }
 
           // Bottom section - QR Code
