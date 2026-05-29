@@ -475,14 +475,18 @@ Page({
 
           // Hollow Background Text
           ctx.save();
-          ctx.translate(width / 2, 220);
-          ctx.rotate(-Math.PI / 12); // Slight tilt for dynamic feel
-          ctx.font = 'bold 120px serif';
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)'; // Faint white outline
+          ctx.font = 'bold 120px "Big Caslon"';
+          ctx.strokeStyle = 'rgba(0, 0, 0, 0.08)'; // Light grey / translucent watermark
           ctx.lineWidth = 2;
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.strokeText('PARTY UP', 0, 0);
+          ctx.textAlign = 'right';
+          
+          // PARTY on upper half, right aligned
+          ctx.textBaseline = 'bottom';
+          ctx.strokeText('PARTY', width - 20, 390);
+
+          // UP on lower half, right aligned
+          ctx.textBaseline = 'top';
+          ctx.strokeText('UP', width - 20, 410);
           ctx.restore();
 
           // Perforated line
