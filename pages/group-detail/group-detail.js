@@ -483,11 +483,15 @@ Page({
           // PARTY on upper half, right aligned
           ctx.textBaseline = 'bottom';
           ctx.font = 'bold 160px "Big Caslon"';
+          const partyWidth = ctx.measureText('PARTY').width;
           ctx.strokeText('PARTY', width - 20, 390);
 
           // UP on lower half, right aligned
           ctx.textBaseline = 'top';
-          ctx.font = 'bold 380px "Big Caslon"'; // Scaled to roughly match the width of 'PARTY'
+          const upBaseWidth = ctx.measureText('UP').width; // Measured at 160px
+          const scaleRatio = partyWidth / upBaseWidth;
+          const upFontSize = Math.floor(160 * scaleRatio);
+          ctx.font = `bold ${upFontSize}px "Big Caslon"`;
           ctx.strokeText('UP', width - 20, 410);
           ctx.restore();
 
