@@ -486,24 +486,22 @@ Page({
           const partyWidth = ctx.measureText('PARTY').width;
           ctx.strokeText('PARTY', width - 20, 390);
 
-          // UP on lower half, right aligned
+          // UP on lower half, distributed to match PARTY's width without getting too tall
           ctx.textBaseline = 'top';
-          const upBaseWidth = ctx.measureText('UP').width; // Measured at 160px
-          const scaleRatio = partyWidth / upBaseWidth;
           const tuningFactor = 1.035; 
           
-          // The user wants the 'hollow width' (inner counter) of UP to be halved. 
-          // We achieve this by horizontally compressing the text by 0.5, and doubling its font size (height)
-          // to maintain the same visual width as PARTY.
-          const stretchX = 0.5; 
-          const upFontSize = Math.floor((160 * scaleRatio * tuningFactor) / stretchX);
-          
-          ctx.save();
-          ctx.scale(stretchX, 1);
+          // We use a reasonable font size so the letters aren't monstrously tall (which caused huge hollow spaces)
+          const upFontSize = 220; 
           ctx.font = `bold ${upFontSize}px "Big Caslon"`;
-          // We must adjust the X coordinate because the canvas grid is also scaled
-          ctx.strokeText('UP', (width - 20) / stretchX, 410);
-          ctx.restore();
+          
+          // Draw 'P' right-aligned
+          ctx.textAlign = 'right';
+          ctx.strokeText('P', width - 20, 410);
+          
+          // Draw 'U' left-aligned to precisely match PARTY's left edge
+          ctx.textAlign = 'left';
+          const leftEdge = width - 20 - (partyWidth * tuningFactor);
+          ctx.strokeText('U', leftEdge, 410);
           ctx.restore();
 
           // Perforated line
