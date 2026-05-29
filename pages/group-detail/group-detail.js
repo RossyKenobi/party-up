@@ -473,6 +473,18 @@ Page({
           this._roundRect(ctx, 0, 0, width, 400, {tl: 40, tr: 40, bl: 0, br: 0});
           ctx.fill();
 
+          // Hollow Background Text
+          ctx.save();
+          ctx.translate(width / 2, 220);
+          ctx.rotate(-Math.PI / 12); // Slight tilt for dynamic feel
+          ctx.font = 'bold 120px serif';
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)'; // Faint white outline
+          ctx.lineWidth = 2;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.strokeText('PARTY UP', 0, 0);
+          ctx.restore();
+
           // Perforated line
           ctx.save();
           ctx.beginPath();
