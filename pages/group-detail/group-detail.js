@@ -490,13 +490,20 @@ Page({
           ctx.textBaseline = 'top';
           const upBaseWidth = ctx.measureText('UP').width; // Measured at 160px
           const scaleRatio = partyWidth / upBaseWidth;
-          // Big Caslon has complex kerning and serif overhangs (especially on 'Y' and 'P'). 
-          // We add a tuning factor to overscale UP slightly so it perfectly left-aligns with PARTY.
-          const tuningFactor = 1.03; 
-          const upFontSize = Math.floor(160 * scaleRatio * tuningFactor);
+          const tuningFactor = 1.035; 
+          
+          // The user wants the 'hollow width' (inner counter) of UP to be halved. 
+          // We achieve this by horizontally compressing the text by 0.5, and doubling its font size (height)
+          // to maintain the same visual width as PARTY.
+          const stretchX = 0.5; 
+          const upFontSize = Math.floor((160 * scaleRatio * tuningFactor) / stretchX);
+          
+          ctx.save();
+          ctx.scale(stretchX, 1);
           ctx.font = `bold ${upFontSize}px "Big Caslon"`;
-          ctx.lineWidth = 1; // Halve the hollow width for the massive UP text
-          ctx.strokeText('UP', width - 20, 410);
+          // We must adjust the X coordinate because the canvas grid is also scaled
+          ctx.strokeText('UP', (width - 20) / stretchX, 410);
+          ctx.restore();
           ctx.restore();
 
           // Perforated line
