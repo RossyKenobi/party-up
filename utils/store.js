@@ -122,6 +122,18 @@ export async function deleteEvent(eventId) {
   if (!res.result || !res.result.success) {
     throw new Error((res.result && res.result.error) || '删除失败');
   }
+  return res.result;
+}
+
+export async function deleteEventSeries(seriesId) {
+  const res = await wx.cloud.callFunction({
+    name: 'eventService',
+    data: { action: 'deleteSeries', seriesId }
+  });
+  if (!res.result || !res.result.success) {
+    throw new Error((res.result && res.result.error) || '删除系列失败');
+  }
+  return res.result;
 }
 
 export async function joinEvent(eventId) {

@@ -203,9 +203,9 @@
       <text class="event-popup-label">地点</text>
       <text class="event-popup-value">📍 {{selectedEvent.location}}</text>
     </view>
-    <view class="event-popup-row">
-      <text class="event-popup-label">参与者</text>
-      <text class="event-popup-value">{{selectedEvent.participants.length}}人</text>
+    <view class="event-popup-row participant-row">
+      <text class="event-popup-label">参与者 ({{selectedEvent.participants.length}})</text>
+      <text class="event-popup-value participant-names">{{selectedEvent.participantsStr}}</text>
     </view>
   </view>
 </view>

@@ -86,6 +86,10 @@ Page({
     } else {
       // Normal create
       this._initDefaultTimes();
+      const defaultCat = CATEGORIES.find(c => c.id === this.data.categoryId);
+      if (defaultCat && this.data.categoryId !== 'other') {
+        this.setData({ title: defaultCat.name });
+      }
     }
   },
 
@@ -112,7 +116,21 @@ Page({
   onTitleInput(e) { this.setData({ title: e.detail.value }); },
   onLocationInput(e) { this.setData({ location: e.detail.value }); },
   
-  selectCategory(e) { this.setData({ categoryId: e.currentTarget.dataset.id }); },
+  selectCategory(e) { 
+    const newCategoryId = e.currentTarget.dataset.id;
+    const oldCategory = CATEGORIES.find(c => c.id === this.data.categoryId);
+    const newCategory = CATEGORIES.find(c => c.id === newCategoryId);
+    
+    let updates = { categoryId: newCategoryId };
+    
+    if (!this.data.isEdit) {
+      if (!this.data.title || (oldCategory && this.data.title === oldCategory.name)) {
+        updates.title = newCategoryId === 'other' ? '' : (newCategory ? newCategory.name : '');
+      }
+    }
+    
+    this.setData(updates); 
+  },
 
   _updateEndTimeAutomatically(startDate, startTime) {
     if (!startDate || !startTime) return;

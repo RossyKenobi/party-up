@@ -1,4 +1,4 @@
-import { getEventById, joinEvent, leaveEvent, deleteEvent, getCurrentUser, getUsersByIds } from '../../utils/store.js';
+import { getEventById, joinEvent, leaveEvent, deleteEvent, deleteEventSeries, getCurrentUser, getUsersByIds } from '../../utils/store.js';
 import { CATEGORIES, formatDateFull, formatTime } from '../../utils/date.js';
 
 Page({
@@ -145,24 +145,48 @@ Page({
   },
 
   handleDelete() {
-    wx.showModal({
-      title: '删除活动',
-      content: '确定要删除此活动吗？此操作不可恢复。',
-      success: async (res) => {
-        if (res.confirm) {
-          wx.showLoading({ title: '处理中...', mask: true });
-          try {
-            await deleteEvent(this.data.eventId);
-            wx.showToast({ title: '已删除', icon: 'success' });
-            setTimeout(() => wx.navigateBack(), 1500);
-          } catch (e) {
-            wx.showToast({ title: '删除失败', icon: 'none' });
-          } finally {
-            wx.hideLoading();
+    const { event, eventId } = this.data;
+    if (event.seriesId) {
+      wx.showActionSheet({
+        itemList: ['删除此次活动', '删除此次及以后所有活动'],
+        itemColor: '#E64340',
+        success: (res) => {
+          if (res.tapIndex === 0) {
+            this._executeDelete('single');
+          } else if (res.tapIndex === 1) {
+            this._executeDelete('series');
           }
         }
+      });
+    } else {
+      wx.showModal({
+        title: '删除活动',
+        content: '确定要删除此活动吗？此操作不可恢复。',
+        confirmColor: '#E64340',
+        success: (res) => {
+          if (res.confirm) {
+            this._executeDelete('single');
+          }
+        }
+      });
+    }
+  },
+
+  async _executeDelete(mode) {
+    wx.showLoading({ title: '处理中...', mask: true });
+    try {
+      if (mode === 'series') {
+        await deleteEventSeries(this.data.event.seriesId);
+      } else {
+        await deleteEvent(this.data.eventId);
       }
-    });
+      wx.showToast({ title: '已删除', icon: 'success' });
+      setTimeout(() => wx.navigateBack(), 1500);
+    } catch (e) {
+      wx.showToast({ title: '删除失败', icon: 'none' });
+    } finally {
+      wx.hideLoading();
+    }
   },
 
   onShareAppMessage() {

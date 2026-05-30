@@ -200,6 +200,32 @@ exports.main = async (event) => {
       await db.collection('events').doc(evt._id).remove();
       return { success: true };
 
+    // ---------- DELETE SERIES ----------
+    } else if (action === 'deleteSeries') {
+      const user = await getCallerUser();
+      const { seriesId } = event;
+
+      if (!seriesId) return { success: false, error: '缺少 seriesId' };
+
+      const now = new Date().toISOString();
+      const seriesEvents = await db.collection('events').where({
+        seriesId,
+        startTime: _.gte(now)
+      }).get();
+
+      if (seriesEvents.data.length === 0) return { success: false, error: '没有可删除的未来事件' };
+      if (seriesEvents.data[0].creatorId !== user.id && user.role !== 'admin') {
+        return { success: false, error: '无权删除此系列活动' };
+      }
+
+      let deleted = 0;
+      for (const evt of seriesEvents.data) {
+        await db.collection('events').doc(evt._id).remove();
+        deleted++;
+      }
+
+      return { success: true, deleted };
+
     // ---------- JOIN ----------
     } else if (action === 'join') {
       const user = await getCallerUser();

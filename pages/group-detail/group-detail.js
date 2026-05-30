@@ -1,5 +1,5 @@
 import { getCurrentUser, getGroupById, joinGroup, getPlacesByGroup, addPlace, deletePlace, votePlace, reorderPlaces, getCommentsByGroup, addComment, deleteComment, getEventsByGroup, updateGroupSettings } from '../../utils/store.js';
-import { formatDate, formatTime } from '../../utils/date.js';
+import { formatDate, formatTime, isSameDay } from '../../utils/date.js';
 
 Page({
   data: {
@@ -429,9 +429,14 @@ Page({
       const events = await getEventsByGroup(this.data.groupId);
       const upcomingEvents = events.map(e => {
         const start = new Date(e.startTime);
+        const end = new Date(e.endTime);
+        const startStr = `${formatDate(start)} ${formatTime(start)}`;
+        const endStr = isSameDay(start, end) ? formatTime(end) : `${formatDate(end)} ${formatTime(end)}`;
+        const participantsStr = (e.participantsInfo || []).map(p => p.nickname).join('、') || '暂无参与者';
         return {
           ...e,
-          displayTime: `${formatDate(start)} ${formatTime(start)}`,
+          displayTime: `${startStr} - ${endStr}`,
+          participantsStr
         };
       });
       this.setData({ upcomingEvents });
