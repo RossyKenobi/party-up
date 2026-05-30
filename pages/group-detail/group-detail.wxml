@@ -195,7 +195,6 @@
         <text class="event-popup-title">{{selectedEvent.title}}</text>
         <image src="/assets/edit-icon.svg" class="event-popup-edit" wx:if="{{selectedEvent.creatorId === currentUserId}}" catchtap="handleEditEvent" />
       </view>
-      <view class="event-popup-close" bindtap="hideEventPopup">✕</view>
     </view>
     <view class="event-popup-row">
       <text class="event-popup-label">时间</text>
