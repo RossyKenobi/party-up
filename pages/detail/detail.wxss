@@ -93,3 +93,66 @@
   text-align: center;
   color: var(--text-tertiary);
 }
+
+/* Poster Overlay */
+.poster-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.poster-content {
+  width: 80%;
+  max-width: 600rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+.poster-image {
+  width: 100%;
+  border-radius: 40rpx; /* Matches canvas rect */
+  box-shadow: 0 16rpx 40rpx rgba(0, 0, 0, 0.15);
+}
+
+.poster-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xl);
+}
+
+.poster-action-btn {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 40rpx;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.15);
+  color: var(--text-primary);
+  font-weight: 500;
+  margin: 0;
+  padding: 0;
+}
+
+.poster-action-btn image {
+  filter: brightness(0) invert(1);
+  opacity: 0.8;
+}
+
+.poster-action-btn::after {
+  display: none;
+}

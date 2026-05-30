@@ -255,6 +255,15 @@ export async function createGroup({ name, maxMembers = 10, isAnonymous = false, 
   return res.result.group;
 }
 
+export async function getEventQRCode(eventId, envVersion) {
+  const { result } = await wx.cloud.callFunction({
+    name: 'eventService',
+    data: { action: 'getQRCode', eventId, envVersion }
+  });
+  if (!result.success) throw new Error(result.error);
+  return result.fileID;
+}
+
 export async function joinGroup(groupId) {
   const res = await wx.cloud.callFunction({
     name: 'groupService',

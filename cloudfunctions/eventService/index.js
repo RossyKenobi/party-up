@@ -326,6 +326,39 @@ exports.main = async (event) => {
 
       return { success: true, createdCount: created.total, joinedCount: joined.total };
 
+    // ---------- GET QR CODE ----------
+    } else if (action === 'getQRCode') {
+      const user = await getCallerUser();
+      const { eventId, envVersion } = event;
+
+      const res = await db.collection('events').where({ id: eventId }).get();
+      if (res.data.length === 0) return { success: false, error: '活动不存在' };
+      const eventDoc = res.data[0];
+
+      try {
+        const qrResult = await cloud.openapi.wxacode.getUnlimited({
+          scene: eventId,
+          page: 'pages/detail/detail',
+          envVersion: envVersion || 'release',
+          checkPath: false,
+          width: 430,
+          is_hyaline: true
+        });
+
+        const ext = qrResult.contentType === 'image/jpeg' ? 'jpg' : 'png';
+        const cloudPath = `qrcodes/event_${eventId}_${envVersion || 'release'}_${Date.now()}.${ext}`;
+
+        const uploadResult = await cloud.uploadFile({
+          cloudPath: cloudPath,
+          fileContent: qrResult.buffer
+        });
+
+        return { success: true, fileID: uploadResult.fileID };
+      } catch (err) {
+        console.error('getUnlimited error', err);
+        return { success: false, error: '生成二维码失败: ' + err.message };
+      }
+
     } else {
       return { success: false, error: '未知操作' };
     }

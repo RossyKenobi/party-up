@@ -28,7 +28,7 @@
 
   <view class="actions-panel">
     <button class="btn btn-primary" style="flex:1" wx:if="{{!hasJoined && !isPast}}" bindtap="handleJoin">加入活动</button>
-    <button class="btn btn-primary" open-type="share" style="flex:1" wx:if="{{hasJoined && !isPast}}">邀请好友</button>
+    <button class="btn btn-primary" bindtap="handleGeneratePoster" style="flex:1" wx:if="{{hasJoined && !isPast}}">邀请好友</button>
     <button class="btn btn-secondary" style="flex:1" wx:if="{{hasJoined && !isCreator && !isPast}}" bindtap="handleLeave">退出</button>
     <button class="btn btn-secondary" style="flex:1" wx:if="{{isCreator && !isPast}}" bindtap="handleEdit">编辑</button>
     <button class="btn btn-secondary" style="flex:1; color:var(--danger)" wx:if="{{isCreator || isAdmin}}" bindtap="handleDelete">删除</button>
@@ -36,4 +36,25 @@
 </view>
 <view wx:else class="empty-state">
   加载中或活动不存在...
+</view>
+
+<!-- Hidden Canvas for Poster Generation -->
+<canvas type="2d" id="posterCanvas" style="position: fixed; left: -9999px; width: 600px; height: 800px;"></canvas>
+
+<!-- Poster Popup -->
+<view class="poster-overlay fade-in" wx:if="{{showPosterPopup}}" catchtouchmove="true">
+  <view class="poster-content">
+    <image src="{{posterTempFilePath}}" mode="widthFix" class="poster-image"></image>
+    <view class="poster-actions">
+      <view class="poster-action-btn close-btn" bindtap="closePosterPopup">
+        <image src="/assets/close-icon.svg" style="width: 36rpx; height: 36rpx;" />
+      </view>
+      <view class="poster-action-btn save-btn" bindtap="savePosterToAlbum">
+        <image src="/assets/download-icon.svg" style="width: 36rpx; height: 36rpx;" />
+      </view>
+      <button class="poster-action-btn share-action-btn" open-type="share">
+        <image src="/assets/share-icon-thin.svg" style="width: 36rpx; height: 36rpx;" />
+      </button>
+    </view>
+  </view>
 </view>
