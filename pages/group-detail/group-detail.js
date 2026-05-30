@@ -1,4 +1,4 @@
-import { getCurrentUser, getGroupById, joinGroup, getPlacesByGroup, addPlace, deletePlace, votePlace, reorderPlaces, getCommentsByGroup, addComment, deleteComment, getEventsByGroup, updateGroupSettings } from '../../utils/store.js';
+import { getCurrentUser, getGroupById, joinGroup, getPlacesByGroup, addPlace, deletePlace, votePlace, reorderPlaces, getCommentsByGroup, addComment, deleteComment, getEventsByGroup, updateGroupSettings, deleteEvent, deleteEventSeries } from '../../utils/store.js';
 import { formatDate, formatTime, isSameDay } from '../../utils/date.js';
 
 Page({
@@ -460,6 +460,54 @@ Page({
       url: `/pages/create/create?id=${eventId}`,
     });
     this.setData({ showEventPopup: false, selectedEvent: null });
+  },
+
+  handleDeleteEvent() {
+    const { selectedEvent } = this.data;
+    if (!selectedEvent) return;
+    
+    if (selectedEvent.seriesId) {
+      wx.showActionSheet({
+        itemList: ['删除此次活动', '删除此次及以后所有活动'],
+        itemColor: '#E64340',
+        success: (res) => {
+          if (res.tapIndex === 0) {
+            this._executeDeleteEvent('single', selectedEvent);
+          } else if (res.tapIndex === 1) {
+            this._executeDeleteEvent('series', selectedEvent);
+          }
+        }
+      });
+    } else {
+      wx.showModal({
+        title: '删除活动',
+        content: '确定要删除此活动吗？此操作不可恢复。',
+        confirmColor: '#E64340',
+        success: (res) => {
+          if (res.confirm) {
+            this._executeDeleteEvent('single', selectedEvent);
+          }
+        }
+      });
+    }
+  },
+
+  async _executeDeleteEvent(mode, event) {
+    wx.showLoading({ title: '处理中...', mask: true });
+    try {
+      if (mode === 'series') {
+        await deleteEventSeries(event.seriesId);
+      } else {
+        await deleteEvent(event.id);
+      }
+      wx.showToast({ title: '已删除', icon: 'success' });
+      this.setData({ showEventPopup: false, selectedEvent: null });
+      this._loadUpcomingEvents();
+    } catch (e) {
+      wx.showToast({ title: '删除失败', icon: 'none' });
+    } finally {
+      wx.hideLoading();
+    }
   },
 
   async handleToggleWinner(e) {

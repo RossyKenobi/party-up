@@ -659,7 +659,7 @@
 .event-popup-header {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   margin-bottom: 24px;
 }
 
@@ -669,7 +669,7 @@
   gap: 8px;
 }
 
-.event-popup-edit {
+.event-popup-action-icon {
   width: 20px;
   height: 20px;
   padding: 4px;

@@ -193,8 +193,9 @@
     <view class="event-popup-header">
       <view class="event-popup-title-wrap">
         <text class="event-popup-title">{{selectedEvent.title}}</text>
-        <image src="/assets/edit-icon.svg" class="event-popup-edit" wx:if="{{selectedEvent.creatorId === currentUserId}}" catchtap="handleEditEvent" />
+        <image src="/assets/edit-icon.svg" class="event-popup-action-icon" wx:if="{{selectedEvent.creatorId === currentUserId}}" catchtap="handleEditEvent" />
       </view>
+      <image src="/assets/delete-icon.svg" class="event-popup-action-icon" wx:if="{{selectedEvent.creatorId === currentUserId}}" catchtap="handleDeleteEvent" />
     </view>
     <view class="event-popup-row">
       <text class="event-popup-label">时间</text>
