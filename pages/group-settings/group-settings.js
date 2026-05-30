@@ -1,4 +1,4 @@
-import { getCurrentUser, getGroupById, updateGroupSettings } from '../../utils/store.js';
+import { getCurrentUser, getGroupById, updateGroupSettings, getPlacesByGroup } from '../../utils/store.js';
 
 Page({
   data: {
@@ -7,8 +7,7 @@ Page({
     currentUser: null,
     members: [],
     isCreator: false,
-    members: [],
-    isCreator: false,
+    places: [],
     hasDeadline: false,
     customDate: '',
     customTime: '',
@@ -61,7 +60,10 @@ Page({
         }
       }
 
-      this.setData({ group, currentUser, members, isCreator, hasDeadline, customDate, customTime });
+      // Load places for voting control
+      const places = await getPlacesByGroup(groupId);
+
+      this.setData({ group, currentUser, members, isCreator, hasDeadline, customDate, customTime, places });
     } catch (e) {
       console.error('loadData failed', e);
       wx.showToast({ title: '加载失败', icon: 'none' });
@@ -235,5 +237,37 @@ Page({
         }
       },
     });
+  },
+
+  async handleToggleVotingClosed() {
+    const { group, places, groupId } = this.data;
+    const currentlyClosed = group.votingClosed;
+
+    const confirmText = currentlyClosed ? '确定重新开启投票？' : '确定结束投票？';
+    const { confirm } = await wx.showModal({ title: '提示', content: confirmText });
+    if (!confirm) return;
+
+    wx.showLoading({ title: '更新中...', mask: true });
+    try {
+      if (currentlyClosed) {
+        await updateGroupSettings(groupId, { votingClosed: false, winnerPlaceIds: [] });
+      } else {
+        let maxVotes = 0;
+        for (const p of places) {
+          const count = p.voters ? p.voters.length : 0;
+          if (count > maxVotes) maxVotes = count;
+        }
+        const winnerIds = maxVotes > 0
+          ? places.filter(p => (p.voters ? p.voters.length : 0) === maxVotes).map(p => p.id)
+          : [];
+        await updateGroupSettings(groupId, { votingClosed: true, winnerPlaceIds: winnerIds });
+      }
+      await this.loadData();
+    } catch (e) {
+      console.error('toggleVotingClosed failed', e);
+      wx.showToast({ title: '操作失败', icon: 'none' });
+    } finally {
+      wx.hideLoading();
+    }
   },
 });

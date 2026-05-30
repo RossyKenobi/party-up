@@ -122,7 +122,7 @@ exports.main = async (event) => {
       if (group.creatorId !== user.id) return { success: false, error: '仅组长可修改设置' };
 
       // Whitelist allowed settings
-      const allowed = ['allowNewMembers', 'allowVoting', 'isAnonymous', 'voteDeadline', 'maxMembers'];
+      const allowed = ['allowNewMembers', 'allowVoting', 'isAnonymous', 'voteDeadline', 'maxMembers', 'allowMemberEvents', 'votingClosed', 'winnerPlaceIds'];
       const safeSettings = {};
       for (const key of allowed) {
         if (settings[key] !== undefined) safeSettings[key] = settings[key];

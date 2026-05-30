@@ -1,4 +1,5 @@
-import { getCurrentUser, getGroupById, joinGroup, getPlacesByGroup, addPlace, deletePlace, votePlace, reorderPlaces, getCommentsByGroup, addComment, deleteComment } from '../../utils/store.js';
+import { getCurrentUser, getGroupById, joinGroup, getPlacesByGroup, addPlace, deletePlace, votePlace, reorderPlaces, getCommentsByGroup, addComment, deleteComment, getEventsByGroup, updateGroupSettings } from '../../utils/store.js';
+import { formatDate, formatTime } from '../../utils/date.js';
 
 Page({
   data: {
@@ -21,6 +22,10 @@ Page({
     commentText: '',
     // Edit mode
     isEditMode: false,
+    // Upcoming events
+    upcomingEvents: [],
+    showEventPopup: false,
+    selectedEvent: null,
   },
 
   _countdownTimer: null,
@@ -168,7 +173,13 @@ Page({
       const now = new Date();
       const deadline = group.voteDeadline ? new Date(group.voteDeadline) : null;
       const isExpired = deadline && now > deadline;
-      const effectiveAllowVoting = group.allowVoting && !isExpired;
+      const effectiveAllowVoting = group.allowVoting && !isExpired && !group.votingClosed;
+
+      // Winner place IDs
+      const winnerPlaceIds = group.winnerPlaceIds || [];
+
+      // Add isWinner to places
+      places.forEach(p => { p.isWinner = winnerPlaceIds.includes(p.id); });
 
       // Chart data: all places, sorted desc
       const totalMembers = (group.memberIds || []).length;
@@ -185,7 +196,7 @@ Page({
             barWidth: pct + '%',
             opacity,
             votersInfo: p.votersInfo,
-            isWinner: isExpired && index === 0 && p.voteCount > 0,
+            isWinner: (isExpired && index === 0 && p.voteCount > 0) || winnerPlaceIds.includes(p.id),
           };
         });
 
@@ -204,6 +215,9 @@ Page({
         isExpired,
         deadline: group.voteDeadline || null,
       });
+
+      // Load upcoming events for this group
+      this._loadUpcomingEvents();
 
       // Start countdown if deadline exists and not expired
       this._clearCountdown();
@@ -401,6 +415,63 @@ Page({
     wx.navigateTo({
       url: `/pages/group-settings/group-settings?groupId=${this.data.groupId}`,
     });
+  },
+
+  handleCreateGroupEvent() {
+    const name = encodeURIComponent(this.data.group.name);
+    wx.navigateTo({
+      url: `/pages/create/create?groupId=${this.data.groupId}&groupName=${name}`,
+    });
+  },
+
+  async _loadUpcomingEvents() {
+    try {
+      const events = await getEventsByGroup(this.data.groupId);
+      const upcomingEvents = events.map(e => {
+        const start = new Date(e.startTime);
+        return {
+          ...e,
+          displayTime: `${formatDate(start)} ${formatTime(start)}`,
+        };
+      });
+      this.setData({ upcomingEvents });
+    } catch (e) {
+      console.warn('loadUpcomingEvents failed:', e);
+    }
+  },
+
+  showEventDetail(e) {
+    const event = e.currentTarget.dataset.event;
+    this.setData({ showEventPopup: true, selectedEvent: event });
+  },
+
+  hideEventPopup() {
+    this.setData({ showEventPopup: false, selectedEvent: null });
+  },
+
+  async handleToggleWinner(e) {
+    if (!this.data.group.votingClosed || !this.data.isCreator) return;
+    const placeId = e.currentTarget.dataset.placeId;
+    const currentWinners = this.data.group.winnerPlaceIds || [];
+    const isCurrentlyWinner = currentWinners.includes(placeId);
+
+    const actionText = isCurrentlyWinner ? '确定取消该选项的获胜状态？' : '确定将该选项设为获胜？';
+    const { confirm } = await wx.showModal({ title: '提示', content: actionText });
+    if (!confirm) return;
+
+    let newWinners;
+    if (isCurrentlyWinner) {
+      newWinners = currentWinners.filter(id => id !== placeId);
+    } else {
+      newWinners = [...currentWinners, placeId];
+    }
+
+    try {
+      await updateGroupSettings(this.data.groupId, { winnerPlaceIds: newWinners });
+      this.refreshData();
+    } catch (e) {
+      wx.showToast({ title: '操作失败', icon: 'none' });
+    }
   },
 
   async handleGeneratePoster() {

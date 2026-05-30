@@ -580,3 +580,122 @@
 .poster-action-btn::after {
   display: none;
 }
+
+/* Upcoming Events */
+.event-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.event-item:last-child {
+  border-bottom: none;
+}
+
+.event-item-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.event-emoji {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.event-item-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.event-item-title {
+  font-size: var(--font-base);
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-item-time {
+  font-size: var(--font-xs);
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+.event-item-location {
+  font-size: var(--font-xs);
+  color: var(--text-secondary);
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+/* Winner highlight */
+.place-winner {
+  background: var(--accent-bg, #f4eae2);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius-md);
+  padding-left: 12px;
+  margin-left: -4px;
+  transition: all 0.2s;
+}
+
+/* Event Detail Popup */
+.event-popup {
+  position: relative;
+  width: 85vw;
+  max-width: 360px;
+  padding: 28px 24px;
+  margin: auto;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.event-popup-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 18px;
+  color: var(--text-tertiary);
+  padding: 4px;
+}
+
+.event-popup-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.event-popup-emoji {
+  font-size: 32px;
+}
+
+.event-popup-title {
+  font-size: var(--font-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.event-popup-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-top: 1px solid var(--border);
+}
+
+.event-popup-label {
+  font-size: var(--font-sm);
+  color: var(--text-tertiary);
+  font-weight: 600;
+}
+
+.event-popup-value {
+  font-size: var(--font-sm);
+  color: var(--text-primary);
+}

@@ -74,11 +74,26 @@
         <view class="picker-btn {{customTime ? 'active-picker' : ''}}">{{customTime || '选择时间'}}</view>
       </picker>
     </view>
+
+    <view class="setting-row" wx:if="{{isCreator}}">
+      <text class="setting-label">允许成员发起活动</text>
+      <switch
+        checked="{{group.allowMemberEvents !== false}}"
+        data-field="allowMemberEvents"
+        bindchange="handleToggle"
+        color="#c4a381"
+      />
+    </view>
   </view>
 
   <!-- Leave Group (non-creator) -->
   <view class="card action-card" wx:if="{{!isCreator}}" bindtap="handleLeave">
     退出小组
+  </view>
+
+  <!-- Voting Control (creator only) -->
+  <view class="card action-card voting-control-card" wx:if="{{isCreator}}" bindtap="handleToggleVotingClosed">
+    <text>{{group.votingClosed ? '开启投票' : '结束投票'}}</text>
   </view>
 
   <!-- Dissolve Group (creator only) -->

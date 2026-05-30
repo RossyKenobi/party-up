@@ -16,12 +16,30 @@
       <text class="deadline-expired" wx:if="{{isExpired}}">· 已截止</text>
     </view>
     <view class="header-right">
+      <view class="settings-btn" wx:if="{{isMember && (isCreator || group.allowMemberEvents !== false)}}" bindtap="handleCreateGroupEvent">
+        <image src="/assets/calendar-icon.svg" class="settings-icon" mode="aspectFit" />
+      </view>
       <view class="settings-btn" wx:if="{{isCreator}}" bindtap="handleGoSettings">
         <image src="/assets/settings-icon.svg" class="settings-icon" mode="aspectFit" />
       </view>
       <button class="share-btn" bindtap="handleGeneratePoster">
         <image src="/assets/share-icon.svg" class="share-icon" mode="aspectFit" />
       </button>
+    </view>
+  </view>
+
+  <!-- Upcoming Events -->
+  <view class="section card" wx:if="{{upcomingEvents.length > 0}}">
+    <view class="section-title">📅 活动安排 ({{upcomingEvents.length}})</view>
+    <view class="event-item" wx:for="{{upcomingEvents}}" wx:key="id" data-event="{{item}}" bindtap="showEventDetail">
+      <view class="event-item-left">
+        <text class="event-emoji">{{item.emoji}}</text>
+        <view class="event-item-info">
+          <text class="event-item-title">{{item.title}}</text>
+          <text class="event-item-time">{{item.displayTime}}</text>
+        </view>
+      </view>
+      <text class="event-item-location" wx:if="{{item.location}}">📍 {{item.location}}</text>
     </view>
   </view>
 
@@ -38,10 +56,11 @@
     <view class="places-list">
       <view class="place-item-wrapper" wx:for="{{places}}" wx:key="id" data-index="{{index}}">
         <view
-          class="place-item"
+          class="place-item {{item.isWinner ? 'place-winner' : ''}}"
           data-place-id="{{item.id}}"
           data-index="{{index}}"
           bindlongpress="handlePlaceLongPress"
+          bindtap="{{group.votingClosed && isCreator ? 'handleToggleWinner' : ''}}"
         >
           <view class="place-content">
             <text class="place-text">{{item.text}}</text>
@@ -98,7 +117,7 @@
     </view>
 
     <!-- Add Place Input -->
-    <view class="add-place-row" wx:if="{{effectiveAllowVoting && isMember}}">
+    <view class="add-place-row" wx:if="{{effectiveAllowVoting && isMember && !group.votingClosed}}">
       <input
         class="add-place-input"
         placeholder="添加新地点..."
@@ -110,7 +129,7 @@
       <view class="add-place-btn" bindtap="handleAddPlace">添加</view>
     </view>
     <view class="voting-closed-notice" wx:if="{{!effectiveAllowVoting}}">
-      <text>{{isExpired ? '投票已截止' : '投票已关闭'}}</text>
+      <text>{{group.votingClosed ? '投票已结束' : (isExpired ? '投票已截止' : '投票已关闭')}}</text>
     </view>
   </view>
 
@@ -164,6 +183,29 @@
       <button class="poster-action-btn share-action-btn" open-type="share">
         <image src="/assets/share-icon-thin.svg" style="width: 36rpx; height: 36rpx;" />
       </button>
+    </view>
+  </view>
+</view>
+
+<!-- Event Detail Popup -->
+<view class="poster-overlay fade-in" wx:if="{{showEventPopup}}" bindtap="hideEventPopup">
+  <view class="event-popup card" catchtap>
+    <view class="event-popup-close" bindtap="hideEventPopup">✕</view>
+    <view class="event-popup-header">
+      <text class="event-popup-emoji">{{selectedEvent.emoji}}</text>
+      <text class="event-popup-title">{{selectedEvent.title}}</text>
+    </view>
+    <view class="event-popup-row">
+      <text class="event-popup-label">时间</text>
+      <text class="event-popup-value">{{selectedEvent.displayTime}}</text>
+    </view>
+    <view class="event-popup-row" wx:if="{{selectedEvent.location}}">
+      <text class="event-popup-label">地点</text>
+      <text class="event-popup-value">📍 {{selectedEvent.location}}</text>
+    </view>
+    <view class="event-popup-row">
+      <text class="event-popup-label">参与者</text>
+      <text class="event-popup-value">{{selectedEvent.participants.length}}人</text>
     </view>
   </view>
 </view>

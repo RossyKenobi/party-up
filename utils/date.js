@@ -186,5 +186,18 @@ export const CATEGORIES = [
   { id: 'party', emoji: '🎉', name: '派对', color: '#D47B85', bg: '#F6E1E3' },
   { id: 'other', emoji: '👾', name: '其他', color: '#9B9A97', bg: '#EAE9E7' }
 ];
+/** Recurrence options */
+export const RECURRENCE_OPTIONS = [
+  { value: 'none', label: '不重复' },
+  { value: 'weekly', label: '每周' },
+  { value: 'biweekly', label: '每两周' },
+  { value: 'monthly', label: '每月' },
+];
+
+/** Visibility options */
+export const VISIBILITY_OPTIONS = [
+  { value: false, label: '公开' },
+  { value: true, label: '私人' },
+];
 
 export { DAY_NAMES, DAY_NAMES_SHORT, MONTH_NAMES };

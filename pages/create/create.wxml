@@ -53,6 +53,32 @@
     </picker>
   </view>
 
+  <view class="form-group card">
+    <label class="form-label">重复</label>
+    <picker mode="selector" range="{{recurrenceLabels}}" bindchange="onRecurrenceChange">
+      <view class="picker-row">
+        <text>{{recurrenceLabels[recurrenceIndex]}}</text>
+        <text style="color:var(--text-tertiary)">></text>
+      </view>
+    </picker>
+    <picker wx:if="{{recurrence !== 'none'}}" mode="date" value="{{recurrenceEndDate}}" start="{{startDate}}" bindchange="onRecurrenceEndDateChange">
+      <view class="picker-row" style="margin-top:8px">
+        <text>结束日期: <text class="picker-val">{{recurrenceEndDate || '请选择'}}</text></text>
+        <text style="color:var(--text-tertiary)">></text>
+      </view>
+    </picker>
+  </view>
+
+  <view class="form-group card">
+    <label class="form-label">可见性</label>
+    <picker mode="selector" range="{{visibilityLabels}}" bindchange="onVisibilityChange">
+      <view class="picker-row">
+        <text>{{visibilityLabels[visibilityIndex]}}</text>
+        <text style="color:var(--text-tertiary)">></text>
+      </view>
+    </picker>
+  </view>
+
   <view class="actions">
     <button class="btn btn-secondary" style="flex:1" bindtap="cancel">取消</button>
     <button class="btn btn-primary" style="flex:2" bindtap="submit">{{isEdit ? '保存修改' : '创建'}}</button>

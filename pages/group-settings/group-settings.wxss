@@ -137,6 +137,17 @@
   color: var(--danger);
 }
 
+.voting-control-card {
+  text-align: center;
+  color: var(--text-secondary);
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.voting-control-card:active {
+  opacity: 0.7;
+}
+
 /* Empty state */
 .empty-state {
   padding: 100px 0;

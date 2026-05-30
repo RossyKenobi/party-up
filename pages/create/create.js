@@ -1,10 +1,11 @@
-import { createEvent, getEventById, updateEvent } from '../../utils/store.js';
-import { CATEGORIES, REMINDER_OPTIONS } from '../../utils/date.js';
+import { createEvent, getEventById, updateEvent, updateEventSeries } from '../../utils/store.js';
+import { CATEGORIES, REMINDER_OPTIONS, RECURRENCE_OPTIONS, VISIBILITY_OPTIONS } from '../../utils/date.js';
 
 Page({
   data: {
     isEdit: false,
     eventId: null,
+    seriesId: null,
     title: '',
     categoryId: 'fitness',
     categories: CATEGORIES,
@@ -18,11 +19,24 @@ Page({
     
     reminderOptions: REMINDER_OPTIONS,
     reminderLabels: REMINDER_OPTIONS.map(o => o.label),
-    reminderIndex: 3 // Default 30 min
+    reminderIndex: 3, // Default 30 min
+
+    recurrenceLabels: RECURRENCE_OPTIONS.map(o => o.label),
+    recurrenceIndex: 0,
+    recurrence: 'none',
+    recurrenceEndDate: '',
+
+    visibilityLabels: VISIBILITY_OPTIONS.map(o => o.label),
+    visibilityIndex: 0,
+    isPrivate: false,
+
+    groupId: null,
+    groupName: ''
   },
 
   async onLoad(options) {
     if (options.id) {
+      // Edit mode
       wx.setNavigationBarTitle({ title: '编辑活动' });
       this.setData({ isEdit: true, eventId: options.id });
       wx.showLoading({ title: '加载中...', mask: true });
@@ -33,6 +47,8 @@ Page({
           const eDateObj = new Date(event.endTime);
           
           const reminderIndex = this.data.reminderOptions.findIndex(o => o.value === event.reminder);
+          const recurrenceIndex = RECURRENCE_OPTIONS.findIndex(o => o.value === (event.recurrence || 'none'));
+          const visibilityIndex = VISIBILITY_OPTIONS.findIndex(o => o.value === (event.isPrivate || false));
           
           this.setData({
             title: event.title,
@@ -42,7 +58,14 @@ Page({
             endDate: this.formatDate(eDateObj),
             endTime: this.formatTime(eDateObj),
             location: event.location || '',
-            reminderIndex: reminderIndex > -1 ? reminderIndex : 3
+            reminderIndex: reminderIndex > -1 ? reminderIndex : 3,
+            recurrence: event.recurrence || 'none',
+            recurrenceIndex: recurrenceIndex > -1 ? recurrenceIndex : 0,
+            recurrenceEndDate: event.recurrenceEndDate || '',
+            isPrivate: event.isPrivate || false,
+            visibilityIndex: visibilityIndex > -1 ? visibilityIndex : 0,
+            seriesId: event.seriesId || null,
+            groupId: event.groupId || null
           });
         }
       } catch (e) {
@@ -50,23 +73,32 @@ Page({
       } finally {
         wx.hideLoading();
       }
-    } else {
-      const now = new Date();
-      // Default to next hour
-      now.setHours(now.getHours() + 1, 0, 0, 0);
-      const end = new Date(now);
-      end.setHours(end.getHours() + 1);
-
-      const sDate = this.formatDate(now);
-      const sTime = this.formatTime(now);
-      const eDate = this.formatDate(end);
-      const eTime = this.formatTime(end);
-
+    } else if (options.groupId) {
+      // Create from group
       this.setData({
-        startDate: sDate, startTime: sTime,
-        endDate: eDate, endTime: eTime
+        groupId: options.groupId,
+        groupName: decodeURIComponent(options.groupName || ''),
+        title: decodeURIComponent(options.groupName || ''),
+        isPrivate: true,
+        visibilityIndex: 1
       });
+      this._initDefaultTimes();
+    } else {
+      // Normal create
+      this._initDefaultTimes();
     }
+  },
+
+  _initDefaultTimes() {
+    const now = new Date();
+    now.setHours(now.getHours() + 1, 0, 0, 0);
+    const end = new Date(now);
+    end.setHours(end.getHours() + 1);
+
+    this.setData({
+      startDate: this.formatDate(now), startTime: this.formatTime(now),
+      endDate: this.formatDate(end), endTime: this.formatTime(end)
+    });
   },
 
   formatDate(d) {
@@ -117,12 +149,32 @@ Page({
   
   onReminderChange(e) { this.setData({ reminderIndex: e.detail.value }); },
 
+  onRecurrenceChange(e) {
+    const idx = e.detail.value;
+    this.setData({
+      recurrenceIndex: idx,
+      recurrence: RECURRENCE_OPTIONS[idx].value
+    });
+  },
+
+  onRecurrenceEndDateChange(e) {
+    this.setData({ recurrenceEndDate: e.detail.value });
+  },
+
+  onVisibilityChange(e) {
+    const idx = e.detail.value;
+    this.setData({
+      visibilityIndex: idx,
+      isPrivate: VISIBILITY_OPTIONS[idx].value
+    });
+  },
+
   cancel() {
     wx.navigateBack();
   },
 
   async submit() {
-    const { isEdit, eventId, title, categoryId, startDate, startTime, endDate, endTime, location, reminderIndex, categories } = this.data;
+    const { isEdit, eventId, seriesId, title, categoryId, startDate, startTime, endDate, endTime, location, reminderIndex, categories, recurrence, recurrenceEndDate, isPrivate, groupId } = this.data;
 
     if (!title.trim()) {
       wx.showToast({ title: '请输入活动名称', icon: 'none' });
@@ -143,6 +195,19 @@ Page({
       return;
     }
 
+    if (recurrence !== 'none' && !recurrenceEndDate) {
+      wx.showToast({ title: '请设置重复结束日期', icon: 'none' });
+      return;
+    }
+
+    if (recurrence !== 'none') {
+      const recEnd = new Date(recurrenceEndDate);
+      if (recEnd <= startDateTime) {
+        wx.showToast({ title: '重复结束日期必须在开始时间之后', icon: 'none' });
+        return;
+      }
+    }
+
     const category = categories.find(c => c.id === categoryId);
 
     const eventData = {
@@ -153,8 +218,38 @@ Page({
       startTime: startDateTime.toISOString(),
       endTime: endDateTime.toISOString(),
       location: location.trim(),
-      reminder: REMINDER_OPTIONS[reminderIndex].value
+      reminder: REMINDER_OPTIONS[reminderIndex].value,
+      recurrence,
+      isPrivate
     };
+
+    if (recurrence !== 'none') {
+      eventData.recurrenceEndDate = recurrenceEndDate;
+    }
+    if (groupId) {
+      eventData.groupId = groupId;
+    }
+
+    // Edit mode with series - ask user for edit depth
+    if (isEdit && seriesId) {
+      const { tapIndex } = await wx.showActionSheet({
+        itemList: ['仅此次', '此次及以后所有']
+      }).catch(() => ({ tapIndex: -1 }));
+
+      if (tapIndex === -1) return;
+
+      if (tapIndex === 0) {
+        // Edit this one only - detach from series
+        eventData.seriesId = null;
+        eventData.recurrence = 'none';
+        delete eventData.recurrenceEndDate;
+        await this._doUpdate(eventId, eventData);
+      } else {
+        // Edit all future
+        await this._doUpdateSeries(seriesId, eventData);
+      }
+      return;
+    }
 
     const doSubmit = async () => {
       wx.showLoading({ title: isEdit ? '保存中...' : '创建中...', mask: true });
@@ -185,6 +280,32 @@ Page({
       });
     } else {
       doSubmit();
+    }
+  },
+
+  async _doUpdate(eventId, eventData) {
+    wx.showLoading({ title: '保存中...', mask: true });
+    try {
+      await updateEvent(eventId, eventData);
+      wx.showToast({ title: '保存成功', icon: 'success' });
+      setTimeout(() => wx.navigateBack(), 1500);
+    } catch (err) {
+      wx.showToast({ title: err.message || '保存失败', icon: 'none' });
+    } finally {
+      wx.hideLoading();
+    }
+  },
+
+  async _doUpdateSeries(seriesId, eventData) {
+    wx.showLoading({ title: '保存中...', mask: true });
+    try {
+      await updateEventSeries(seriesId, eventData);
+      wx.showToast({ title: '保存成功', icon: 'success' });
+      setTimeout(() => wx.navigateBack(), 1500);
+    } catch (err) {
+      wx.showToast({ title: err.message || '保存失败', icon: 'none' });
+    } finally {
+      wx.hideLoading();
     }
   }
 });

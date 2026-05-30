@@ -152,10 +152,10 @@ export async function getEvents() {
   return res.data;
 }
 
-export async function getEventsByDateRange(startDate, endDate) {
+export async function getEventsByDateRange(startDate, endDate, userId) {
   const res = await wx.cloud.callFunction({
     name: 'eventService',
-    data: { action: 'listByDateRange', startDate, endDate }
+    data: { action: 'listByDateRange', startDate, endDate, userId }
   });
   if (!res.result || !res.result.success) {
     throw new Error((res.result && res.result.error) || '查询失败');
@@ -189,6 +189,27 @@ export async function getEventById(id) {
   const database = getDB();
   const res = await database.collection('events').where({ id }).get();
   return res.data.length > 0 ? res.data[0] : null;
+}
+
+export async function updateEventSeries(seriesId, eventData) {
+  const res = await wx.cloud.callFunction({
+    name: 'eventService',
+    data: { action: 'updateSeries', seriesId, eventData }
+  });
+  if (!res.result || !res.result.success) {
+    throw new Error((res.result && res.result.error) || '更新失败');
+  }
+}
+
+export async function getEventsByGroup(groupId) {
+  const res = await wx.cloud.callFunction({
+    name: 'eventService',
+    data: { action: 'listByGroup', groupId }
+  });
+  if (!res.result || !res.result.success) {
+    throw new Error((res.result && res.result.error) || '查询失败');
+  }
+  return res.result.events;
 }
 
 // =============================================================================

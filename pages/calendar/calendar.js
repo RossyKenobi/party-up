@@ -87,7 +87,9 @@ Page({
       const rangeStart = new Date(d.getFullYear(), d.getMonth(), d.getDate() - 21);
       const rangeEnd = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 21);
 
-      const allEvents = await getEventsByDateRange(rangeStart.toISOString(), rangeEnd.toISOString());
+      const user = getCurrentUser();
+      const userId = user ? user.id : null;
+      const allEvents = await getEventsByDateRange(rangeStart.toISOString(), rangeEnd.toISOString(), userId);
       this.setData({ allEvents }, () => {
         this.fullResetView(this.data.selectedDate);
       });
