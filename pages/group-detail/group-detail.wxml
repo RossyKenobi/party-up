@@ -138,7 +138,7 @@
     <view class="section-title">📊 投票统计</view>
 
     <view class="chart-list">
-      <view class="chart-row {{item.isWinner ? 'chart-winner' : ''}}" wx:for="{{chartPlaces}}" wx:key="id">
+      <view class="chart-row" wx:for="{{chartPlaces}}" wx:key="id">
         <view class="chart-row-header">
           <text class="chart-label">{{item.text}}</text>
           <view class="chart-voters" wx:if="{{!group.isAnonymous && item.votersInfo && item.votersInfo.length > 0}}">
@@ -190,10 +190,12 @@
 <!-- Event Detail Popup -->
 <view class="poster-overlay fade-in" wx:if="{{showEventPopup}}" bindtap="hideEventPopup">
   <view class="event-popup card" catchtap>
-    <view class="event-popup-close" bindtap="hideEventPopup">✕</view>
     <view class="event-popup-header">
-      <text class="event-popup-emoji">{{selectedEvent.emoji}}</text>
-      <text class="event-popup-title">{{selectedEvent.title}}</text>
+      <view class="event-popup-title-wrap">
+        <text class="event-popup-title">{{selectedEvent.title}}</text>
+        <image src="/assets/edit-icon.svg" class="event-popup-edit" wx:if="{{selectedEvent.creatorId === currentUserId}}" catchtap="handleEditEvent" />
+      </view>
+      <view class="event-popup-close" bindtap="hideEventPopup">✕</view>
     </view>
     <view class="event-popup-row">
       <text class="event-popup-label">时间</text>

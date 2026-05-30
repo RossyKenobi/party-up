@@ -454,6 +454,14 @@ Page({
     this.setData({ showEventPopup: false, selectedEvent: null });
   },
 
+  handleEditEvent() {
+    const eventId = this.data.selectedEvent.id;
+    wx.navigateTo({
+      url: `/pages/create/create?id=${eventId}`,
+    });
+    this.setData({ showEventPopup: false, selectedEvent: null });
+  },
+
   async handleToggleWinner(e) {
     if (!this.data.group.votingClosed || !this.data.isCreator) return;
     const placeId = e.currentTarget.dataset.placeId;
