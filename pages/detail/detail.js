@@ -50,7 +50,13 @@ Page({
       const end = new Date(event.endTime);
       
       let participants = [];
-      if (event.participants && event.participants.length > 0) {
+      if (event.participantsInfo && event.participantsInfo.length > 0) {
+        participants = event.participantsInfo.map(p => ({
+          ...p,
+          id: p.userId, // Map userId to id for template compatibility
+          initial: p.nickname ? p.nickname[0] : '?'
+        }));
+      } else if (event.participants && event.participants.length > 0) {
         const users = await getUsersByIds(event.participants);
         participants = event.participants.map(pid => {
           const u = users.find(x => x.id === pid) || { id: pid, nickname: '未知用户', avatarColor: '#ccc', avatarUrl: '' };
