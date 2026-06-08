@@ -1,7 +1,7 @@
 {
   "pages": [
     "pages/splash/splash",
-    "pages/discover/discover",
+    "pages/explore/explore",
     "pages/calendar/calendar",
     "pages/groups/groups",
     "pages/group-create/group-create",

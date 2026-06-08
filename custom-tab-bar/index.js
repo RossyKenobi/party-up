@@ -5,7 +5,7 @@ Component({
     selectedColor: "#c4a381",
     list: [
       {
-        pagePath: "/pages/discover/discover",
+        pagePath: "/pages/explore/explore",
         text: "发现",
         icon: "/assets/tab-discover.svg",
         activeIcon: "/assets/tab-discover-active.svg"
