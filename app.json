@@ -26,7 +26,7 @@
     "borderStyle": "black",
     "list": [
       {
-        "pagePath": "pages/discover/discover",
+        "pagePath": "pages/explore/explore",
         "text": "发现",
         "iconPath": "assets/tab-calendar.png",
         "selectedIconPath": "assets/tab-calendar-active.png"
