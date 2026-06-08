@@ -35,7 +35,7 @@ exports.main = async (event) => {
         const updates = {};
         if (nickname) updates.nickname = nickname.trim();
         if (avatarColor) updates.avatarColor = avatarColor;
-        if (avatarUrl !== undefined) updates.avatarUrl = avatarUrl || '';
+        if (avatarUrl) updates.avatarUrl = avatarUrl;
         if (Object.keys(updates).length > 0) {
           await db.collection('users').doc(user._id).update({ data: updates });
         }
@@ -53,7 +53,7 @@ exports.main = async (event) => {
         // Bind OpenID to this old record
         const updates = { _openid: OPENID };
         if (avatarColor) updates.avatarColor = avatarColor;
-        if (avatarUrl !== undefined) updates.avatarUrl = avatarUrl || '';
+        if (avatarUrl) updates.avatarUrl = avatarUrl;
         await db.collection('users').doc(oldUser._id).update({ data: updates });
         const merged = { ...oldUser, ...updates };
         return {
