@@ -1,4 +1,4 @@
-<!--pages/calendar/calendar.wxml-->
+<!--pages/discover/discover.wxml-->
 <view class="calendar-page">
   <view class="header-bar">
     <view class="month-label" bindtap="toggleMonthView">
