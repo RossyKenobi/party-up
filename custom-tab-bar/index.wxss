@@ -3,27 +3,53 @@
   bottom: calc(24px + env(safe-area-inset-bottom));
   left: 32px;
   right: 32px;
-  height: 60px;
+  height: 66px;
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
   display: flex;
-  border-radius: 30px;
+  border-radius: 33px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   z-index: 999;
 }
 
+.tab-bar-slider {
+  position: absolute;
+  width: 25%;
+  top: 4px;
+  bottom: 4px;
+  left: 0;
+  border-radius: 29px;
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  z-index: 0;
+}
+
 .tab-bar-item {
   flex: 1;
-  text-align: center;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  font-size: 16px;
-  font-weight: 600;
+  gap: 3px;
+  z-index: 1;
+  position: relative;
   transition: opacity 0.2s;
 }
 
 .tab-bar-item:active {
   opacity: 0.7;
+}
+
+.tab-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.tab-text {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
 }

@@ -164,10 +164,10 @@ export async function getEvents() {
   return res.data;
 }
 
-export async function getEventsByDateRange(startDate, endDate, userId) {
+export async function getEventsByDateRange(startDate, endDate, userId, mode = null) {
   const res = await wx.cloud.callFunction({
     name: 'eventService',
-    data: { action: 'listByDateRange', startDate, endDate, userId }
+    data: { action: 'listByDateRange', startDate, endDate, userId, mode }
   });
   if (!res.result || !res.result.success) {
     throw new Error((res.result && res.result.error) || '查询失败');

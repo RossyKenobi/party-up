@@ -87,9 +87,19 @@ Page({
       // Normal create
       this._initDefaultTimes();
       const defaultCat = CATEGORIES.find(c => c.id === this.data.categoryId);
-      if (defaultCat && this.data.categoryId !== 'other') {
-        this.setData({ title: defaultCat.name });
+      
+      let isPrivate = false;
+      let visibilityIndex = 0;
+      if (options.isPrivate === 'true') {
+        isPrivate = true;
+        visibilityIndex = 1;
       }
+
+      this.setData({ 
+        title: (defaultCat && this.data.categoryId !== 'other') ? defaultCat.name : '',
+        isPrivate,
+        visibilityIndex
+      });
     }
   },
 

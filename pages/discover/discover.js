@@ -45,7 +45,7 @@ Page({
 
   onShow() {
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-      this.getTabBar().updateIndex(1);
+      this.getTabBar().updateIndex(0);
     }
     this.refreshData();
     this.startTimer();
@@ -89,7 +89,7 @@ Page({
 
       const user = getCurrentUser();
       const userId = user ? user.id : null;
-      const allEvents = await getEventsByDateRange(rangeStart.toISOString(), rangeEnd.toISOString(), userId, 'private');
+      const allEvents = await getEventsByDateRange(rangeStart.toISOString(), rangeEnd.toISOString(), userId, 'public');
       this.setData({ allEvents }, () => {
         this.fullResetView(this.data.selectedDate);
       });
@@ -473,7 +473,7 @@ Page({
       wx.showToast({ title: '请先前往“我的”页面登录', icon: 'none' });
       return;
     }
-    wx.navigateTo({ url: '/pages/create/create?isPrivate=true' });
+    wx.navigateTo({ url: '/pages/create/create?isPrivate=false' });
   },
 
   goDetail(e) {

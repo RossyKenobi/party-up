@@ -259,7 +259,7 @@ exports.main = async (event) => {
 
     // ---------- LIST BY DATE RANGE ----------
     } else if (action === 'listByDateRange') {
-      const { startDate, endDate, userId } = event;
+      const { startDate, endDate, userId, mode } = event;
 
       const res = await db.collection('events')
         .where({
@@ -270,10 +270,20 @@ exports.main = async (event) => {
         .limit(1000)
         .get();
 
-      // Filter out private events that don't belong to the requesting user
-      const events = userId
-        ? res.data.filter(e => !e.isPrivate || e.creatorId === userId || (e.participants && e.participants.includes(userId)))
-        : res.data.filter(e => !e.isPrivate);
+      let events;
+      if (mode === 'public') {
+        events = res.data.filter(e => !e.isPrivate);
+      } else if (mode === 'private') {
+        if (!userId) {
+          events = [];
+        } else {
+          events = res.data.filter(e => e.creatorId === userId || (e.participants && e.participants.includes(userId)));
+        }
+      } else {
+        events = userId
+          ? res.data.filter(e => !e.isPrivate || e.creatorId === userId || (e.participants && e.participants.includes(userId)))
+          : res.data.filter(e => !e.isPrivate);
+      }
 
       return { success: true, events };
 

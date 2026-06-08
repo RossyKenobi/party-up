@@ -1,6 +1,7 @@
 {
   "pages": [
     "pages/splash/splash",
+    "pages/discover/discover",
     "pages/calendar/calendar",
     "pages/groups/groups",
     "pages/group-create/group-create",
@@ -25,22 +26,28 @@
     "borderStyle": "black",
     "list": [
       {
+        "pagePath": "pages/discover/discover",
+        "text": "发现",
+        "iconPath": "assets/tab-calendar.png",
+        "selectedIconPath": "assets/tab-calendar-active.png"
+      },
+      {
         "pagePath": "pages/calendar/calendar",
-        "text": "📅 日历",
+        "text": "日程",
         "iconPath": "assets/tab-calendar.png",
         "selectedIconPath": "assets/tab-calendar-active.png"
       },
       {
         "pagePath": "pages/groups/groups",
-        "text": "✈️ 去哪玩",
+        "text": "去哪玩",
         "iconPath": "assets/tab-calendar.png",
         "selectedIconPath": "assets/tab-calendar-active.png"
       },
       {
         "pagePath": "pages/my/my",
-        "text": "👤 我的",
-        "iconPath": "assets/tab-my.png",
-        "selectedIconPath": "assets/tab-my-active.png"
+        "text": "我的",
+        "iconPath": "assets/tab-calendar.png",
+        "selectedIconPath": "assets/tab-calendar-active.png"
       }
     ]
   },

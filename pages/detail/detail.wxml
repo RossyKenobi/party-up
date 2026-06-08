@@ -1,8 +1,12 @@
 <!--pages/detail/detail.wxml-->
 <view class="container fade-in" wx:if="{{event}}">
   <view class="card event-header-card">
-    <view class="event-title">
-      <text style="margin-right:8px">{{category.emoji}}</text>{{event.title}}
+    <view class="event-title-wrapper">
+      <view class="event-title">
+        <text class="event-emoji">{{category.emoji}}</text>
+        {{event.title}}
+        <text class="event-privacy-badge">{{event.isPrivate ? 'Private' : 'Public'}}</text>
+      </view>
     </view>
     <view class="event-time-lg">
       {{dateStr}} {{timeStr}}

@@ -158,7 +158,13 @@ export function eventOnDate(event, date) {
   d.setHours(0, 0, 0, 0);
   const start = new Date(event.startTime);
   start.setHours(0, 0, 0, 0);
-  const end = new Date(event.endTime);
+  
+  const originalEnd = new Date(event.endTime);
+  if (originalEnd.getHours() === 0 && originalEnd.getMinutes() === 0 && originalEnd.getSeconds() === 0 && originalEnd.getTime() > start.getTime()) {
+    originalEnd.setMilliseconds(originalEnd.getMilliseconds() - 1);
+  }
+  
+  const end = new Date(originalEnd);
   end.setHours(0, 0, 0, 0);
   return d >= start && d <= end;
 }

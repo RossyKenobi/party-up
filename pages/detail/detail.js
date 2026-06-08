@@ -49,14 +49,8 @@ Page({
       const start = new Date(event.startTime);
       const end = new Date(event.endTime);
       
-      let participants = (event.participantsInfo || []).map(u => ({
-        ...u,
-        id: u.userId, // Map userId to id so detail.wxml can match item.id === event.creatorId
-        initial: u.nickname ? u.nickname[0] : '?'
-      }));
-
-      // Fallback for old events without participantsInfo
-      if (participants.length === 0 && event.participants && event.participants.length > 0) {
+      let participants = [];
+      if (event.participants && event.participants.length > 0) {
         const users = await getUsersByIds(event.participants);
         participants = event.participants.map(pid => {
           const u = users.find(x => x.id === pid) || { id: pid, nickname: '未知用户', avatarColor: '#ccc', avatarUrl: '' };

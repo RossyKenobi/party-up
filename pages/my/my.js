@@ -13,7 +13,7 @@ Page({
 
   onShow() {
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-      this.getTabBar().setData({ selected: 2 });
+      this.getTabBar().updateIndex(3);
     }
     this.refreshData();
   },
@@ -77,7 +77,17 @@ Page({
 
     wx.showLoading({ title: '登录中...', mask: true });
     try {
-      await login(nickname, randomColor, this.data.tempAvatarUrl);
+      let finalAvatarUrl = this.data.tempAvatarUrl;
+      if (finalAvatarUrl && !finalAvatarUrl.startsWith('cloud://') && !finalAvatarUrl.startsWith('http')) {
+        const cloudPath = `avatars/${Date.now()}_${Math.floor(Math.random()*1000)}.jpg`;
+        const uploadRes = await wx.cloud.uploadFile({
+          cloudPath,
+          filePath: finalAvatarUrl
+        });
+        finalAvatarUrl = uploadRes.fileID;
+      }
+
+      await login(nickname, randomColor, finalAvatarUrl);
       this.setData({ showLoginModal: false });
       await this.refreshData();
     } catch (e) {
